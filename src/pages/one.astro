@@ -1,0 +1,26 @@
+---
+import Slide from "../components/slide.astro";
+---
+
+<Slide>
+    <h1 data-fade-in>presenting</h1>
+</Slide>
+<style>
+    [data-fade-in] {
+        opacity: 0;
+        transition: opacity 4s;
+    }
+
+    [data-fade-in].shown {
+        opacity: 1;
+    }
+</style>
+<script>
+    function fadeIn() {
+        document.querySelectorAll("[data-fade-in]").forEach((el) => {
+            el.classList.add("shown");
+        });
+    }
+    // @ts-ignore
+    window.fadeIn = fadeIn;
+</script>

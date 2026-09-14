@@ -1,0 +1,78 @@
+@font-face {
+    font-family: "Junicode";
+    src: url("/fonts/JunicodeVF-Roman.woff2");
+    font-style: normal;
+    font-weight: 300 700;
+    font-stretch: 75% 125%;
+}
+
+@font-face {
+    font-family: "Junicode";
+    src: url("/fonts/JunicodeVF-Italic.woff2");
+    font-style: italic;
+    font-weight: 300 700;
+    font-stretch: 75% 125%;
+}
+
+/** should be between 300 and 700 */
+@property --wght {
+    syntax: "<number>";
+    inherits: true;
+    initial-value: 400;
+}
+
+/** should be between 0 and 100 */
+@property --wdth {
+    syntax: "<number>";
+    inherits: true;
+    initial-value: 0;
+}
+
+/** should be between 0 and 100 */
+@property --enla {
+    syntax: "<number>";
+    inherits: true;
+    initial-value: 0;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    overscroll-behavior: none;
+    font-size: 2rem;
+    
+    --junicode-family: "Junicode", "Times New Roman", Times, serif;
+    --junicode-settings:
+        "wght" clamp(300, var(--wght), 700),
+        "wdth" calc(clamp(0, var(--wdth), 100) / 2 + 75),
+        "ENLA" clamp(0, var(--enla), 100);
+    --wght: 400;
+    --wdth: 50;
+    --enla: 0;
+
+    font-family: var(--junicode-family);
+    font-variation-settings: var(--junicode-settings);
+}
+
+.junicode {
+    
+}
+
+html {
+    hanging-punctuation: first allow-end last;
+    word-break: break-word;
+}
+
+body {
+    margin: unset;
+}
+
+pre {
+    white-space: pre-wrap;
+}
+
+.tnum {
+    font-feature-settings: "tnum";
+}
