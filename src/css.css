@@ -4,6 +4,7 @@
     font-style: normal;
     font-weight: 300 700;
     font-stretch: 75% 125%;
+    font-display: swap;
 }
 
 @font-face {
@@ -12,27 +13,15 @@
     font-style: italic;
     font-weight: 300 700;
     font-stretch: 75% 125%;
+    font-display: swap;
 }
 
-/** should be between 300 and 700 */
-@property --wght {
-    syntax: "<number>";
-    inherits: true;
-    initial-value: 400;
-}
-
-/** should be between 0 and 100 */
-@property --wdth {
-    syntax: "<number>";
-    inherits: true;
-    initial-value: 0;
-}
-
-/** should be between 0 and 100 */
-@property --enla {
-    syntax: "<number>";
-    inherits: true;
-    initial-value: 0;
+@font-face {
+    font-family: 'Recursive';
+    src: url("/fonts/RecursiveVF.woff2");
+    font-style: oblique 0deg 15deg;
+    font-weight: 300 1000;
+    font-display: swap;
 }
 
 * {
@@ -42,7 +31,8 @@
 :root {
     overscroll-behavior: none;
     font-size: 2rem;
-    
+
+
     --junicode-family: "Junicode", "Times New Roman", Times, serif;
     --junicode-settings:
         "wght" clamp(300, var(--wght), 700),
@@ -52,12 +42,12 @@
     --wdth: 50;
     --enla: 0;
 
+    /* --recursive-family: "Recursive", 'Courier New', Courier, monospace; */
+    /* --recursive-weight: 300-1000; */
+    /* --recursive-settings: "MONO" 0-1, "CASL" 0-1, "slnt" -15-0, "CRSV" 0-1; */
+
     font-family: var(--junicode-family);
     font-variation-settings: var(--junicode-settings);
-}
-
-.junicode {
-    
 }
 
 html {

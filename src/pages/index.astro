@@ -1,0 +1,118 @@
+---
+import Slide from "../components/slide.astro";
+
+// is this good? maybe all I need? maybe I can just count
+// up all transitions and don't need opt-in numbering?
+
+export const transitions = ["fade-in"];
+export const nextPage = "one";
+---
+
+<Slide>
+    <span class="fade-in">▶ BEEF! What a relief!</span>
+</Slide>
+<style>
+    .fade-in {
+        transition:
+            opacity 4s,
+            font-weight 1s,
+            font-variation-settings 1s;
+        opacity: 0;
+        font-family: "Recursive";
+        font-weight: 300;
+        font-variation-settings:
+            "MONO" 1,
+            "CASL" 0.5,
+            "slnt" 0,
+            "CRSV" 1;
+    }
+    .fade-in.instant {
+        transition: none;
+    }
+    .fade-in.in {
+        opacity: 1;
+        font-weight: 600;
+        font-variation-settings:
+            "MONO" 1,
+            "CASL" 0.5,
+            "slnt" -15,
+            "CRSV" 1;
+    }
+</style>
+<script>
+    import { setTransitions } from "../lib/slides.client";
+    setTransitions({
+        "fade-in": (onComplete: () => void) => {
+            const els = [...document.getElementsByClassName("fade-in")];
+            els.forEach((el) => el.classList.add("in"));
+            let done = false;
+            setTimeout(() => {
+                done = true;
+                onComplete();
+            }, 4000);
+            return {
+                revert: () => {
+                    els.forEach((el) => {
+                        el.classList.add("instant");
+                        el.classList.remove("in");
+                        setTimeout(() => {
+                            el.classList.remove("instant");
+                        }, 10);
+                    });
+                },
+                fastForward: () => {
+                    if (done) return;
+                    els.forEach((el) => {
+                        el.classList.add("instant");
+                        setTimeout(() => {
+                            el.classList.remove("instant");
+                        }, 10);
+                    });
+                },
+            };
+        },
+    });
+
+    // mock listener, for testing
+    function setupListener() {
+        const abortController = new AbortController();
+        document.addEventListener(
+            "keypress",
+            (e) => {
+                if (e.key === " ") {
+                    const { revert, fastForward } = window.transitions[
+                        "fade-in"
+                    ](() => {
+                        abortController.abort();
+                        setupListener();
+                    });
+
+                    document.addEventListener(
+                        "keypress",
+                        (e) => {
+                            if (e.key === " ") {
+                                abortController.abort();
+                                fastForward();
+                                setupListener();
+                            }
+                        },
+                        {
+                            signal: abortController.signal,
+                        },
+                    );
+
+                    document.addEventListener("keypress", (e) => {
+                        if (e.key === "x") {
+                            abortController.abort();
+                            revert();
+                            setupListener();
+                        }
+                    });
+                }
+            },
+            { signal: abortController.signal },
+        );
+    }
+
+    setupListener();
+</script>

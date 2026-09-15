@@ -1,5 +1,7 @@
 ---
 import Slide from "../components/slide.astro";
+
+export const nextPage = "two";
 ---
 
 <Slide>
@@ -15,12 +17,3 @@ import Slide from "../components/slide.astro";
         opacity: 1;
     }
 </style>
-<script>
-    function fadeIn() {
-        document.querySelectorAll("[data-fade-in]").forEach((el) => {
-            el.classList.add("shown");
-        });
-    }
-    // @ts-ignore
-    window.fadeIn = fadeIn;
-</script>

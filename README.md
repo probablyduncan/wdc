@@ -1,3 +1,16 @@
+ok, here's how it will work
+each page has a number of front-matter exports and a number of client functions
+index.astro is the start
+each page exports a list of transitions, numbered or not
+and the last transition is always a transition to another page
+so that way, we don't have to worry about a list of pages, or anything like that
+
+
+
+
+
+
+
 ## slides infrastructure
 
 slides can either be a new `.astro` page, or a client-side transition on the same `.astro` page

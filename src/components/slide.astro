@@ -1,14 +1,21 @@
 ---
-import "../../src/css.css";
-import {
-    numSlides,
-    slides,
-    getSlideByPathname,
-    getSlideCounter,
-} from "../slides";
+import "../css.css";
+import { getSlides, getPageName } from "../lib/slides.server";
 
-const slide = getSlideByPathname(Astro.originPathname);
-if (!slide) throw "no slide!";
+const slides = getSlides();
+const thisPage = getPageName(Astro.url);
+
+const thisPageIndex = slides.findIndex((s) => s.name === thisPage && s.type === "page",);
+const nextPageIndex = slides.slice(thisPageIndex + 1).findIndex((s) => s.type === "page");
+const nextPage = nextPageIndex > -1 ? slides[nextPageIndex + thisPageIndex + 1].name : "";
+const prevPage = slides.slice(0, thisPageIndex).findLast((s) => s.type === "page")?.name ?? "";
+const transitions = slides.slice(thisPageIndex + 1, nextPageIndex > -1 ? nextPageIndex + thisPageIndex + 1 : undefined).map(s => s.name);
+
+// but I guess really what I need is info for the current page only:
+// current page's transitions
+// next page
+// prev page
+// so a flat array of everything isn't really helpful
 ---
 
 <!doctype html>
@@ -22,7 +29,12 @@ if (!slide) throw "no slide!";
         <title>WDC, DP, you see</title>
     </head>
 
-    <body>
+    <body
+        data-this-page={thisPage}
+        data-next-page={nextPage}
+        data-prev-page={prevPage}
+        data-transitions={JSON.stringify(transitions)}
+    >
         <header>
             <span>DUNCAN</span>
             <span>WDC</span>
@@ -32,7 +44,7 @@ if (!slide) throw "no slide!";
             <slot />
         </main>
         <footer class="tnum">
-            <span data-slide-counter>{getSlideCounter(slide)}</span>
+            <!-- <span data-slide-counter>{getSlideCounter(slide)}</span> -->
             <button data-slide-toggle="prev">prev</button>
             <button data-slide-toggle="next">next</button>
         </footer>
@@ -70,86 +82,11 @@ if (!slide) throw "no slide!";
     </style>
 
     <script>
-        import {
-            numSlides,
-            slides,
-            getSlideByPathname,
-            getSlideCounter,
-            type Slide,
-        } from "../slides";
-
         function initSlides() {
-            type SlideDirection = "prev" | "next";
-            let currentSlide = getSlideByPathname(location.pathname)!;
-            if (!currentSlide) return;
-
-            const updateSlideNumbers = (() => {
-                const slideNumberContainers = [
-                    ...document.querySelectorAll("[data-slide-counter]"),
-                ] as HTMLElement[];
-
-                return () =>
-                    slideNumberContainers.forEach((el) => {
-                        el.innerText = getSlideCounter(
-                            currentSlide,
-                            el.dataset.slideCounter,
-                        );
-                    });
-            })();
-
-            // set up toggles
-            document
-                .querySelectorAll(
-                    "[data-slide-toggle=prev], [data-slide-toggle=next]",
-                )
-                .forEach((_el) => {
-                    const el = _el as HTMLElement;
-                    el.addEventListener("click", () => {
-                        go(el.dataset.slideToggle as SlideDirection);
-                    });
-                });
-
-            document.addEventListener("keydown", (e) => {
-                switch (e.key) {
-                    case "ArrowLeft":
-                        go("prev");
-                        break;
-                    case "ArrowRight":
-                        go("next");
-                        break;
-                }
-            });
-
-            function go(dir: SlideDirection, instant: boolean = false) {
-
-                // get out when we're at start or end
-                // remove this when we need to skip/revert animations
-                if (
-                    (currentSlide.index === slides.length - 1 &&
-                        dir === "next") ||
-                    (currentSlide.index === 0 && dir === "prev")
-                ) {
-                    return;
-                }
-
-                // if going to prev page, just need to get there
-                if (dir === "prev" && currentSlide.type === "server") {
-                    window.location.href = "/" + slides.slice(0, currentSlide.index).findLast(s => s.type === "server")?.name;
-                    return;
-                }
-
-                currentSlide =
-                    slides[currentSlide.index + (dir === "next" ? 1 : -1)];
-                updateSlideNumbers();
-
-                if (currentSlide.type === "server") {
-                    window.location.href = "/" + currentSlide.name;
-                    return;
-                }
-
-                // @ts-ignore
-                window[currentSlide.name]();
-            }
+            console.log(document.body.dataset.thisPage);
+            console.log(document.body.dataset.nextPage);
+            console.log(document.body.dataset.prevPage);
+            console.log(JSON.parse(document.body.dataset.transitions ?? "[]"));
         }
 
         document.addEventListener("DOMContentLoaded", initSlides);
