@@ -30,8 +30,6 @@
 
 :root {
     overscroll-behavior: none;
-    font-size: 2rem;
-
 
     --junicode-family: "Junicode", "Times New Roman", Times, serif;
     --junicode-settings:
@@ -63,6 +61,12 @@ pre {
     white-space: pre-wrap;
 }
 
-.tnum {
-    font-feature-settings: "tnum";
+button {
+    border: unset;
+    border-radius: unset;
+    font-family: unset;
+    font-size: unset;
+    background: unset;
+    padding: unset;
+    font-variant: unset;
 }

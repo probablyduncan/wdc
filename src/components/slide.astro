@@ -1,21 +1,8 @@
 ---
 import "../css.css";
-import { getSlides, getPageName } from "../lib/slides.server";
+import { getPageInfo, getPageName } from "../lib/slides.server";
 
-const slides = getSlides();
-const thisPage = getPageName(Astro.url);
-
-const thisPageIndex = slides.findIndex((s) => s.name === thisPage && s.type === "page",);
-const nextPageIndex = slides.slice(thisPageIndex + 1).findIndex((s) => s.type === "page");
-const nextPage = nextPageIndex > -1 ? slides[nextPageIndex + thisPageIndex + 1].name : "";
-const prevPage = slides.slice(0, thisPageIndex).findLast((s) => s.type === "page")?.name ?? "";
-const transitions = slides.slice(thisPageIndex + 1, nextPageIndex > -1 ? nextPageIndex + thisPageIndex + 1 : undefined).map(s => s.name);
-
-// but I guess really what I need is info for the current page only:
-// current page's transitions
-// next page
-// prev page
-// so a flat array of everything isn't really helpful
+const info = getPageInfo(getPageName(Astro.url));
 ---
 
 <!doctype html>
@@ -29,24 +16,22 @@ const transitions = slides.slice(thisPageIndex + 1, nextPageIndex > -1 ? nextPag
         <title>WDC, DP, you see</title>
     </head>
 
-    <body
-        data-this-page={thisPage}
-        data-next-page={nextPage}
-        data-prev-page={prevPage}
-        data-transitions={JSON.stringify(transitions)}
-    >
+    <body data-slide-info={JSON.stringify(info)}>
         <header>
-            <span>DUNCAN</span>
-            <span>WDC</span>
-            <span>2026</span>
+            <span>wdc/2026</span>
+            <span>1/25</span>
         </header>
         <main>
             <slot />
         </main>
-        <footer class="tnum">
+        <footer>
             <!-- <span data-slide-counter>{getSlideCounter(slide)}</span> -->
-            <button data-slide-toggle="prev">prev</button>
-            <button data-slide-toggle="next">next</button>
+            <span>duncanpetrie</span>
+            <span>
+                <button data-slide-prev>prev</button>
+                &nbsp;/&nbsp;
+                <button data-slide-next>next</button>
+            </span>
         </footer>
     </body>
 
@@ -69,7 +54,14 @@ const transitions = slides.slice(thisPageIndex + 1, nextPageIndex > -1 ? nextPag
             left: 0;
             right: 0;
             display: flex;
+            align-items: center;
             justify-content: space-between;
+
+            line-height: 1;
+            padding: 0 1rem;
+
+            font-variant-numeric: diagonal-fractions;
+            font-variant-caps: petite-caps;
         }
 
         header {
@@ -83,10 +75,134 @@ const transitions = slides.slice(thisPageIndex + 1, nextPageIndex > -1 ? nextPag
 
     <script>
         function initSlides() {
-            console.log(document.body.dataset.thisPage);
-            console.log(document.body.dataset.nextPage);
-            console.log(document.body.dataset.prevPage);
-            console.log(JSON.parse(document.body.dataset.transitions ?? "[]"));
+            function prev() {
+                if (index === 0) {
+                    toPreviousPage();
+                    return;
+                }
+
+                index--;
+
+                if (revert) {
+                    revert();
+                    fastForwardCurrent = undefined;
+                }
+            }
+
+            function next() {
+                if (fastForwardCurrent) {
+                    fastForwardCurrent();
+                    fastForwardCurrent = undefined;
+                    return;
+                }
+
+                if (index >= info.transitions.length) {
+                    toNextPage();
+                    return;
+                }
+
+                index++;
+                beginTransition(
+                    window.transitions[info.transitions[index - 1]],
+                );
+            }
+
+            function beginTransition(transitionFunction: TransitionFunction) {
+                const t = transitionFunction(onTransitionComplete);
+                fastForwardCurrent = t.fastForward;
+                revert = t.revert;
+            }
+
+            function toPreviousPage() {
+                if (!info.prev) {
+                    return;
+                }
+
+                let newUrl = window.location.origin;
+                if (info.prev !== "index") {
+                    newUrl += "/" + info.prev;
+                }
+                newUrl += "?" + QUERY_PARAMS_STATE_KEY;
+                window.location.href = newUrl;
+            }
+
+            function toNextPage() {
+                if (!info.next) {
+                    return;
+                }
+
+                let newUrl = window.location.origin;
+                if (info.next !== "index") {
+                    newUrl += "/" + info.next;
+                }
+                window.location.href = newUrl;
+            }
+            const info = JSON.parse(
+                document.body.dataset.slideInfo!,
+            ) as PageInfo;
+
+            const QUERY_PARAMS_STATE_KEY = "end";
+
+            let index = 0;
+            if (
+                new URLSearchParams(window.location.search).get(
+                    QUERY_PARAMS_STATE_KEY,
+                ) !== null
+            ) {
+                history.replaceState(
+                    null,
+                    "",
+                    window.location.origin + window.location.pathname,
+                );
+                index += info.transitions.length;
+            }
+
+            document.addEventListener("keydown", (e) => {
+                switch (e.code) {
+                    case "ArrowLeft":
+                        prev();
+                        break;
+                    case "ArrowRight":
+                        next();
+                        break;
+                }
+            });
+
+            document.querySelectorAll("[data-slide-prev]").forEach((_el) => {
+                _el.addEventListener("click", prev);
+            });
+
+            document.querySelectorAll("[data-slide-next]").forEach((_el) => {
+                _el.addEventListener("click", next);
+            });
+
+            let revert:
+                ReturnType<Window["transitions"][string]>["revert"] | undefined;
+            let fastForwardCurrent:
+                | ReturnType<Window["transitions"][string]>["fastForward"]
+                | undefined;
+
+            function onTransitionComplete() {
+                fastForwardCurrent = undefined;
+            }
+
+            if (window.initialTransition) {
+                beginTransition(window.initialTransition);
+            }
+
+            if (index > 0) {
+                if (fastForwardCurrent) {
+                    fastForwardCurrent();
+                }
+
+                info.transitions.forEach((name) => {
+                    beginTransition(window.transitions[name]);
+                    if (fastForwardCurrent) {
+                        fastForwardCurrent();
+                        fastForwardCurrent = undefined;
+                    }
+                });
+            }
         }
 
         document.addEventListener("DOMContentLoaded", initSlides);

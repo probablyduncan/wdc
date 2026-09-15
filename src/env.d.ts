@@ -1,8 +1,6 @@
 interface Window {
-    transitions: Record<"page" | string, (onComplete: () => void) => {
-        revert: () => void;
-        fastForward: () => void;
-    }>;
+    transitions: Record<"page" | string, TransitionFunction>;
+    initialTransition?: TransitionFunction;
 }
 
 type SlideModuleExport = {
@@ -12,15 +10,16 @@ type SlideModuleExport = {
     file: string;
 }
 
-type Transition = {
-    type: "page" | "function";
-    name: string;
-    index: number;
+type TransitionFunction = (onComplete: () => void) => {
+    revert: () => void;
+    fastForward: () => void;
 }
 
 type PageInfo = {
-    thisPage: string;
+    this: string;
+    next?: string;
+    prev?: string;
     transitions: string[];
-    nextPage?: string;
-    prevPage?: string;
+    startIndex: number;
+    totalCount: number;
 }

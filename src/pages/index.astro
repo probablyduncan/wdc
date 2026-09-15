@@ -13,10 +13,11 @@ export const nextPage = "one";
 </Slide>
 <style>
     .fade-in {
+        font-size: 5vw;
         transition:
-            opacity 4s,
-            font-weight 1s,
-            font-variation-settings 1s;
+            opacity 2s,
+            font-weight 2s,
+            font-variation-settings 2s;
         opacity: 0;
         font-family: "Recursive";
         font-weight: 300;
@@ -49,7 +50,7 @@ export const nextPage = "one";
             setTimeout(() => {
                 done = true;
                 onComplete();
-            }, 4000);
+            }, 2000);
             return {
                 revert: () => {
                     els.forEach((el) => {
@@ -114,5 +115,5 @@ export const nextPage = "one";
         );
     }
 
-    setupListener();
+    // setupListener();
 </script>

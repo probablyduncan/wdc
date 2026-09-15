@@ -1,7 +1,29 @@
-let _slides: Transition[];
 export function getSlides() {
     ensureCache();
-    return _slides!;
+    return _cache!;
+}
+
+export function getPageInfo(name: string): PageInfo {
+    ensureCache();
+    const page = _cache.pages[name];
+    return {
+        this: name,
+        next: page.next,
+        prev: page.prev,
+        transitions: page.transitions,
+        startIndex: page.startNumber,
+        totalCount: _cache.length,
+    }
+}
+
+let _cache: {
+    length: number;
+    pages: Record<string, {
+        prev?: string;
+        next?: string;
+        transitions: string[];
+        startNumber: number;
+    }>;
 }
 
 /**
@@ -23,69 +45,70 @@ export function normalizePageName(pageName: string) {
 }
 
 function ensureCache() {
+    if (_cache) return;
 
-    if (_slides) return;
+    _cache = {
+        length: 0,
+        pages: {},
+    };
 
-    const pages = import.meta.glob("/src/pages/**/*.astro", { eager: true });
 
-    let index = 0;
-
-    _slides = [];
-
-    function addSlide(name: string, type: Transition["type"]) {
-        _slides.push({
-            type,
-            name,
-            index: index++,
-        });
-    }
-
-    const pageMap = new Map<string, SlideModuleExport>();
-
-    Object.values(pages).forEach((_module) => {
+    const moduleMap = new Map<string, SlideModuleExport>();
+    Object.values(import.meta.glob("/src/pages/**/*.astro", { eager: true })).forEach((_module) => {
         const module = _module as SlideModuleExport;
         const name = normalizePageName(module.url);
-        pageMap.set(name, module);
+        moduleMap.set(name, module);
     });
 
-    let currentPage = "index";
+    let currentPage: string = "index";
+    let prevPage: string | undefined = undefined;
+
     while (true) {
-        const module = pageMap.get(currentPage);
-        if (!module) {
-            break;
+        const module = moduleMap.get(currentPage);
+        if (!module) break;
+
+        _cache.pages[currentPage] = {
+            startNumber: ++_cache.length,
+            transitions: [],
+        };
+
+        if (prevPage) {
+            _cache.pages[currentPage].prev = prevPage;
         }
 
-        addSlide(currentPage, "page");
+        if (module.transitions) {
 
-        // if transitions isn't an array or it has non-string elements, throw
-        if (module.transitions && (!Array.isArray(module.transitions) || module.transitions.some(str => typeof str !== "string"))) {
-            throw validationError("transition is not array of strings", "transitions", module);
+            // if transitions isn't an array or it has non-string elements, throw
+            if (!Array.isArray(module.transitions) || module.transitions.some(str => typeof str !== "string")) {
+                throw validationError("transition is not array of strings", "transitions", module);
+            }
+
+            _cache.pages[currentPage].transitions = module.transitions;
+            _cache.length += module.transitions.length;
         }
-        
-        module.transitions?.forEach(name => {
-            addSlide(name, "function");
-        });
 
         // last slide, we're done
         if (module.nextPage === undefined) {
             break;
         }
 
-        // validate it's a string
+        // validate next page is a string
         if (typeof module.nextPage !== "string") {
             throw validationError("nextPage is not a string", "nextPage", module);
         }
 
-        // validate it's a page that exists
-        if (!pageMap.has(module.nextPage)) {
+        // validate next page is a page that exists
+        if (!moduleMap.has(module.nextPage)) {
             throw validationError("nextPage is not a valid page", "nextPage", module);
         }
 
         // validate against infinite loop
-        if (_slides.some(s => s.name === module.nextPage)) {
+        if (module.nextPage in _cache.pages) {
             throw validationError("nextPage is being used twice (infinite loop!)", "nextPage", module);
         }
 
+        _cache.pages[currentPage].next = module.nextPage;
+        prevPage = currentPage;
         currentPage = module.nextPage;
     }
 }

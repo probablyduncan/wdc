@@ -1,9 +1,30 @@
 ---
 import Slide from "../components/slide.astro";
 
-export const transitions=  ["fade-out"];
-
+export const transitions = ["fade-out"];
 ---
+
 <Slide>
     <h1>Pretty neat, huh?</h1>
 </Slide>
+<script>
+    import { setTransitions } from "../lib/slides.client";
+    setTransitions({
+        "fade-out": (onComplete) => {
+            const els = [...document.querySelectorAll("h1")] as HTMLElement[];
+            els.forEach((el) => {
+                el.hidden = true;
+            });
+            onComplete();
+
+            return {
+                fastForward: () => {},
+                revert: () => {
+                    els.forEach((el) => {
+                        el.hidden = false;
+                    });
+                },
+            };
+        },
+    });
+</script>
