@@ -73,47 +73,4 @@ export const nextPage = "one";
             };
         },
     });
-
-    // mock listener, for testing
-    function setupListener() {
-        const abortController = new AbortController();
-        document.addEventListener(
-            "keypress",
-            (e) => {
-                if (e.key === " ") {
-                    const { revert, fastForward } = window.transitions[
-                        "fade-in"
-                    ](() => {
-                        abortController.abort();
-                        setupListener();
-                    });
-
-                    document.addEventListener(
-                        "keypress",
-                        (e) => {
-                            if (e.key === " ") {
-                                abortController.abort();
-                                fastForward();
-                                setupListener();
-                            }
-                        },
-                        {
-                            signal: abortController.signal,
-                        },
-                    );
-
-                    document.addEventListener("keypress", (e) => {
-                        if (e.key === "x") {
-                            abortController.abort();
-                            revert();
-                            setupListener();
-                        }
-                    });
-                }
-            },
-            { signal: abortController.signal },
-        );
-    }
-
-    // setupListener();
 </script>
