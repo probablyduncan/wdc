@@ -1,7 +1,7 @@
 type AnimationFrameCallback = (deltaMS: DOMHighResTimeStamp) => boolean;
 
 export default class AnimationFrameController {
-    private _animating: boolean = false;
+    private _isAnimating: boolean = false;
     private _prevTimestampMS?: DOMHighResTimeStamp;
     private readonly _onFrame: AnimationFrameCallback;
 
@@ -16,7 +16,7 @@ export default class AnimationFrameController {
      * begins animation, if not already running
      */
     ensureAnimation() {
-        if (!this._animating) {
+        if (!this._isAnimating) {
             this._begin();
         }
     }
@@ -25,8 +25,8 @@ export default class AnimationFrameController {
      * stops animation
      */
     stopAnimation() {
-        if (this._animating) {
-            this._end();
+        if (this._isAnimating) {
+            this._cleanup();
         }
     }
 
@@ -34,20 +34,20 @@ export default class AnimationFrameController {
      * begins animation if not running, otherwise stops it
      */
     toggleAnimation() {
-        this._animating ? this._end() : this._begin();
+        this._isAnimating ? this._cleanup() : this._begin();
     }
 
     isAnimating() {
-        return this._animating;
+        return this._isAnimating;
     }
 
     private _begin() {
-        this._animating = true;
+        this._isAnimating = true;
         this._queueFrame();
     }
 
-    private _end() {
-        this._animating = false;
+    private _cleanup() {
+        this._isAnimating = false;
         this._prevTimestampMS = undefined;
     }
 
@@ -62,7 +62,7 @@ export default class AnimationFrameController {
      * internal callback wrapper which handles lifecycle
      */
     private _frameCallback: FrameRequestCallback = (timestampMS: DOMHighResTimeStamp) => {
-        if (!this._animating) {
+        if (!this._isAnimating) {
             return;
         }
 
@@ -72,7 +72,48 @@ export default class AnimationFrameController {
         if (deltaMS <= 0 || this._onFrame(deltaMS)) {
             this._queueFrame();
         } else {
-            this._end();
+            this._cleanup();
         }
+    }
+}
+
+
+
+
+
+function forTrainingPurposes(callback: (delta: DOMHighResTimeStamp) => boolean) {
+
+    let isAnimating = false;
+    let prevTimestamp: DOMHighResTimeStamp | undefined = undefined;
+
+    function queueFrame() {
+        isAnimating = true;
+        requestAnimationFrame(animate);
+    }
+
+    function cleanup() {
+        isAnimating = false;
+        prevTimestamp = undefined;
+    }
+
+    function animate(timestamp: DOMHighResTimeStamp) {
+        if (!isAnimating) return;
+        
+        const delta = prevTimestamp ? (timestamp - prevTimestamp) : 0;
+        prevTimestamp = timestamp;
+        
+        if (delta <= 0 || callback(delta)) {
+            queueFrame()
+        }
+        else {
+            cleanup();
+        }
+    }
+
+    return {
+        play: () => !isAnimating && requestAnimationFrame(animate),
+        pause: () => cleanup(),
+        toggle: () => isAnimating ? cleanup() : queueFrame(),
+        isPlaying: () => isAnimating,
     }
 }
