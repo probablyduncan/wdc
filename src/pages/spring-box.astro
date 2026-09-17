@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+    <head></head>
+    <body>
+        <div id="fps"></div>
+        <div id="box"></div>
+    </body>
+</html>
+
+<style>
+    body {
+        overflow: clip;
+        width: 100vw;
+        height: 100vh;
+    }
+    #box {
+        width: 100px;
+        aspect-ratio: 1;
+        background-color: tomato;
+        --x: 0px;
+        transform: translateX(calc(var(--x) - 50%));
+    }
+    #fps {
+        position: fixed;
+        top: 0;
+        right: 0;
+        font-family: monospace;
+    }
+</style>
+
+<script>
+    import AnimationFrameController from "../lib/animationFrameController";
+
+    let current = 0;
+    let target = 0;
+    let velocity = 0;
+
+    const MASS = 2;
+    const STIFFNESS = 100;
+    const DAMPING = 20;
+
+    const box = document.getElementById("box")!;
+    const fps = document.getElementById("fps")!;
+
+    const spring = new AnimationFrameController((deltaMS) => {
+        // so every frame, I have an amount that we are out of equilibrium
+        // that's target-current
+        // and I have a velocity, which is persisted across frames
+        // and I calculate acceleration per frame based on this
+
+        const fSpring = STIFFNESS * (target - current);
+        const fDamping = DAMPING * velocity;
+        const acceleration = (fSpring - fDamping) / MASS;
+
+        const deltaS = deltaMS / 1000;
+        velocity += acceleration * deltaS;
+        current += velocity * deltaS;
+
+        box.style.setProperty("--x", current + "px");
+
+        if (Math.abs(velocity) > 1) {
+            fps.innerText = (1 / deltaS).toFixed().padStart(4, " ") + " FPS";
+            return true;
+        } else {
+            fps.innerText = "~ FPS";
+            return false;
+        }
+    });
+
+    let mouseDown = false;
+
+    window.addEventListener("mousedown", (e) => {
+        spring.ensureAnimation();
+        mouseDown = true;
+        target = e.clientX;
+    });
+
+    window.addEventListener("mouseup", () => {
+        mouseDown = false;
+    });
+
+    window.addEventListener("mousemove", (e) => {
+        if (mouseDown) {
+            target = e.clientX;
+        }
+    });
+
+    document.addEventListener("keypress", ({ key }) => {
+        if (key === "x") {
+            spring.stopAnimation();
+        } else if (key === " ") {
+            spring.toggleAnimation();
+        }
+    });
+</script>

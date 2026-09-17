@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+    <head></head>
+    <body>
+        <div id="fps"></div>
+        <div id="box"></div>
+    </body>
+</html>
+
+<style>
+    body {
+        overflow: clip;
+        width: 100vw;
+        height: 100vh;
+    }
+    #box {
+        width: 100px;
+        aspect-ratio: 1;
+        background-color: tomato;
+        --x: -100px;
+        --y: -100px;
+        transform: translate(calc(var(--x) - 50%), calc(var(--y) - 50%));
+    }
+    #fps {
+        position: fixed;
+        top: 0;
+        right: 0;
+        font-family: monospace;
+        user-select: none;
+    }
+</style>
+
+<script>
+    import AnimationFrameController from "../lib/animationFrameController";
+    import { LerpController, SpringController } from "../lib/interpolationController";
+
+    const box = document.getElementById("box")!;
+    const fps = document.getElementById("fps")!;
+
+    const x = new SpringController({ initialValue: -100 });
+    const y = new SpringController({ initialValue: -100 });
+
+    const animationController = new AnimationFrameController((deltaMS) => {
+        box.style.setProperty("--x", x.step(deltaMS) + "px");
+        box.style.setProperty("--y", y.step(deltaMS) + "px");
+        fps.innerText = (1000 / deltaMS).toFixed().padStart(4, " ") + " FPS";
+        return true;
+    });
+
+    animationController.ensureAnimation();
+
+    window.addEventListener("mousemove", (e) => {
+        x.target = e.clientX;
+        y.target = e.clientY;
+    });
+
+    document.addEventListener("keypress", ({ key }) => {
+        if (key === " ") {
+            animationController.toggleAnimation();
+        }
+    });
+</script>

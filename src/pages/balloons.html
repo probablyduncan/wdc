@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>balloons</title>
+</head>
+
+<body>
+    <div class="balloons">balloons are nice</div>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Junicode";
+            min-height: 100svh;
+            margin: 0;
+            box-sizing: border-box;
+            font-size: 2rem;
+        }
+
+        .balloon {
+
+            --progress: 0;
+
+            --wght: calc(var(--progress) * 4 + 300);
+            /* --wght: 400; */
+            --wdth: calc(var(--progress) / 2 + 75);
+            /* --wdth: 100; */
+            --enla: var(--progress);
+
+            font-variation-settings:
+                "wght" var(--wght),
+                "wdth" var(--wdth),
+                "ENLA" var(--enla);
+
+            transform-origin: bottom center;
+            display: inline-block;
+            line-height: 0.4;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .balloon.done {
+            pointer-events: none;
+            z-index: 10;
+            transform: scale(2) translateY(-200px);
+            opacity: 0;
+        }
+
+        @font-face {
+            font-family: "Junicode";
+            font-style: normal;
+            src: url("/fonts/JunicodeVF-Roman.woff2");
+        }
+
+        @font-face {
+            font-family: "Junicode";
+            font-style: italic;
+            src: url("/fonts/JunicodeVF-Italic.woff2");
+        }
+    </style>
+    <script>
+
+        // I guess I should take a step back and figure out exactly what 
+
+        function init() {
+            const balloons = [];
+            document.querySelectorAll(".balloons").forEach(wrapper => {
+                const text = wrapper.innerText;
+                wrapper.innerHTML = "";
+                text.split("").forEach(char => {
+                    const span = document.createElement("span");
+                    span.innerText = char;
+
+                    if (char === " ") {
+                        wrapper.appendChild(span);
+                        return;
+                    }
+
+                    span.classList.add("balloon");
+
+                    const colors = ["green", "indianred", "royalblue", "cornflowerblue", "navy", "olive", "brown", "crimson", "firebrick", "orangered", "olivedrab", "seagreen", "tomato", "yellowgreen"];
+                    span.style.color = colors[Math.floor(Math.random() * colors.length)];
+
+                    const abortController = new AbortController();
+
+                    span.addEventListener("mouseenter", () => {
+                        state.active = true;
+                        console.log("enter");
+                    }, {
+                        signal: abortController.signal
+                    });
+
+                    span.addEventListener("mouseleave", () => {
+                        state.active = false;
+                        console.log("leave");
+                    }, {
+                        signal: abortController.signal
+                    });
+
+                    const state = {
+                        progress: 0,
+                        element: span,
+                        x: 0,
+                        y: 0,
+                        r: 0,
+                        active: false,
+                        detach: () => {
+                            console.log("detach")
+                            abortController.abort();
+                        }
+                    };
+
+                    balloons.push(state);
+
+                    wrapper.appendChild(span);
+                });
+            });
+
+            let prev;
+            function animate(timestamp) {
+
+                const delta = timestamp - (prev ?? timestamp);
+                prev = timestamp;
+
+                for (let balloon of balloons) {
+                    if (balloon.active) {
+                        balloon.progress += delta / 10;
+                    }
+
+                    if (balloon.active && balloon.progress >= 100) {
+                        balloon.detach();
+                        balloon.progress = 100;
+                        balloon.active = false;
+                        balloon.element.classList.add("done");
+                    }
+                    else {
+                        balloon.element.style.setProperty("--progress", balloon.progress);
+                    }
+
+                }
+
+                requestAnimationFrame(animate);
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        document.addEventListener("DOMContentLoaded", init);
+    </script>
+</body>
+
+</html>
