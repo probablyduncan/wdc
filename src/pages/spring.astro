@@ -1,9 +1,18 @@
+---
+import Controls from "../components/controls.astro";
+import Control from "../components/control.astro";
+---
+
 <!doctype html>
 <html lang="en">
     <head></head>
     <body>
         <div id="fps"></div>
         <div id="box"></div>
+        <Controls>
+            <Control name="damping" type="values" values={[5, 10, 15, 20, 50, 65, 200]} />
+            <Control name="stiff" type="checkbox" />
+        </Controls>
     </body>
 </html>
 
@@ -14,8 +23,8 @@
         height: 100vh;
     }
     #box {
-        width: 200px;
-        aspect-ratio: 2;
+        width: 100px;
+        aspect-ratio: 1;
         background-color: tomato;
         --x: -100px;
         --y: -100px;
@@ -34,6 +43,7 @@
 
 <script>
     import AnimationFrameController from "../lib/animationFrameController";
+    import { addControlListener } from "../lib/controlStore";
     import { SpringController } from "../lib/interpolationController";
 
     const box = document.getElementById("box")!;
@@ -82,5 +92,15 @@
         if (key === " ") {
             animationController.toggle();
         }
+    });
+
+    addControlListener<number>("damping", (value) => {
+        x.options.damping = value;
+        y.options.damping = value;
+    });
+    
+    addControlListener<boolean>("stiff", (value) => {
+        x.options.stiffness = value ? 20 : 120;
+        y.options.stiffness = value ? 20 : 120;
     });
 </script>
