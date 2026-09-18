@@ -1,75 +1,54 @@
 type AnimationFrameCallback = (deltaMS: DOMHighResTimeStamp) => boolean;
 
 export default class AnimationFrameController {
-    private _isAnimating: boolean = false;
+    
     private _prevTimestampMS?: DOMHighResTimeStamp;
-    private readonly _onFrame: AnimationFrameCallback;
-
+    private readonly _animationCallback: AnimationFrameCallback;
+    
     /**
      * @param animationCallback callback which is run on each frame. Should return true if animation should continue, and false if animation is complete and should not keep looping.
-     */
-    constructor(animationCallback: AnimationFrameCallback) {
-        this._onFrame = animationCallback;
+    */
+   constructor(animationCallback: AnimationFrameCallback) {
+       this._animationCallback = animationCallback;
     }
+    
+    isRunning: boolean = false;
 
-    /**
-     * begins animation, if not already running
-     */
-    ensureAnimation() {
-        if (!this._isAnimating) {
-            this._begin();
+    playIfPaused() {
+        if (!this.isRunning) {
+            this._queueFrame();
         }
     }
 
-    /**
-     * stops animation
-     */
-    stopAnimation() {
-        if (this._isAnimating) {
+    pause() {
+        if (this.isRunning) {
             this._cleanup();
         }
     }
 
-    /**
-     * begins animation if not running, otherwise stops it
-     */
-    toggleAnimation() {
-        this._isAnimating ? this._cleanup() : this._begin();
+    toggle() {
+        this.isRunning ? this._cleanup() : this._queueFrame();
     }
 
-    isAnimating() {
-        return this._isAnimating;
-    }
-
-    private _begin() {
-        this._isAnimating = true;
-        this._queueFrame();
-    }
-
-    private _cleanup() {
-        this._isAnimating = false;
-        this._prevTimestampMS = undefined;
-    }
-
-    /**
-     * requests next frame (will duplicate frames if called while animating)
-     */
     private _queueFrame() {
+        this.isRunning = true;
         requestAnimationFrame(this._frameCallback);
     }
 
-    /**
-     * internal callback wrapper which handles lifecycle
-     */
+    private _cleanup() {
+        this.isRunning = false;
+        this._prevTimestampMS = undefined;
+    }
+
     private _frameCallback: FrameRequestCallback = (timestampMS: DOMHighResTimeStamp) => {
-        if (!this._isAnimating) {
+        if (!this.isRunning) {
             return;
         }
 
         const deltaMS = this._prevTimestampMS ? timestampMS - this._prevTimestampMS : 0;
         this._prevTimestampMS = timestampMS;
 
-        if (deltaMS <= 0 || this._onFrame(deltaMS)) {
+        if (deltaMS <= 0 || this._animationCallback(deltaMS)) {
             this._queueFrame();
         } else {
             this._cleanup();
@@ -83,21 +62,21 @@ export default class AnimationFrameController {
 
 function forTrainingPurposes(callback: (delta: DOMHighResTimeStamp) => boolean) {
 
-    let isAnimating = false;
+    let isRunning = false;
     let prevTimestamp: DOMHighResTimeStamp | undefined = undefined;
 
     function queueFrame() {
-        isAnimating = true;
+        isRunning = true;
         requestAnimationFrame(animate);
     }
 
     function cleanup() {
-        isAnimating = false;
+        isRunning = false;
         prevTimestamp = undefined;
     }
 
     function animate(timestamp: DOMHighResTimeStamp) {
-        if (!isAnimating) return;
+        if (!isRunning) return;
         
         const delta = prevTimestamp ? (timestamp - prevTimestamp) : 0;
         prevTimestamp = timestamp;
@@ -111,9 +90,9 @@ function forTrainingPurposes(callback: (delta: DOMHighResTimeStamp) => boolean) 
     }
 
     return {
-        play: () => !isAnimating && requestAnimationFrame(animate),
+        play: () => !isRunning && queueFrame(),
         pause: () => cleanup(),
-        toggle: () => isAnimating ? cleanup() : queueFrame(),
-        isPlaying: () => isAnimating,
+        toggle: () => isRunning ? cleanup() : queueFrame(),
+        isPlaying: () => isRunning,
     }
 }

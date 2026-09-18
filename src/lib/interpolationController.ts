@@ -1,15 +1,11 @@
-interface InterpolationOptions {
-    initialValue: number;
-}
-
-interface InterpolationController<Options extends InterpolationOptions> {
+interface InterpolationController<Options> {
+    options: Options;
     current: number;
     target: number;
-    options: Options;
     step(deltaMS: DOMHighResTimeStamp): number;
 }
 
-interface SpringOptions extends InterpolationOptions {
+interface SpringOptions {
     damping: number;
     stiffness: number;
     mass: number;
@@ -17,20 +13,18 @@ interface SpringOptions extends InterpolationOptions {
 
 export class SpringController implements InterpolationController<SpringOptions> {
 
-    current: number;
-    target: number;
+    current: number = 0;
+    target: number = 0;
     velocity: number = 0;
 
     options: SpringOptions = {
         mass: 2,
         damping: 20,
         stiffness: 100,
-        initialValue: 0,
     };
 
     constructor(options: Partial<SpringOptions> = {}) {
         Object.assign(this.options, options);
-        this.current = this.target = this.options.initialValue;
     }
 
     step(deltaMS: DOMHighResTimeStamp): number {
@@ -44,23 +38,25 @@ export class SpringController implements InterpolationController<SpringOptions> 
     }
 }
 
-interface LerpOptions extends InterpolationOptions {
+interface LerpOptions {
+    /**
+     * will travel this amount of the distance towards the target per millisecond.
+     * 1 means it will cover the whole distance instantly.
+     * */
     lerpValue: 0.0030625 | 0.006125 | 0.0125 | 0.025 | 1;
 }
 
 export class LerpController implements InterpolationController<LerpOptions> {
 
-    current: number;
-    target: number;
+    current: number = 0;
+    target: number = 0;
 
     options: LerpOptions = {
         lerpValue: 0.0125,
-        initialValue: 0,
     };
 
     constructor(options: Partial<LerpOptions> = {}) {
         Object.assign(this.options, options);
-        this.current = this.target = this.options.initialValue;
     }
 
     step(deltaMS: DOMHighResTimeStamp): number {
@@ -68,4 +64,42 @@ export class LerpController implements InterpolationController<LerpOptions> {
         this.current += lerp * (this.target - this.current);
         return this.current;
     }
+}
+
+interface AccelerationOptions {
+    /** px/s/s */
+    acceleration: number;
+}
+
+export class AccelerationController implements InterpolationController<AccelerationOptions> {
+    current: number = 0;
+    target: number = 0;
+    velocity: number = 0;
+
+    options: AccelerationOptions = {
+        acceleration: 200,
+    };
+
+    constructor(options: Partial<AccelerationOptions> = {}) {
+        Object.assign(this.options, options)
+    }
+
+    step(deltaMS: DOMHighResTimeStamp): number {
+        
+        const deltaS = deltaMS / 1000;
+        const right = this.target > this.current;
+        this.velocity += this.options.acceleration * deltaS * (right ? 1 : -1);
+        this.current += this.velocity * deltaS;
+
+        // hard stop, need to improve this
+        // maybe we have to factor in the distance to travel? idk
+
+        if (right === this.current >= this.target) {
+            this.current = this.target;
+            this.velocity = 0;
+        }
+
+        return this.current;
+    }
+
 }

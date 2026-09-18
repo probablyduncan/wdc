@@ -70,7 +70,7 @@
     let mouseDown = false;
 
     window.addEventListener("mousedown", (e) => {
-        spring.ensureAnimation();
+        spring.playIfPaused();
         mouseDown = true;
         target = e.clientX;
     });
@@ -87,9 +87,9 @@
 
     document.addEventListener("keypress", ({ key }) => {
         if (key === "x") {
-            spring.stopAnimation();
+            spring.pause();
         } else if (key === " ") {
-            spring.toggleAnimation();
+            spring.toggle();
         }
     });
 </script>

@@ -14,12 +14,14 @@
         height: 100vh;
     }
     #box {
-        width: 100px;
-        aspect-ratio: 1;
+        width: 200px;
+        aspect-ratio: 2;
         background-color: tomato;
         --x: -100px;
         --y: -100px;
-        transform: translate(calc(var(--x) - 50%), calc(var(--y) - 50%));
+        --r: 0rad;
+        transform: translate(calc(var(--x) - 50%), calc(var(--y) - 50%))
+            rotate(var(--r));
     }
     #fps {
         position: fixed;
@@ -32,22 +34,44 @@
 
 <script>
     import AnimationFrameController from "../lib/animationFrameController";
-    import { LerpController, SpringController } from "../lib/interpolationController";
+    import { SpringController } from "../lib/interpolationController";
 
     const box = document.getElementById("box")!;
     const fps = document.getElementById("fps")!;
 
-    const x = new SpringController({ initialValue: -100 });
-    const y = new SpringController({ initialValue: -100 });
+    const x = new SpringController();
+    const y = new SpringController();
+
+    // set starting position
+    x.current = x.target = y.current = y.target = -100;
+
+    function getRotation() {
+        // max.rotation
+        const max = Math.PI / 8;
+        // [-180,180] where top is 0, left is negative, right is positive
+        const angleToCurrent = Math.atan2(
+            x.target - x.current,
+            y.current - y.target,
+        );
+        // [-1,1] where topleft and bottomright +1, topright and bottomleft -1, and left/right/top/bottom 0
+        const angleFactor = -Math.sin(angleToCurrent * 2);
+        // [0,1] velocities get big (~1000 sometimes), so we have to scale it down a lot
+        const velocityFactor = Math.min(
+            Math.abs((x.velocity * y.velocity) / 2000000),
+            1,
+        );
+        return max * angleFactor * velocityFactor;
+    }
 
     const animationController = new AnimationFrameController((deltaMS) => {
         box.style.setProperty("--x", x.step(deltaMS) + "px");
         box.style.setProperty("--y", y.step(deltaMS) + "px");
-        fps.innerText = (1000 / deltaMS).toFixed().padStart(4, " ") + " FPS";
+        box.style.setProperty("--r", getRotation() + "rad");
+        fps.innerText = (1000 / deltaMS).toFixed() + " FPS ";
         return true;
     });
 
-    animationController.ensureAnimation();
+    animationController.playIfPaused();
 
     window.addEventListener("mousemove", (e) => {
         x.target = e.clientX;
@@ -56,7 +80,7 @@
 
     document.addEventListener("keypress", ({ key }) => {
         if (key === " ") {
-            animationController.toggleAnimation();
+            animationController.toggle();
         }
     });
 </script>
