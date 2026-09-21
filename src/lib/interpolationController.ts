@@ -43,7 +43,7 @@ interface LerpOptions {
      * will travel this amount of the distance towards the target per millisecond.
      * 1 means it will cover the whole distance instantly.
      * */
-    lerpValue: 0.0030625 | 0.006125 | 0.0125 | 0.025 | 1;
+    lerpValue: number;
 }
 
 export class LerpController implements InterpolationController<LerpOptions> {
