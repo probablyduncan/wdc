@@ -1,18 +1,8 @@
-interface Window {
-    transitions: Record<"page" | string, TransitionFunction>;
-    initialTransition?: TransitionFunction;
-}
-
 type SlideModuleExport = {
     transitions?: string[];
     nextPage?: string;
     url: string;
     file: string;
-}
-
-type TransitionFunction = (onComplete: () => void) => {
-    revert: () => void;
-    fastForward: () => void;
 }
 
 type PageInfo = {

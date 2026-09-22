@@ -5,7 +5,7 @@ import Slide from "../components/slide.astro";
 // up all transitions and don't need opt-in numbering?
 
 export const transitions = ["fade-in"];
-export const nextPage = "one";
+export const nextPage = "alternatives";
 ---
 
 <Slide>
@@ -14,10 +14,6 @@ export const nextPage = "one";
 <style>
     .fade-in {
         font-size: 5vw;
-        transition:
-            opacity 2s,
-            font-weight 2s,
-            font-variation-settings 2s;
         opacity: 0;
         font-family: "Recursive";
         font-weight: 300;
@@ -27,12 +23,13 @@ export const nextPage = "one";
             "slnt" 0,
             "CRSV" 1;
     }
-    .fade-in.instant {
-        transition: none;
-    }
     .fade-in.in {
         opacity: 1;
         font-weight: 600;
+        transition:
+            opacity 2s,
+            font-weight 2s,
+            font-variation-settings 2s;
         font-variation-settings:
             "MONO" 1,
             "CASL" 0.5,
@@ -41,36 +38,16 @@ export const nextPage = "one";
     }
 </style>
 <script>
-    import { setTransitions } from "../lib/slides.client";
-    setTransitions({
-        "fade-in": (onComplete: () => void) => {
-            const els = [...document.getElementsByClassName("fade-in")];
-            els.forEach((el) => el.classList.add("in"));
-            let done = false;
-            setTimeout(() => {
-                done = true;
-                onComplete();
-            }, 2000);
-            return {
-                revert: () => {
-                    els.forEach((el) => {
-                        el.classList.add("instant");
-                        el.classList.remove("in");
-                        setTimeout(() => {
-                            el.classList.remove("instant");
-                        }, 10);
-                    });
-                },
-                fastForward: () => {
-                    if (done) return;
-                    els.forEach((el) => {
-                        el.classList.add("instant");
-                        setTimeout(() => {
-                            el.classList.remove("instant");
-                        }, 10);
-                    });
-                },
-            };
-        },
+    import { registerTransition } from "../lib/slides.client";
+    registerTransition("fade-in", () => {
+        const els = [...document.getElementsByClassName("fade-in")];
+        return {
+            begin() {
+                els.forEach((el) => el.classList.add("in"));
+            },
+            revert() {
+                els.forEach((el) => el.classList.remove("in"));
+            },
+        };
     });
 </script>

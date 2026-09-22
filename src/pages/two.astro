@@ -5,26 +5,17 @@ export const transitions = ["fade-out"];
 ---
 
 <Slide>
-    <h1>Pretty neat, huh?</h1>
+    <h1 id="fade-out">Pretty neat, huh?</h1>
 </Slide>
 <script>
-    import { setTransitions } from "../lib/slides.client";
-    setTransitions({
-        "fade-out": (onComplete) => {
-            const els = [...document.querySelectorAll("h1")] as HTMLElement[];
-            els.forEach((el) => {
-                el.hidden = true;
-            });
-            onComplete();
+    import { registerTransition } from "../lib/slides.client";
 
-            return {
-                fastForward: () => {},
-                revert: () => {
-                    els.forEach((el) => {
-                        el.hidden = false;
-                    });
-                },
-            };
+    registerTransition("fade-out", {
+        begin() {
+            document.getElementById("fade-out")!.hidden = true;
         },
+        revert() {
+            document.getElementById("fade-out")!.hidden = false;
+        }
     });
 </script>

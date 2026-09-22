@@ -2,7 +2,7 @@
 import "../css.css";
 import { getPageInfo, getPageName } from "../lib/slides.server";
 
-const info = getPageInfo(getPageName(Astro.url));
+const pageInfo = getPageInfo(getPageName(Astro.url));
 ---
 
 <!doctype html>
@@ -14,9 +14,10 @@ const info = getPageInfo(getPageName(Astro.url));
 
         <link rel="canonical" href={Astro.site} />
         <title>WDC, DP, you see</title>
+        <script src="../lib/slides.client.ts" />
     </head>
 
-    <body data-slide-info={JSON.stringify(info)}>
+    <body data-page-info={JSON.stringify(pageInfo)}>
         <header>
             <span>wdc/2026</span>
             <span>1/25</span>
@@ -28,24 +29,25 @@ const info = getPageInfo(getPageName(Astro.url));
             <!-- <span data-slide-counter>{getSlideCounter(slide)}</span> -->
             <span>duncanpetrie</span>
             <span>
-                <button data-slide-prev>prev</button>
+                <button data-prev-slide>prev</button>
                 &nbsp;/&nbsp;
-                <button data-slide-next>next</button>
+                <button data-next-slide>next</button>
             </span>
         </footer>
     </body>
 
     <style>
         body {
+            margin: unset;
         }
 
         main {
-            max-width: 100vw;
+            width: 100vw;
             height: 100vh;
 
             display: flex;
-            justify-content: center;
-            align-items: center;
+            place-content: center;
+            place-items: center;
         }
 
         header,
@@ -72,139 +74,4 @@ const info = getPageInfo(getPageName(Astro.url));
             bottom: 0;
         }
     </style>
-
-    <script>
-        function initSlides() {
-            function prev() {
-                if (index === 0) {
-                    toPreviousPage();
-                    return;
-                }
-
-                index--;
-
-                if (revert) {
-                    revert();
-                    fastForwardCurrent = undefined;
-                }
-            }
-
-            function next() {
-                if (fastForwardCurrent) {
-                    fastForwardCurrent();
-                    fastForwardCurrent = undefined;
-                    return;
-                }
-
-                if (index >= info.transitions.length) {
-                    toNextPage();
-                    return;
-                }
-
-                index++;
-                beginTransition(
-                    window.transitions[info.transitions[index - 1]],
-                );
-            }
-
-            function beginTransition(transitionFunction: TransitionFunction) {
-                const t = transitionFunction(onTransitionComplete);
-                fastForwardCurrent = t.fastForward;
-                revert = t.revert;
-            }
-
-            function toPreviousPage() {
-                if (!info.prev) {
-                    return;
-                }
-
-                let newUrl = window.location.origin;
-                if (info.prev !== "index") {
-                    newUrl += "/" + info.prev;
-                }
-                newUrl += "?" + QUERY_PARAMS_STATE_KEY;
-                window.location.href = newUrl;
-            }
-
-            function toNextPage() {
-                if (!info.next) {
-                    return;
-                }
-
-                let newUrl = window.location.origin;
-                if (info.next !== "index") {
-                    newUrl += "/" + info.next;
-                }
-                window.location.href = newUrl;
-            }
-            const info = JSON.parse(
-                document.body.dataset.slideInfo!,
-            ) as PageInfo;
-
-            const QUERY_PARAMS_STATE_KEY = "end";
-
-            let index = 0;
-            if (
-                new URLSearchParams(window.location.search).get(
-                    QUERY_PARAMS_STATE_KEY,
-                ) !== null
-            ) {
-                history.replaceState(
-                    null,
-                    "",
-                    window.location.origin + window.location.pathname,
-                );
-                index += info.transitions.length;
-            }
-
-            document.addEventListener("keydown", (e) => {
-                switch (e.code) {
-                    case "ArrowLeft":
-                        prev();
-                        break;
-                    case "ArrowRight":
-                        next();
-                        break;
-                }
-            });
-
-            document.querySelectorAll("[data-slide-prev]").forEach((_el) => {
-                _el.addEventListener("click", prev);
-            });
-
-            document.querySelectorAll("[data-slide-next]").forEach((_el) => {
-                _el.addEventListener("click", next);
-            });
-
-            let revert:
-                ReturnType<Window["transitions"][string]>["revert"] | undefined;
-            let fastForwardCurrent:
-                | ReturnType<Window["transitions"][string]>["fastForward"]
-                | undefined;
-
-            function onTransitionComplete() {
-                fastForwardCurrent = undefined;
-            }
-
-            if (window.initialTransition) {
-                beginTransition(window.initialTransition);
-            }
-
-            if (index > 0) {
-                if (fastForwardCurrent) {
-                    fastForwardCurrent();
-                }
-
-                info.transitions.forEach((name) => {
-                    beginTransition(window.transitions[name]);
-                    if (fastForwardCurrent) {
-                        fastForwardCurrent();
-                        fastForwardCurrent = undefined;
-                    }
-                });
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", initSlides);
-    </script>
 </html>
