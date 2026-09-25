@@ -1,21 +1,16 @@
 ---
 import Slide from "../components/slide.astro";
-
-export const transitions = ["fade-out"];
 ---
 
 <Slide>
     <h1 id="fade-out">Pretty neat, huh?</h1>
 </Slide>
 <script>
-    import { registerTransition } from "../lib/slides.client";
+    import {
+        registerElementTransition,
+    } from "../lib/slides";
 
-    registerTransition("fade-out", {
-        begin() {
-            document.getElementById("fade-out")!.hidden = true;
-        },
-        revert() {
-            document.getElementById("fade-out")!.hidden = false;
-        }
+    registerElementTransition<HTMLElement>("#fade-out", (el, op) => {
+        el.hidden = (op === "begin");
     });
 </script>

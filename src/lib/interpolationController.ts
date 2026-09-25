@@ -3,6 +3,7 @@ interface InterpolationController<Options> {
     current: number;
     target: number;
     step(deltaMS: DOMHighResTimeStamp): number;
+    isAtRest(): boolean;
 }
 
 interface SpringOptions {
@@ -36,6 +37,11 @@ export class SpringController implements InterpolationController<SpringOptions> 
         this.current += this.velocity * deltaS;
         return this.current;
     }
+
+    isAtRest(): boolean {
+        const tolerance = 0.5;
+        return Math.abs(this.velocity) < tolerance && Math.abs(this.target - this.current) < tolerance;
+    }
 }
 
 interface LerpOptions {
@@ -63,6 +69,11 @@ export class LerpController implements InterpolationController<LerpOptions> {
         const lerp = Math.min(1, deltaMS * this.options.lerpValue);
         this.current += lerp * (this.target - this.current);
         return this.current;
+    }
+
+    isAtRest(): boolean {
+        const tolerance = 0.1;
+        return Math.abs(this.target - this.current) < tolerance;
     }
 }
 
@@ -100,6 +111,11 @@ export class AccelerationController implements InterpolationController<Accelerat
         }
 
         return this.current;
+    }
+
+    isAtRest(): boolean {
+        const tolerance = 0.1;
+        return Math.abs(this.target - this.current) < tolerance;
     }
 
 }

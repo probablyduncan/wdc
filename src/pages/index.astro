@@ -1,53 +1,14 @@
 ---
+import AlternativesSection from "../components/alternatives-section.astro";
+import CernSection from "../components/cern-section.astro";
+import EggSection from "../components/egg-section.astro";
+import IntroSection from "../components/intro-section.astro";
 import Slide from "../components/slide.astro";
-
-// is this good? maybe all I need? maybe I can just count
-// up all transitions and don't need opt-in numbering?
-
-export const transitions = ["fade-in"];
-export const nextPage = "alternatives";
 ---
 
-<Slide>
-    <span class="fade-in">▶ BEEF! What a relief!</span>
+<Slide next="alternatives">
+    <IntroSection />
+    <CernSection />
+    <AlternativesSection />
+    <EggSection />
 </Slide>
-<style>
-    .fade-in {
-        font-size: 5vw;
-        opacity: 0;
-        font-family: "Recursive";
-        font-weight: 300;
-        font-variation-settings:
-            "MONO" 1,
-            "CASL" 0.5,
-            "slnt" 0,
-            "CRSV" 1;
-    }
-    .fade-in.in {
-        opacity: 1;
-        font-weight: 600;
-        transition:
-            opacity 2s,
-            font-weight 2s,
-            font-variation-settings 2s;
-        font-variation-settings:
-            "MONO" 1,
-            "CASL" 0.5,
-            "slnt" -15,
-            "CRSV" 1;
-    }
-</style>
-<script>
-    import { registerTransition } from "../lib/slides.client";
-    registerTransition("fade-in", () => {
-        const els = [...document.getElementsByClassName("fade-in")];
-        return {
-            begin() {
-                els.forEach((el) => el.classList.add("in"));
-            },
-            revert() {
-                els.forEach((el) => el.classList.remove("in"));
-            },
-        };
-    });
-</script>

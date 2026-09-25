@@ -1,48 +1,8 @@
 ---
-import { Code } from "astro:components";
-import Slide from "../components/slide.astro";
 
-const editFile = `vscode://file${Astro.self.moduleId}`;
 ---
 
-<Slide>
-    <!-- <Code
-        id="css"
-        lang="css"
-        theme="dark-plus"
-        code="transition: opacity 1s;"
-    /> -->
-    <!-- <Code
-        id="keyframes"
-        lang="css"
-        theme="dark-plus"
-        code={`@keyframes woah!! {
-  from {
-    transform: rotate3d(0, 1, 0.5, 3.142rad);  
-  }
-  to {
-    transform: rotate3d(0, 0, 0, 0);
-  }
-}`}
-    /> -->
-    <!-- <Code
-        id="waapi"
-        lang="typescript"
-        theme="dark-plus"
-        code={`function slideIn(el: HTMLElement) {
-  const distanceToOffscreen = el.offsetLeft + el.clientWidth;  
-  el.animate(
-    [
-      { transform: \`translateX(\${distanceToOffscreen}px)\` },
-      { transform: \`translateX(0)\` },
-    ],
-    {
-      duration: distanceToOffscreen * 2,
-      easing: "linear(0, 0.029 1.3%, 0.119 2.8%...)",
-    },
-  );
-}`}
-    /> -->
+<section id="alternatives">
     <pre
         id="css">
 <span class="eh">transition</span>: opacity <span class="green">1s</span>;</pre>
@@ -156,12 +116,17 @@ const editFile = `vscode://file${Astro.self.moduleId}`;
             </g>
         </svg>
     </div>
-</Slide>
+</section>
 <style>
-    img {
-        width: 10px;
-        aspect-ratio: 1;
-        background-color: red;
+    section {
+        position: fixed;
+        inset: 0;
+        background-color: #fafaff;
+        &:not(.active) {
+            opacity: 0;
+            pointer-events: none;
+            user-select: none;
+        }
     }
 
     #css,
@@ -356,6 +321,7 @@ const editFile = `vscode://file${Astro.self.moduleId}`;
 <script>
     import { registerClassTransition, registerTransition } from "../lib/slides";
 
+    registerClassTransition("#alternatives");
     registerClassTransition("#css", "show");
     registerClassTransition("#keyframes", "show");
 
@@ -391,7 +357,6 @@ const editFile = `vscode://file${Astro.self.moduleId}`;
             },
         };
     });
-
 
     registerClassTransition("#motion", "show");
     registerClassTransition("#gsap", "show");

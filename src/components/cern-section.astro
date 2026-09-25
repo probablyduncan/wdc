@@ -1,0 +1,100 @@
+---
+
+---
+
+<section id="cern">
+    <img id="subway" src="/images/subway-surfers.gif" draggable="false" />
+    <div>
+        <h1>World Wide Web</h1>
+        The WorldWideWeb (W3) is a wide-area <a>hypermedia</a> information retrieval
+        initiative aiming to give universal access to a large universe of documents.
+        <p>
+            Everything there is online about W3 is linked directly or indirectly
+            to this document, including an <a>executive summary</a> of the project,
+            <a>Mailing lists</a>, <a>Policy</a>, November's <a>W3 news</a>, <a
+                >Frequently Asked Questions</a
+            >.
+        </p>
+        <dl>
+            <dt>
+                <a>What's out there?</a>
+            </dt><dd>
+                Pointers to the world's online information, <a>subjects</a>, <a
+                    >W3 servers</a
+                >, etc.
+            </dd><dt>
+                <a>Help</a>
+            </dt><dd>on the browser you are using</dd><dt>
+                <a>Software Products</a>
+            </dt><dd>
+                A list of W3 project components and their current state. (e.g. <a
+                    >Line Mode</a
+                >, X11 <a>Viola</a>, <a>NeXTStep</a>, <a>Servers</a>, <a
+                    >Tools</a
+                >, <a>Mail robot</a>, <a>Library</a>)
+            </dd><dt>
+                <a>Technical</a>
+            </dt><dd>
+                Details of protocols, formats, program internals etc
+            </dd><dt>
+                <a>Bibliography</a>
+            </dt><dd>Paper documentation on W3 and references.</dd><dt>
+                <a>People</a>
+            </dt><dd>A list of some people involved in the project.</dd><dt>
+                <a>History</a>
+            </dt><dd>A summary of the history of the project.</dd><dt>
+                <a>How can I help</a> ?
+            </dt><dd>If you would like to support the web..</dd><dt>
+                <a>Getting code</a>
+            </dt><dd>
+                Getting the code by <a>anonymous FTP</a>, etc.
+            </dd>
+        </dl>
+    </div>
+</section>
+<style>
+    #cern {
+        position: fixed;
+        font-family: Times, serif;
+        height: 100vh;
+        width: 100vw;
+        background-color: white;
+        &:not(.active) {
+            opacity: 0;
+            user-select: none;
+            pointer-events: none;
+        }
+        h1 {
+            margin-top: 0;
+        }
+        a {
+            color: blue;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        display: grid;
+        grid-template-columns: auto 1fr;
+
+        div {
+            padding: 0.5em;
+        }
+
+        #subway {
+            width: 0;
+            height: 100vh;
+            pointer-events: none;
+            user-select: none;
+            &.active {
+                transition: width 0.5s;
+                width: 55.1111111111vh;
+            }
+        }
+    }
+</style>
+<script>
+    import { registerClassTransition } from "../lib/slides";
+
+    registerClassTransition("#cern");
+    registerClassTransition("#subway");
+</script>

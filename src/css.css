@@ -51,6 +51,12 @@
     font-variation-settings: var(--recursive-settings);
 }
 
+html,
+body {
+    min-height: 100%;
+    background: #fafaff;
+}
+
 html {
     hanging-punctuation: first allow-end last;
     word-break: break-word;

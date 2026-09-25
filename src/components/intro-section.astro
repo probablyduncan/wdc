@@ -1,0 +1,63 @@
+<div id="wiki-website" class="image"></div>
+<div id="wiki-usap" class="image"></div>
+<div id="usap" class="image"></div>
+
+<div id="sc-cern" class="image"></div>
+<div id="mf" class="image"></div>
+<div id="sc-cern-2" class="image"></div>
+<div id="ipad" class="image"></div>
+<style>
+    .image {
+        position: fixed;
+        inset: 0;
+        background-position: center;
+        background-size: cover;
+        user-select: none;
+        &:not(.active) {
+            opacity: 0;
+            pointer-events: none;
+        }
+    }
+
+    #wiki-website {
+        background-image: url("/images/sc-wiki-website.png");
+    }
+
+    #wiki-usap {
+        background-image: url("/images/sc-wiki-usap.png");
+    }
+
+    #usap {
+        background-position: top center;
+        background-image: url("/images/www.usap.gov.png");
+    }
+
+    #sc-cern {
+        background-image: url("/images/sc-cern.png");
+    }
+
+    #sc-cern-2 {
+        background-image: url("/images/sc-cern-folder.png");
+    }
+
+    #ipad {
+        background-image: url("/images/sc-ipad-kid.png");
+    }
+
+    #mf {
+        background-image: url("/images/sc-mf.png");
+    }
+</style>
+<script>
+    import { registerClassTransition } from "../lib/slides";
+
+    registerClassTransition("#wiki-website");
+    registerClassTransition("#wiki-usap");
+    registerClassTransition("#usap");
+
+    registerClassTransition("#sc-cern");
+
+    registerClassTransition("#mf");
+    registerClassTransition("#sc-cern-2");
+    registerClassTransition("#ipad");
+</script>

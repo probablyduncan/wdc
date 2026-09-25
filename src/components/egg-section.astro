@@ -1,0 +1,61 @@
+<section id="egg-section">
+    <img id="oldHouse" class="house" src="/images/house1.png" />
+    <img id="newHouse" class="house" src="/images/house2.jpeg" />
+    <img id="neighbor" class="house" src="/images/house2.jpeg" />
+    <img id="egg" src="/images/egg.webp" />
+</section>
+<style>
+    #egg-section {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: clip;
+        background-color: #fafaff;
+        &:not(.active) {
+            opacity: 0;
+            pointer-events: none;
+            user-select: none;
+        }
+    }
+    
+    .house {
+        position: fixed;
+        z-index: -1;
+    }
+
+    #oldHouse {
+        left: 1%;
+        bottom: 10vh;
+        width: 40vh;
+        opacity: 0.5;
+    }
+
+    #newHouse {
+        right: 20vh;
+        bottom: 5vh;
+        width: 50vh;
+    }
+
+    #neighbor {
+        right: -30vh;
+        bottom: 5vh;
+        width: 50vh;
+        opacity: 0.5;
+    }
+
+    #egg {
+        position: fixed;
+        left: 10vh;
+        bottom: 16.5vh;
+        width: 25vh;
+        aspect-ratio: 1;
+        background-color: bisque;
+        border: 4px ridge burlywood;
+    }
+</style>
+<script>
+    import { registerClassTransition } from "../lib/slides";
+
+    registerClassTransition("#egg-section");
+</script>

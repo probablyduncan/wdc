@@ -1,8 +1,12 @@
 ---
 import "../css.css";
-import { getPageInfo, getPageName } from "../lib/slides.server";
 
-const pageInfo = getPageInfo(getPageName(Astro.url));
+interface Props {
+    next?: string;
+    prev?: string;
+}
+
+const { next, prev } = Astro.props;
 ---
 
 <!doctype html>
@@ -14,26 +18,15 @@ const pageInfo = getPageInfo(getPageName(Astro.url));
 
         <link rel="canonical" href={Astro.site} />
         <title>WDC, DP, you see</title>
-        <script src="../lib/slides.client.ts" />
+        <script src="../lib/slides.ts"></script>
     </head>
 
-    <body data-page-info={JSON.stringify(pageInfo)}>
-        <header>
-            <span>wdc/2026</span>
-            <span>1/25</span>
-        </header>
+    <body data-next-page={next} data-prev-page={prev}>
+        <header></header>
         <main>
             <slot />
         </main>
-        <footer>
-            <!-- <span data-slide-counter>{getSlideCounter(slide)}</span> -->
-            <span>duncanpetrie</span>
-            <span>
-                <button data-prev-slide>prev</button>
-                &nbsp;/&nbsp;
-                <button data-next-slide>next</button>
-            </span>
-        </footer>
+        <footer></footer>
     </body>
 
     <style>
@@ -46,6 +39,7 @@ const pageInfo = getPageInfo(getPageName(Astro.url));
             height: 100vh;
 
             display: flex;
+            flex-flow: column;
             place-content: center;
             place-items: center;
         }

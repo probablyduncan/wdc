@@ -1,3 +1,21 @@
+
+too complicated!!!!
+
+here's my current approach
+simpler examples will have sample code displayed on screen, and I won't live code anything
+and then we build an animation controller? idk
+
+
+
+
+
+
+
+
+
+
+
+
 ok, here's how it will work
 each page has a number of front-matter exports and a number of client functions
 index.astro is the start

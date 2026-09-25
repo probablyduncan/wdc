@@ -1,0 +1,211 @@
+---
+import "../css.css";
+---
+
+<!doctype html>
+<html lang="en">
+    <head></head>
+    <body>
+        <div class="controls">
+            <div id="size-wrapper" class="control">
+                <label for="size">size</label>
+                <input id="size" type="range" min="0" max="7" value="3" />
+                <output for="size">1</output>
+            </div>
+            <div id="lerp-wrapper" class="control">
+                <label for="lerp">lerp</label>
+                <input id="lerp" type="range" min="3" max="10" value="6" />
+                <output for="lerp">6</output>
+            </div>
+            <div id="motion-wrapper" class="control">
+                <label for="motion">motion</label>
+                <input
+                    id="motion"
+                    type="range"
+                    min="4"
+                    max="17"
+                    data-values={JSON.stringify(["off", "on"])}
+                />
+                <output for="motion">off</output>
+            </div>
+            <div id="shape-wrapper" class="control">
+                <label for="shape">shape</label>
+                <input
+                    id="shape"
+                    type="range"
+                    value="1"
+                    data-values={JSON.stringify([
+                        "ball",
+                        "square",
+                        "rectangle",
+                        "polygon",
+                    ])}
+                />
+                <output for="shape"></output>
+            </div>
+        </div>
+        <main></main>
+    </body>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .controls {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+        }
+
+        .control {
+            --x: -100vw;
+            transform: translateX(var(--x));
+
+            display: flex;
+            align-items: center;
+            gap: 1ch;
+
+            &:not(.ready) {
+                user-select: none;
+                pointer-events: none;
+            }
+        }
+    </style>
+    <script>
+        import AnimationFrameController from "../lib/animationFrameController";
+        import { SpringController } from "../lib/interpolationController";
+
+        function init() {
+            document
+                .querySelectorAll<HTMLElement>(".control")
+                .forEach((control, i) => {
+                    const label = control.getElementsByTagName("label")[0];
+                    const input = control.getElementsByTagName("input")[0];
+                    const output = control.getElementsByTagName("output")[0];
+
+                    //@ ts-ignore
+                    function getNumStr(or: string) {
+                        return { str: or, num: parseInt(or) };
+                    }
+
+                    let values: string[] | undefined = undefined;
+                    if (input.dataset.values) {
+                        const parsed = JSON.parse(input.dataset.values);
+                        if (Array.isArray(parsed)) {
+                            values = parsed as string[];
+                            input.min = "0";
+                            input.max = (values.length - 1).toString();
+                            if (
+                                input.value !== "" &&
+                                isNaN(parseInt(input.value)) &&
+                                values.includes(input.value)
+                            ) {
+                                input.value = values
+                                    .indexOf(input.value)
+                                    .toString();
+                            }
+                        }
+                    }
+
+                    if (!(input.max && input.min) && !values) {
+                        console.error(
+                            "set input min/max or data-values",
+                            input,
+                        );
+                    }
+
+                    const min = getNumStr(input.min);
+                    const max = getNumStr(input.max);
+                    const initialVal = getNumStr(input.value);
+                    // input.disabled = true;
+
+                    const initialLerp =
+                        (initialVal.num - min.num) / (max.num - min.num);
+
+                    const step = getNumStr(
+                        values || !input.step ? "1" : input.step,
+                    );
+
+                    input.style.width =
+                        (4 * (max.num - min.num)) / step.num + "ch";
+
+                    function updateOutput() {
+                        output.innerText = values
+                            ? values[parseInt(input.value)]
+                            : input.value;
+                    }
+
+                    updateOutput();
+
+                    function makeInputUsable() {
+                        input.min = min.str;
+                        input.max = max.str;
+                        input.value = initialVal.str;
+                        input.step = step.str;
+                        input.disabled = false;
+                        control.classList.add("ready");
+                        input.addEventListener("input", updateOutput);
+                    }
+
+                    const x = new SpringController();
+                    x.current = -input.clientWidth - control.offsetLeft;
+                    x.target = 0;
+
+                    // set for animation
+                    const halfInputWidth = input.clientWidth / 2;
+                    input.min = (-halfInputWidth).toString();
+                    input.max = halfInputWidth.toString();
+                    input.step = "1";
+
+                    function getValue() {
+                        // diff between input and value currents gets distance from center
+                        // we need to add the offset from the initial value, i.e. where value should end up
+                        return (
+                            initialLerp * input.clientWidth -
+                            halfInputWidth +
+                            v.current -
+                            x.current
+                        ).toFixed();
+                    }
+
+                    const v = new SpringController({
+                        damping: 20 + Math.random() * 10,
+                        mass: 6 + Math.random() * 2,
+                        stiffness: Math.random() * 50 + 250,
+                    });
+
+                    v.current = x.current + Math.random() * 40 - 20;
+                    v.target = 0;
+
+                    const a = new AnimationFrameController((deltaMS) => {
+                        x.step(deltaMS);
+                        v.step(deltaMS);
+
+                        control.style.setProperty("--x", x.current + "px");
+                        input.value = getValue();
+
+                        if (v.isAtRest()) {
+                            makeInputUsable();
+                            return false;
+                        }
+                        return true;
+                    });
+
+                    window.addEventListener("keydown", ({ key }) => {
+                        if (key === " ") {
+                            setTimeout(() => {
+                                a.playIfPaused();
+                            }, i * 1000);
+                        }
+                    });
+                });
+        }
+        window.addEventListener("DOMContentLoaded", init);
+    </script>
+</html>
