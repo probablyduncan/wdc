@@ -1,8 +1,126 @@
+---
+import { Code } from "astro-expressive-code/components";
+---
+
 <section id="egg-section">
-    <img id="oldHouse" class="house" src="/images/house1.png" />
+    <div id="code-wrapper">
+        <Code
+            lang="typescript"
+            code={`
+// calculate distance to new house:
+const distance = newHouse.offsetLeft - oldHouse.offsetLeft;`}
+        />
+        <Code
+            lang="typescript"
+            code={`
+// calculate distance to new house:
+const distance = newHouse.offsetLeft - oldHouse.offsetLeft;
+// update egg's position:
+egg.style.transform = translate(\`\${distance}px\`);`}
+        />
+        <Code
+            lang="typescript"
+            code={`
+// do this slowly
+function moveEgg() {
+    // move it a little bit at a time?
+
+}`}
+        />
+        <Code
+            lang="typescript"
+            ins={[1, 3, 4]}
+            code={`let x = 0;
+function moveEgg() {
+    x++;
+    egg.style.transform = \`translate(\${x}px)\`;
+}`}
+        />
+        <Code
+            lang="typescript"
+            ins={[1, 3, 4]}
+            code={`let x = 0;
+function moveEgg() {
+    x++;
+    egg.style.transform = \`translate(\${x}px)\`;
+}`}
+        />
+        <Code
+            lang="typescript"
+            ins={6}
+            code={`let x = 0;
+function moveEgg() {
+    x++;
+    egg.style.transform = \`translate(\${x}px)\`;
+}
+moveEgg();`}
+        />
+        <Code
+            lang="typescript"
+            ins={7}
+            code={`let x = 0;
+function moveEgg() {
+    x++;
+    egg.style.transform = \`translate(\${x}px)\`;
+}
+moveEgg();
+moveEgg();`}
+        />
+        <Code
+            wrap={true}
+            lang="typescript"
+            ins={8}
+            code={`let x = 0;
+function moveEgg() {
+    x++;
+    egg.style.transform = \`translate(\${x}px)\`;
+}
+moveEgg();
+moveEgg();
+moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();`}
+        />
+        <Code
+            lang="typescript"
+            ins={7}
+            code={`let x = 0;
+function moveEgg() {
+    x++;
+    egg.style.transform = \`translate(\${x}px)\`;
+}`}
+        />
+        <Code
+            lang="typescript"
+            ins={[7, 8, 9]}
+            code={`let x = 0;
+function moveEgg() {
+    x++;
+    egg.style.transform = \`translate(\${x}px)\`;
+}
+
+while(true) {
+    moveEgg();
+}`}
+        />
+        <Code
+            lang="typescript"
+            ins={7}
+            code={`let x = 0;
+function moveEgg() {
+    x++;
+    egg.style.transform = \`translate(\${x}px)\`;
+}`}
+        />
+    </div>
+    <div id="oldHouse" class="house">
+        <img src="/images/house2.jpeg" />
+    </div>
     <img id="newHouse" class="house" src="/images/house2.jpeg" />
-    <img id="neighbor" class="house" src="/images/house2.jpeg" />
-    <img id="egg" src="/images/egg.webp" />
+    <img id="neighbor" class="house" src="/images/house1.png" />
+    <div id="egg"></div>
+    <!-- <div id="rewind"></div> -->
+    <div id="arson-timeline">
+        <img src="/images/arson-timeline.svg" />
+    </div>
 </section>
 <style>
     #egg-section {
@@ -11,51 +129,295 @@
         width: 100%;
         height: 100%;
         overflow: clip;
-        background-color: #fafaff;
+        background-color: white;
         &:not(.active) {
             opacity: 0;
             pointer-events: none;
             user-select: none;
         }
     }
-    
+
     .house {
         position: fixed;
         z-index: -1;
+        user-select: none;
+        pointer-events: none;
+        &:not(.active) {
+            opacity: 0;
+        }
     }
 
     #oldHouse {
-        left: 1%;
-        bottom: 10vh;
-        width: 40vh;
-        opacity: 0.5;
+        left: -5vw;
+        bottom: 5vh;
+        width: 50vh;
+
+        img {
+            filter: hue-rotate(-60deg) saturate(50%);
+            width: 100%;
+        }
+
+        &::after {
+            background-image: url("/images/house-fire.webp");
+            background-size: contain;
+            content: "";
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+        }
+
+        &.hot::after {
+            opacity: 1;
+            transition: opacity 10s;
+        }
     }
 
     #newHouse {
-        right: 20vh;
+        right: 10vw;
         bottom: 5vh;
         width: 50vh;
     }
 
     #neighbor {
-        right: -30vh;
-        bottom: 5vh;
-        width: 50vh;
-        opacity: 0.5;
+        right: -10vw;
+        bottom: 11vh;
+        width: 40vh;
+        &.active {
+            /* opacity: 0.5; */
+        }
     }
 
     #egg {
         position: fixed;
-        left: 10vh;
-        bottom: 16.5vh;
-        width: 25vh;
+        bottom: 17.5vh;
+        width: 24vh;
+
         aspect-ratio: 1;
-        background-color: bisque;
-        border: 4px ridge burlywood;
+        background-color: #deafaf;
+
+        --initial-x: 9vw;
+        --x: var(--initial-x);
+        transform: translateX(var(--x));
+
+        &.fancy {
+            background-color: bisque;
+            border: 8px ridge burlywood;
+        }
+        &.faberge {
+            background-image: url("/images/egg.webp");
+            background-size: cover;
+            animation: faberge 2s;
+        }
+        &.right {
+            background-image: url("/images/egg-right.webp");
+            --x: 65vw;
+        }
+        &.right-1px {
+            --x: calc(var(--initial-x) + 1px);
+        }
+        &.right-2px {
+            --x: calc(var(--initial-x) + 2px);
+        }
+        &.right-200px {
+            --x: calc(var(--initial-x) + 200px);
+        }
+        &.cracked {
+            background-image: url("/images/egg-cracked.webp");
+        }
+    }
+
+    @keyframes faberge {
+        0% {
+            box-shadow: none;
+        }
+        20% {
+            box-shadow: 0 0 40px #b3cfcc;
+        }
+        100% {
+            box-shadow: none;
+        }
+    }
+
+    #code-wrapper {
+        position: fixed;
+        left: 20%;
+        top: 10%;
+        width: 55ch;
+        & > :global(*:not(.active)) {
+            display: none;
+        }
+    }
+
+    /* #rewind {
+        position: fixed;
+        inset: 0;
+        background-image: url("/images/rewind.gif");
+        background-size: cover;
+        mix-blend-mode: difference;
+        &:not(.active) {
+            opacity: 0;
+        }
+    } */
+
+    #arson-timeline {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        img {
+            border: 4px solid black;
+        }
+
+        &:not(.active) {
+            opacity: 0;
+            pointer-events: none;
+            user-select: none;
+        }
     }
 </style>
 <script>
-    import { registerClassTransition } from "../lib/slides";
+    import { registerWaapiTransition } from "../lib/slides";
+    import {
+        registerClassTransition,
+        registerTransition,
+        withPrevious,
+    } from "../lib/slides";
 
+    // initial appear
     registerClassTransition("#egg-section");
+
+    // egg appears
+    registerClassTransition("#egg", "fancy");
+
+    // houses
+    registerClassTransition("#newHouse");
+    registerClassTransition("#oldHouse");
+
+    registerClassTransition("#egg", "faberge");
+
+    nextCodeBlock();
+    nextCodeBlock();
+
+    // go right all at once, break egg!
+    registerClassTransition("#egg", "right");
+    registerWaapiTransition(
+        "#code-wrapper",
+        [
+            { transform: "rotate(0deg)" },
+            { transform: "rotate(-10deg)" },
+            { transform: "rotate(8deg)" },
+            { transform: "rotate(-4deg)" },
+            { transform: "rotate(2deg)" },
+            { transform: "rotate(0deg)" },
+        ],
+        {
+            duration: 500,
+            easing: "ease-out",
+        },
+    );
+    withPrevious();
+
+    // ok, go back
+    registerClassTransition("#egg", "right", "remove");
+    nextCodeBlock();
+    withPrevious();
+
+    nextCodeBlock();
+    nextCodeBlock();
+
+    // move to right 1px
+    registerClassTransition("#egg", "right-1px");
+    nextCodeBlock();
+    withPrevious();
+
+    // move to right 2px
+    registerClassTransition("#egg", "right-2px");
+    nextCodeBlock();
+    withPrevious();
+
+    // move to right 2px
+    registerClassTransition("#egg", "right-200px");
+    nextCodeBlock();
+    withPrevious();
+
+    // revert px moves
+    nextCodeBlock();
+    registerClassTransition("#egg", "right-200px", "remove");
+    withPrevious();
+    registerClassTransition("#egg", "right-2px", "remove");
+    withPrevious();
+    registerClassTransition("#egg", "right-1px", "remove");
+    withPrevious();
+
+    // what about a while loop?
+    nextCodeBlock();
+    registerClassTransition("#oldHouse", "hot");
+    withPrevious();
+
+    // crack egg
+    registerClassTransition("#egg", "cracked");
+    
+    // show arson timeline
+    registerClassTransition("#arson-timeline", "active");
+    
+    // ok enough of that
+    registerClassTransition("#egg", "cracked", "remove");
+    registerClassTransition("#arson-timeline", "active", "remove");
+    withPrevious();
+    registerClassTransition("#oldHouse", "hot", "remove");
+    withPrevious();
+
+    nextCodeBlock();
+    withPrevious();
+
+
+
+    // oh no, it's going too far, that's your neighbor!
+    // registerClassTransition("#neighbor");
+
+    // code block controls
+    let currentCodeBlock: Element | null = null;
+    function nextCodeBlock() {
+        function activateCurrentCodeBlock() {
+            document
+                .querySelectorAll("#code-wrapper > .active")
+                .forEach((el) => el.classList.remove("active"));
+
+            currentCodeBlock?.classList.add("active");
+        }
+        registerTransition({
+            begin() {
+                if (currentCodeBlock) {
+                    currentCodeBlock = currentCodeBlock.nextElementSibling;
+                } else {
+                    currentCodeBlock =
+                        document.querySelector("#code-wrapper > *");
+                }
+                activateCurrentCodeBlock();
+            },
+            revert() {
+                if (currentCodeBlock) {
+                    currentCodeBlock = currentCodeBlock.previousElementSibling;
+                } else {
+                    currentCodeBlock = document.querySelector(
+                        "#code-wrapper > :last-child",
+                    );
+                }
+                activateCurrentCodeBlock();
+            },
+        });
+    }
+
+    function codeBlockTransition() {
+        registerTransition({
+            begin() {
+                document
+                    .getElementById("code-wrapper")
+                    ?.animate([{ rotate: "0deg" }, { rotate: "360deg" }]);
+            },
+            revert() {},
+        });
+    }
 </script>

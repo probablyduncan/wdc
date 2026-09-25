@@ -79,6 +79,23 @@ export function registerWaapiTransition(
     });
 }
 
+export function withPrevious() {
+    if (_transitions.length < 2) {
+        return;
+    }
+    const lastTwo = _transitions.splice(_transitions.length - 2);
+    _transitions.push({
+        begin() {
+            lastTwo[0].begin(() => {});
+            lastTwo[1].begin(() => {});
+        },
+        revert() {
+            lastTwo[0].revert();
+            lastTwo[1].revert();
+        },
+    })
+}
+
 // ------------------------
 
 /**

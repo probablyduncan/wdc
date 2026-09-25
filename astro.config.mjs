@@ -6,6 +6,12 @@ import expressiveCode from 'astro-expressive-code';
 // https://astro.build/config
 export default defineConfig({
     integrations: [expressiveCode({
-        themes: ["dark-plus"],
+        frames: {
+            showCopyToClipboardButton: false,
+        },
+        styleOverrides: {
+            codeFontSize: "1rem",
+        }
+        // themes: ["dark-plus"],
     })]
 });
