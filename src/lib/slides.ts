@@ -151,15 +151,20 @@ let _fastForwardFunction: (() => void) | void = undefined;
 
 const getCurrentTransition = () => _transitions[_transitionIndex];
 
-function goToPage(pageName: string) {
+const INDEX_SEARCH_PARAM_KEY = "s";
+
+function goToPage(pageName: string, slide?: number) {
     let newUrl = window.location.origin;
     if (pageName !== "index") {
         newUrl += "/" + pageName;
     }
+    
+    if (slide) {
+        newUrl += "?" + INDEX_SEARCH_PARAM_KEY + "=" + slide;
+    }
+
     window.location.href = newUrl;
 }
-
-const INDEX_SEARCH_PARAM_KEY = "s";
 
 function updateIndexInUrl() {
     const url = new URL(window.location.href);
@@ -187,6 +192,7 @@ function fastForwardToUrlIndex() {
             _transitions[i].begin(() => { });
         }
     }
+    updateIndexInUrl();
 }
 
 export function nextTransition() {
@@ -240,7 +246,7 @@ export function nextPage() {
 
 export function prevPage() {
     if (document.body.dataset.prevPage) {
-        goToPage(document.body.dataset.prevPage);
+        goToPage(document.body.dataset.prevPage, 999);
     }
 }
 

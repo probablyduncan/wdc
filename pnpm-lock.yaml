@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@expressive-code/plugin-collapsible-sections':
+        specifier: ^0.44.2
+        version: 0.44.2
       astro:
         specifier: ^7.3.2
         version: 7.3.2(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.6.2)
@@ -344,6 +347,9 @@ packages:
 
   '@expressive-code/core@0.44.2':
     resolution: {integrity: sha512-Yw5KonQCD1HoOO2P89y4wifqS9qrJcGVY0LkVMUsVZjhi++bhz4WwQ37inenKFNOEVo50P7cjoVsCdaVnUbq8w==}
+
+  '@expressive-code/plugin-collapsible-sections@0.44.2':
+    resolution: {integrity: sha512-iT8PPitb32Te5tGd1LiIlVeZve/HDZUtygwLjqg3f47aHR3AeUreDXDZUis5qMHr+/Vrt8tKfQSWtT7qm8Fkng==}
 
   '@expressive-code/plugin-frames@0.44.2':
     resolution: {integrity: sha512-gVLm6TQMNIRWIaM7o+mCtxkGNjLZY5/2faSTLoXeo9wv/Pkj/0QAtZyXPVPrRsPARqiipATNFmfvQFLJudxPHQ==}
@@ -1692,6 +1698,10 @@ snapshots:
       postcss-nested: 6.2.0(postcss@8.5.28)
       unist-util-visit: 5.1.0
       unist-util-visit-parents: 6.0.2
+
+  '@expressive-code/plugin-collapsible-sections@0.44.2':
+    dependencies:
+      '@expressive-code/core': 0.44.2
 
   '@expressive-code/plugin-frames@0.44.2':
     dependencies:

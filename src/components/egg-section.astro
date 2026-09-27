@@ -21,6 +21,15 @@ const distance = newHouse.offsetLeft - oldHouse.offsetLeft;
 egg.style.transform = translateX(\`\${distance}px\`);`}
         />
         <Code
+            class="full-width"
+            lang="typescript"
+            code={`
+// calculate distance to new house:
+const distance = newHouse.offsetLeft - oldHouse.offsetLeft;
+// update egg's position:
+egg.style.transform = translateX(\`\${distance}px\`);`}
+        />
+        <Code
             lang="typescript"
             code={`
 // what about a function we can call repeatedly?
@@ -232,11 +241,11 @@ requestAnimationFrame(animate);`}
             ins={[2, 6, 8]}
             code={`
 let x = 0;
-let max = newHouse.offsetLeft - oldHouse.offsetLeft;
+const target = newHouse.offsetLeft - oldHouse.offsetLeft;
 function animate(timestamp: DOMHighResTimeStamp) {
     x += 5;
     egg.style.transform = \`translateX(\${x}px)\`;
-    if (x < max) {
+    if (x < target) {
         requestAnimationFrame(animate);
     }
 }
@@ -247,11 +256,11 @@ function animate(timestamp: DOMHighResTimeStamp) {
             ins={[10]}
             code={`
 let x = 0;
-let max = newHouse.offsetLeft - oldHouse.offsetLeft;
+const target = newHouse.offsetLeft - oldHouse.offsetLeft;
 function animate(timestamp: DOMHighResTimeStamp) {
     x += 5;
     egg.style.transform = \`translateX(\${x}px)\`;
-    if (x < max) {
+    if (x < target) {
         requestAnimationFrame(animate);
     }
 }
@@ -261,16 +270,43 @@ requestAnimationFrame(animate);`}
             lang="typescript"
             code={`
 let x = 0;
-let max = newHouse.offsetLeft - oldHouse.offsetLeft;
+const target = newHouse.offsetLeft - oldHouse.offsetLeft;
 function animate(timestamp: DOMHighResTimeStamp) {
     x += 5;
     egg.style.transform = \`translateX(\${x}px)\`;
-    if (x < max) {
+    if (x < target) {
         requestAnimationFrame(animate);
     }
 }
 requestAnimationFrame(animate);`}
         />
+        <!-- <Code
+            lang="typescript"
+            code={`
+let current = 0;
+const target = newHouse.offsetLeft - oldHouse.offsetLeft;
+
+let prev: DOMHighResTimeStamp | undefined;
+function moveEgg(time: DOMHighResTimeStamp) {
+
+    if (!prev) {
+        prev = time;
+        requestAnimationFrame(moveEgg);
+        return;
+    }
+
+    const delta = time - prev;
+    prev = time;
+
+    current = Math.min(current + delta, target);
+    egg.style.transform = \`translateX(\${current}px)\`;
+
+    if (current < target) {
+        requestAnimationFrame(moveEgg);
+    }
+}
+requestAnimationFrame(moveEgg);`}
+        /> -->
     </div>
     <div id="old-house" class="house">
         <img src="/images/house2.jpeg" />
@@ -335,9 +371,13 @@ requestAnimationFrame(animate);`}
             opacity: 0;
         }
 
-        &.hot::after {
+        &.hot::after, &.fraud::after {
             opacity: 1;
             transition: opacity 10s;
+        }
+
+        &.fraud::after {
+            transition-delay: 10s;
         }
     }
 
@@ -360,7 +400,7 @@ requestAnimationFrame(animate);`}
             left: 35%;
             top: 57%;
             animation-name: grow-egg;
-            animation-delay: 14s;
+            animation-delay: 24s;
             animation-timing-function: steps(50);
             animation-duration: 100s;
             animation-fill-mode: both;
@@ -517,7 +557,7 @@ requestAnimationFrame(animate);`}
     }
 
     .money {
-        --base-delay: 10s;
+        --base-delay: 20s;
         --stagger-delay: calc(var(--i, 0) * 2s);
 
         --amplitude: 2vh;
@@ -553,7 +593,7 @@ requestAnimationFrame(animate);`}
         }
         100% {
             bottom: var(--bottom);
-            left: 80vw;
+            left: 70vw;
             opacity: 0;
         }
     }
@@ -704,12 +744,15 @@ requestAnimationFrame(animate);`}
     codeBlockTransition();
 
     // go right all at once, break egg!
+    codeBlockTransition();
     registerClassTransition("#egg", "right");
+    withPrevious();
 
     // ok, go back
     registerClassTransition("#egg", "right", "remove");
     codeBlockTransition();
     withPrevious();
+    
 
     // show new code, to translate 1px at a time
     codeBlockTransition();
@@ -882,7 +925,7 @@ requestAnimationFrame(animate);`}
     withPrevious();
     registerClassTransition("#egg", "unpacked");
     withPrevious();
-    registerClassTransition("#old-house", "hot");
+    registerClassTransition("#old-house", "fraud");
     withPrevious();
     registerClassTransition(".money");
     withPrevious();

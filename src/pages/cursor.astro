@@ -1,0 +1,275 @@
+---
+import { Code } from "astro-expressive-code/components";
+import Slide from "../components/slide.astro";
+---
+
+<Slide prev="index">
+    <div id="html-css-code">
+        <Code
+            lang="html"
+            code={`
+<img id="egg" alt="my best egg"
+    src="egg.webp" draggable="false" />`}
+        />
+        <Code
+            lang="css"
+            collapse={["5-8", "11-15"]}
+            collapseStyle="collapsible-start"
+            code={`
+#egg {
+    --x: 0; --y: 0;
+    transform: translate(var(--x), var(--y));
+
+    position: fixed;
+    width: 5rem;
+    pointer-events: none;
+    user-select: none;
+}
+
+@media (prefers-reduced-motion) {
+    #egg {
+        display: none;
+    }
+}
+    `}
+        />
+    </div>
+    <div id="js-code">
+        <!-- <Code
+            lang="typescript"
+            code={`
+const egg = document.getElementById("egg");
+window.addEventListener("mousemove", (e) => {
+    egg.style.setProperty("--x", e.clientX);
+    egg.style.setProperty("--y", e.clientY);
+});
+    `}
+        /> -->
+        <!-- <Code
+            lang="typescript"
+            ins={[2, 3, 5, 6, 9, 10, 11, 12, 13, 14]}
+            code={`
+const egg = document.getElementById("egg");
+const current = { x: 0, y: 0 };
+const target = { x: 0, y: 0 };
+const FRAME_RATE: number = 12;
+window.addEventListener("mousemove", (e) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+function animate() {
+    current.x = Math.sign(target.x - current.x) * 20;
+    current.y = Math.sign(target.y - current.y) * 20;
+    egg.style.setProperty("--x", current.x);
+    egg.style.setProperty("--y", current.y);
+}
+    `}
+        /> -->
+        <Code
+            lang="typescript"
+            code={`
+const egg = document.getElementById("egg"); 
+const current = { x: 0, y: 0 };
+const target = { x: 0, y: 0 };
+
+window.addEventListener("mousemove", (e) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+// ms to travel halfway to target
+const SEC_TO_HALF = 0.2;
+
+function animate(timestampMS: DOMHighResTimeStamp) {
+    const deltaS = (timestampMS - prevTimestampMS) / 1000;
+    const lerp = Math.min(1, deltaS * 0.5 / SEC_TO_HALF);
+    current.x += (target.x - current.x) * lerp;
+    current.y += (target.y - current.y) * lerp;
+    egg.style.setProperty("--x", current.x + "px");
+    egg.style.setProperty("--y", current.y + "px");
+
+    requestAnimationFrame(animate);
+}
+
+requestAnimationFrame(animate);
+`}
+        />
+    </div>
+    <img id="egg" src="/images/egg.webp" alt="my best egg" />
+</Slide>
+<style>
+    :global(:root) {
+        /* cursor: none; */
+    }
+    #egg {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        user-select: none;
+
+        @media (prefers-reduced-motion) {
+            display: none;
+        }
+
+        width: 5rem;
+
+        --x: 0px;
+        --y: 0px;
+        transform: translate(calc(var(--x) - 50%), calc(var(--y) - 50%));
+
+        transition: opacity 0.4s;
+    }
+
+    #html-css-code {
+        position: fixed;
+        top: 2ch;
+        right: 2ch;
+        display: flex;
+        flex-flow: column;
+        gap: 2ch;
+    }
+
+    #js-code {
+        position: fixed;
+        top: 2ch;
+        left: 2ch;
+    }
+
+    :global(body:has(.expressive-code:hover)) #egg {
+        opacity: 0.4;
+    }
+</style>
+<script>
+    const egg = document.getElementById("egg")!;
+    type Pos = { x: number; y: number };
+    const target: Pos = { x: 0, y: 0 };
+    const current: Pos = { x: 0, y: 0 };
+
+    window.addEventListener("mousemove", ({ clientX, clientY }) => {
+        target.x = clientX;
+        target.y = clientY;
+    });
+
+    let prev: DOMHighResTimeStamp | undefined = undefined;
+    let secondsToHalfway: number;
+
+    function animate(timestamp?: DOMHighResTimeStamp) {
+        if (prev === undefined || timestamp === undefined) {
+            prev = timestamp;
+            requestAnimationFrame(animate);
+            return;
+        }
+
+        const delta = timestamp - prev;
+        prev = timestamp;
+
+        // delta is the number of milliseconds since the last frame
+        // and we want to travel half the distance per second
+        // so the distance we want to travel is 0.5 * delta / 1000
+        // travel half the distance per amount of time:
+
+        const lerp = Math.min((0.5 * delta) / secondsToHalfway / 1000, 1);
+        current.x += (target.x - current.x) * lerp;
+        current.y += (target.y - current.y) * lerp;
+
+        // travel a certain number of pixels per amount of time, on each axis:
+        // current.x += Math.sign(target.x - current.x) * Math.min(Math.abs(target.x - current.x), delta);
+        // current.y += Math.sign(target.y - current.y) * Math.min(Math.abs(target.y - current.y), delta);
+
+        // travel a certain number of pixels in the correct direction:
+        // const dir = Math.atan2(target.y - current.y, target.x - current.x);
+        // current.x +=
+        //     Math.sign(target.x - current.x) *
+        //     Math.min(
+        //         Math.abs(target.x - current.x),
+        //         Math.abs(Math.cos(dir) * delta),
+        //     );
+        // current.y +=
+        //     Math.sign(target.y - current.y) *
+        //     Math.min(
+        //         Math.abs(target.y - current.y),
+        //         Math.abs(Math.sin(dir) * delta),
+        //     );
+
+        egg.style.setProperty("--x", current.x + "px");
+        egg.style.setProperty("--y", current.y + "px");
+
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    // mock 12fps
+    // setInterval(() => animate(performance.now()), 175);
+
+    function attachRange(
+        name: string,
+        values: string[],
+        onChange: (value: string, input: HTMLInputElement) => void,
+    ) {
+        document
+            .querySelectorAll<HTMLElement>(".expressive-code .code")
+            .forEach((line) => {
+                if (!line.innerText.startsWith("const " + name)) {
+                    return;
+                }
+
+                let nameEl: HTMLElement | undefined;
+                let valueEl: HTMLElement | undefined;
+                for (let i = 0; i < line.children.length; i++) {
+                    const el = line.children[i] as HTMLElement;
+                    if (!nameEl && el.innerText === name) {
+                        nameEl = el;
+                    } else if (!valueEl && el.innerText === ";") {
+                        valueEl = line.children[i - 1] as HTMLElement;
+                    }
+
+                    if (nameEl && valueEl) {
+                        break;
+                    }
+                }
+
+                if (!nameEl || !valueEl) {
+                    return;
+                }
+
+                // create slider
+                const input = document.createElement("input");
+                input.type = "range";
+
+                // set value
+                let index = values.indexOf(valueEl.innerHTML);
+                if (index === -1) {
+                    index = Math.floor(values.length / 2);
+                    valueEl.innerHTML = values[index];
+                }
+                input.value = index.toString();
+
+                // set min/max
+                input.min = "0";
+                input.max = (values.length - 1).toString();
+
+                // set styles
+                input.style.float = "right";
+                input.style.accentColor = nameEl.style.getPropertyValue("--0");
+
+                line.appendChild(input);
+
+                function update() {
+                    const newValue = values[parseFloat(input.value)];
+                    valueEl!.innerText = newValue;
+                    onChange(newValue, input);
+                }
+
+                input.addEventListener("input", update);
+                update();
+            });
+    }
+
+    attachRange(
+        "SEC_TO_HALF",
+        ["0.01", "0.05", "0.1", "0.2", "0.5", "1"],
+        (value) => (secondsToHalfway = parseFloat(value)),
+    );
+</script>
