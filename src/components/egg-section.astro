@@ -5,26 +5,28 @@ import { Code } from "astro-expressive-code/components";
 <section id="egg-section">
     <div id="code-wrapper">
         <Code
+            class="full-width"
             lang="typescript"
             code={`
 // calculate distance to new house:
 const distance = newHouse.offsetLeft - oldHouse.offsetLeft;`}
         />
         <Code
+            class="full-width"
             lang="typescript"
             code={`
 // calculate distance to new house:
 const distance = newHouse.offsetLeft - oldHouse.offsetLeft;
 // update egg's position:
-egg.style.transform = translate(\`\${distance}px\`);`}
+egg.style.transform = translateX(\`\${distance}px\`);`}
         />
         <Code
             lang="typescript"
             code={`
-// do this slowly
+// what about a function we can call repeatedly?
 function moveEgg() {
-    // move it a little bit at a time?
-
+    // move our egg slowly,
+    // a little bit at a time
 }`}
         />
         <Code
@@ -33,16 +35,7 @@ function moveEgg() {
             code={`let x = 0;
 function moveEgg() {
     x++;
-    egg.style.transform = \`translate(\${x}px)\`;
-}`}
-        />
-        <Code
-            lang="typescript"
-            ins={[1, 3, 4]}
-            code={`let x = 0;
-function moveEgg() {
-    x++;
-    egg.style.transform = \`translate(\${x}px)\`;
+    egg.style.transform = \`translateX(\${x}px)\`;
 }`}
         />
         <Code
@@ -51,7 +44,7 @@ function moveEgg() {
             code={`let x = 0;
 function moveEgg() {
     x++;
-    egg.style.transform = \`translate(\${x}px)\`;
+    egg.style.transform = \`translateX(\${x}px)\`;
 }
 moveEgg();`}
         />
@@ -61,20 +54,47 @@ moveEgg();`}
             code={`let x = 0;
 function moveEgg() {
     x++;
-    egg.style.transform = \`translate(\${x}px)\`;
+    egg.style.transform = \`translateX(\${x}px)\`;
 }
+moveEgg();
+moveEgg();`}
+        />
+        <Code
+            lang="typescript"
+            ins={8}
+            code={`let x = 0;
+function moveEgg() {
+    x++;
+    egg.style.transform = \`translateX(\${x}px)\`;
+}
+moveEgg();
+moveEgg();
+moveEgg();`}
+        />
+        <Code
+            lang="typescript"
+            ins={9}
+            code={`let x = 0;
+function moveEgg() {
+    x++;
+    egg.style.transform = \`translateX(\${x}px)\`;
+}
+moveEgg();
+moveEgg();
 moveEgg();
 moveEgg();`}
         />
         <Code
             wrap={true}
             lang="typescript"
-            ins={8}
+            ins={10}
             code={`let x = 0;
 function moveEgg() {
     x++;
-    egg.style.transform = \`translate(\${x}px)\`;
+    egg.style.transform = \`translateX(\${x}px)\`;
 }
+moveEgg();
+moveEgg();
 moveEgg();
 moveEgg();
 moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();`}
@@ -85,7 +105,7 @@ moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();
             code={`let x = 0;
 function moveEgg() {
     x++;
-    egg.style.transform = \`translate(\${x}px)\`;
+    egg.style.transform = \`translateX(\${x}px)\`;
 }`}
         />
         <Code
@@ -94,7 +114,7 @@ function moveEgg() {
             code={`let x = 0;
 function moveEgg() {
     x++;
-    egg.style.transform = \`translate(\${x}px)\`;
+    egg.style.transform = \`translateX(\${x}px)\`;
 }
 
 while(true) {
@@ -103,24 +123,173 @@ while(true) {
         />
         <Code
             lang="typescript"
+            code={`let x = 0;
+function moveEgg() {
+    x++;
+    egg.style.transform = \`translateX(\${x}px)\`;
+}
+
+// we want to call moveEgg() in a loop
+// *without* starting a fire
+`}
+        />
+        <Code
+            lang="typescript"
+            ins={[2, 5]}
+            code={`let x = 0;
+setInterval(() => {
+    x++;
+    egg.style.transform = \`translateX(\${x}px)\`;
+}, 1);`}
+        />
+        <Code
+            lang="typescript"
             ins={7}
             code={`let x = 0;
 function moveEgg() {
     x++;
-    egg.style.transform = \`translate(\${x}px)\`;
+    egg.style.transform = \`translateX(\${x}px)\`;
 }`}
         />
+        <Code
+            lang="typescript"
+            code={`
+function animate(timestamp: DOMHighResTimeStamp) {
+    // do something!
+}
+requestAnimationFrame(animate);
+        `}
+        />
+        <Code
+            lang="typescript"
+            ins={2}
+            code={`
+function animate(timestamp: DOMHighResTimeStamp) {
+    console.log(timestamp);
+}
+requestAnimationFrame(animate);
+`}
+        />
+        <Code
+            lang="typescript"
+            ins={3}
+            code={`
+function animate(timestamp: DOMHighResTimeStamp) {
+    console.log(timestamp);
+    requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+`}
+        />
+        <Code
+            lang="typescript"
+            ins={[1, 3, 4]}
+            code={`
+let x = 0;
+function animate(timestamp: DOMHighResTimeStamp) {
+    x++;
+    egg.style.transform = \`translateX(\${x}px)\`;
+    requestAnimationFrame(animate);
+}`}
+        />
+        <Code
+            lang="typescript"
+            ins={7}
+            code={`
+let x = 0;
+function animate(timestamp: DOMHighResTimeStamp) {
+    x++;
+    egg.style.transform = \`translateX(\${x}px)\`;
+    requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);`}
+        />
+        <Code
+            lang="typescript"
+            ins={[3]}
+            code={`
+let x = 0;
+function animate(timestamp: DOMHighResTimeStamp) {
+    x += 5;
+    egg.style.transform = \`translateX(\${x}px)\`;
+    requestAnimationFrame(animate);
+}`}
+        />
+        <Code
+            lang="typescript"
+            ins={[7]}
+            code={`
+let x = 0;
+function animate(timestamp: DOMHighResTimeStamp) {
+    x += 5;
+    egg.style.transform = \`translateX(\${x}px)\`;
+    requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);`}
+        />
+        <Code
+            lang="typescript"
+            ins={[2, 6, 8]}
+            code={`
+let x = 0;
+let max = newHouse.offsetLeft - oldHouse.offsetLeft;
+function animate(timestamp: DOMHighResTimeStamp) {
+    x += 5;
+    egg.style.transform = \`translateX(\${x}px)\`;
+    if (x < max) {
+        requestAnimationFrame(animate);
+    }
+}
+`}
+        />
+        <Code
+            lang="typescript"
+            ins={[10]}
+            code={`
+let x = 0;
+let max = newHouse.offsetLeft - oldHouse.offsetLeft;
+function animate(timestamp: DOMHighResTimeStamp) {
+    x += 5;
+    egg.style.transform = \`translateX(\${x}px)\`;
+    if (x < max) {
+        requestAnimationFrame(animate);
+    }
+}
+requestAnimationFrame(animate);`}
+        />
+        <Code
+            lang="typescript"
+            code={`
+let x = 0;
+let max = newHouse.offsetLeft - oldHouse.offsetLeft;
+function animate(timestamp: DOMHighResTimeStamp) {
+    x += 5;
+    egg.style.transform = \`translateX(\${x}px)\`;
+    if (x < max) {
+        requestAnimationFrame(animate);
+    }
+}
+requestAnimationFrame(animate);`}
+        />
     </div>
-    <div id="oldHouse" class="house">
+    <div id="old-house" class="house">
         <img src="/images/house2.jpeg" />
     </div>
-    <img id="newHouse" class="house" src="/images/house2.jpeg" />
+    <div id="new-house" class="house">
+        <img src="/images/house2.jpeg" />
+    </div>
     <img id="neighbor" class="house" src="/images/house1.png" />
     <div id="egg"></div>
     <!-- <div id="rewind"></div> -->
     <div id="arson-timeline">
         <img src="/images/arson-timeline.svg" />
     </div>
+    <div id="raf">&nbsp;&nbsp;requestAnimationFrame!!</div>
+    <img class="money" src="/images/money.png" style="--i: 0;" />
+    <img class="money" src="/images/money.png" style="--i: 1;" />
+    <img class="money" src="/images/money.png" style="--i: 2;" />
+    <img class="money" src="/images/money.png" style="--i: 3;" />
+    <img class="money" src="/images/money.png" style="--i: 4;" />
 </section>
 <style>
     #egg-section {
@@ -147,7 +316,7 @@ function moveEgg() {
         }
     }
 
-    #oldHouse {
+    #old-house {
         left: -5vw;
         bottom: 5vh;
         width: 50vh;
@@ -172,10 +341,36 @@ function moveEgg() {
         }
     }
 
-    #newHouse {
+    #new-house {
         right: 10vw;
         bottom: 5vh;
         width: 50vh;
+
+        img {
+            width: 100%;
+        }
+
+        &.yard-egg::after {
+            content: "";
+            position: absolute;
+            background-image: url("/images/egg.webp");
+            background-size: contain;
+            width: 30%;
+            aspect-ratio: 1;
+            left: 35%;
+            top: 57%;
+            animation-name: grow-egg;
+            animation-delay: 14s;
+            animation-timing-function: steps(50);
+            animation-duration: 100s;
+            animation-fill-mode: both;
+            transform-origin: bottom;
+        }
+    }
+
+    @keyframes grow-egg {
+        from { transform: scale(1); }
+        to { transform: scale(3); }
     }
 
     #neighbor {
@@ -194,47 +389,74 @@ function moveEgg() {
 
         aspect-ratio: 1;
         background-color: #deafaf;
+        background-size: cover;
 
         --initial-x: 9vw;
-        --x: var(--initial-x);
-        transform: translateX(var(--x));
+        --x: 0px;
+        transform: translateX(calc(var(--initial-x) + var(--x)));
 
+        &.unpacked {
+            display: none;
+        }
         &.fancy {
             background-color: bisque;
             border: 8px ridge burlywood;
         }
         &.faberge {
             background-image: url("/images/egg.webp");
-            background-size: cover;
-            animation: faberge 2s;
         }
         &.right {
             background-image: url("/images/egg-right.webp");
-            --x: 65vw;
-        }
-        &.right-1px {
-            --x: calc(var(--initial-x) + 1px);
-        }
-        &.right-2px {
-            --x: calc(var(--initial-x) + 2px);
-        }
-        &.right-200px {
-            --x: calc(var(--initial-x) + 200px);
+            /* this isn't quite right, need to fix this with screen size */
+            --x: 46.8vw;
         }
         &.cracked {
             background-image: url("/images/egg-cracked.webp");
         }
+        &.hot {
+            animation: crack-after-time 5s step-end both;
+            background-color: rgb(251, 153, 146);
+            transition:
+                background-color 10s,
+                border-color 10s;
+            border-color: rgb(236, 138, 96);
+        }
     }
 
-    @keyframes faberge {
+    body:has(#egg.right) #code-wrapper {
+        animation: shake 0.5s ease-out;
+    }
+
+    @keyframes shake {
         0% {
-            box-shadow: none;
+            transform: rotate(0deg);
         }
         20% {
-            box-shadow: 0 0 40px #b3cfcc;
+            transform: rotate(-10deg);
+        }
+        40% {
+            transform: rotate(8deg);
+        }
+        60% {
+            transform: rotate(-4deg);
+        }
+        80% {
+            transform: rotate(2deg);
         }
         100% {
-            box-shadow: none;
+            transform: rotate(0deg);
+        }
+    }
+
+    @keyframes crack-after-time {
+        0% {
+            background-image: url("/images/egg.webp");
+        }
+        61% {
+            background-image: url("/images/egg-cracked.webp");
+        }
+        100% {
+            background-image: url("/images/egg-crumbled.webp");
         }
     }
 
@@ -242,9 +464,13 @@ function moveEgg() {
         position: fixed;
         left: 20%;
         top: 10%;
-        width: 55ch;
-        & > :global(*:not(.active)) {
+
+        :global(.expressive-code):not(.active) {
             display: none;
+        }
+
+        :global(.expressive-code):not(.full-width) .code {
+            max-width: 60ch;
         }
     }
 
@@ -276,14 +502,190 @@ function moveEgg() {
             user-select: none;
         }
     }
+
+    #raf {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 4vw;
+        background-color: white;
+        &:not(.active) {
+            display: none;
+        }
+    }
+
+    .money {
+        --base-delay: 10s;
+        --stagger-delay: calc(var(--i, 0) * 2s);
+
+        --amplitude: 2vh;
+        --bottom: 20vh;
+
+        position: fixed;
+        width: 60px;
+        aspect-ratio: 1;
+        background-image: url("/images/money.png");
+        background-size: contain;
+        display: none;
+        &.active {
+            animation: money 8s linear both infinite;
+            animation-delay: calc(var(--base-delay) + var(--stagger-delay));
+            display: block;
+        }
+    }
+
+    @keyframes money {
+        0% {
+            left: 5vw;
+            bottom: var(--bottom);
+            opacity: 0;
+        }
+        10%, 30%, 50%, 70%, 90% {
+            bottom: calc(var(--bottom) + var(--amplitude));
+        }
+        25%, 85% {
+            opacity: 0.8;
+        }
+        20%, 40%, 60%, 80% {
+            bottom: var(--bottom);
+        }
+        100% {
+            bottom: var(--bottom);
+            left: 80vw;
+            opacity: 0;
+        }
+    }
 </style>
 <script>
-    import { registerWaapiTransition } from "../lib/slides";
     import {
         registerClassTransition,
+        registerRafTransition,
         registerTransition,
         withPrevious,
     } from "../lib/slides";
+
+    const egg = document.getElementById("egg")!;
+    const oldHouse = document.getElementById("old-house")!;
+    const newHouse = document.getElementById("new-house")!;
+    const neighbor = document.getElementById("neighbor")!;
+
+    function translateEgg(x: string | "unset") {
+        registerTransition(() => {
+            let prev: string | undefined;
+            return {
+                begin() {
+                    prev = egg.style.getPropertyValue("--x");
+                    if (x === "unset") {
+                        egg.style.removeProperty("--x");
+                    } else {
+                        egg.style.setProperty("--x", x);
+                    }
+                },
+                revert() {
+                    if (prev) {
+                        egg.style.setProperty("--x", prev);
+                    } else {
+                        egg.style.removeProperty("--x");
+                    }
+                },
+            };
+        });
+    }
+
+    // code block controls
+    const { codeBlockTransition, nextCodeBlock, prevCodeBlock } = (() => {
+        let currentCodeBlock: Element | null = null;
+        function activateCurrentCodeBlock() {
+            document
+                .querySelectorAll("#code-wrapper > .active")
+                .forEach((el) => el.classList.remove("active"));
+
+            currentCodeBlock?.classList.add("active");
+        }
+
+        function nextCodeBlock() {
+            if (currentCodeBlock) {
+                currentCodeBlock = currentCodeBlock.nextElementSibling;
+            } else {
+                currentCodeBlock = document.querySelector(
+                    "#code-wrapper .expressive-code:first-child",
+                );
+            }
+            activateCurrentCodeBlock();
+        }
+
+        function prevCodeBlock() {
+            if (currentCodeBlock) {
+                currentCodeBlock = currentCodeBlock.previousElementSibling;
+            } else {
+                currentCodeBlock = document.querySelector(
+                    "#code-wrapper .expressive-code:last-child",
+                );
+            }
+            activateCurrentCodeBlock();
+        }
+
+        return {
+            nextCodeBlock,
+            prevCodeBlock,
+            codeBlockTransition: () =>
+                registerTransition({
+                    begin: nextCodeBlock,
+                    revert: prevCodeBlock,
+                }),
+        };
+    })();
+
+    const { beginSetInterval, endSetInterval } = (() => {
+        let intervalId: NodeJS.Timeout | undefined = undefined;
+        let x = 0;
+        function setX() {
+            egg.style.setProperty("--x", x + "px");
+        }
+        function resetX() {
+            egg.style.removeProperty("--x");
+            x = 0;
+        }
+        function startInterval() {
+            cancelInterval();
+            intervalId = setInterval(() => {
+                x++;
+                setX();
+            }, 1);
+        }
+        function cancelInterval() {
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = undefined;
+            }
+        }
+
+        // start setInterval
+        return {
+            beginSetInterval: () =>
+                registerTransition({
+                    begin() {
+                        startInterval();
+                    },
+                    revert() {
+                        cancelInterval();
+                        resetX();
+                    },
+                }),
+            endSetInterval: () =>
+                registerTransition({
+                    begin() {
+                        cancelInterval();
+                        resetX();
+                    },
+                    revert() {
+                        startInterval();
+                    },
+                }),
+        };
+    })();
 
     // initial appear
     registerClassTransition("#egg-section");
@@ -292,132 +694,199 @@ function moveEgg() {
     registerClassTransition("#egg", "fancy");
 
     // houses
-    registerClassTransition("#newHouse");
-    registerClassTransition("#oldHouse");
+    registerClassTransition("#new-house");
+    registerClassTransition("#old-house");
 
     registerClassTransition("#egg", "faberge");
 
-    nextCodeBlock();
-    nextCodeBlock();
+    // code to translate all at once
+    codeBlockTransition();
+    codeBlockTransition();
 
     // go right all at once, break egg!
     registerClassTransition("#egg", "right");
-    registerWaapiTransition(
-        "#code-wrapper",
-        [
-            { transform: "rotate(0deg)" },
-            { transform: "rotate(-10deg)" },
-            { transform: "rotate(8deg)" },
-            { transform: "rotate(-4deg)" },
-            { transform: "rotate(2deg)" },
-            { transform: "rotate(0deg)" },
-        ],
-        {
-            duration: 500,
-            easing: "ease-out",
+
+    // ok, go back
+    registerClassTransition("#egg", "right", "remove");
+    codeBlockTransition();
+    withPrevious();
+
+    // show new code, to translate 1px at a time
+    codeBlockTransition();
+
+    codeBlockTransition();
+    translateEgg("1px");
+    withPrevious();
+
+    codeBlockTransition();
+    translateEgg("2px");
+    withPrevious();
+
+    codeBlockTransition();
+    translateEgg("3px");
+    withPrevious();
+
+    codeBlockTransition();
+    translateEgg("4px");
+    withPrevious();
+
+    codeBlockTransition();
+    translateEgg("200px");
+    withPrevious();
+
+    // ok, back to drawing board
+    codeBlockTransition();
+    translateEgg("unset");
+    withPrevious();
+
+    // what about a while loop? start a little fire
+    codeBlockTransition();
+    registerClassTransition("#old-house", "hot");
+    withPrevious();
+    registerClassTransition("#egg", "hot");
+    withPrevious();
+
+    // show arson timeline
+    registerClassTransition("#arson-timeline", "active");
+
+    // ok enough of that
+    registerClassTransition("#arson-timeline", "active", "remove");
+    registerClassTransition("#old-house", "hot", "remove");
+    withPrevious();
+    registerClassTransition("#egg", "hot", "remove");
+    withPrevious();
+    codeBlockTransition();
+    withPrevious();
+
+    // try set interval
+    codeBlockTransition();
+    beginSetInterval();
+    withPrevious();
+
+    // cancel interval, no good
+    codeBlockTransition();
+    endSetInterval();
+    withPrevious();
+
+    // now introduce requestAnimationFrame
+    registerClassTransition("#raf", "active");
+
+    registerClassTransition("#raf", "active", "remove");
+    codeBlockTransition();
+    withPrevious();
+
+    registerRafTransition((timestamp) => {
+        console.log(timestamp);
+        return false;
+    }, {});
+    codeBlockTransition();
+    withPrevious();
+
+    let cancelRafTransition = registerRafTransition((timestamp) => {
+        console.log(timestamp);
+        return true;
+    }, {});
+    codeBlockTransition();
+    withPrevious();
+
+    cancelRafTransition();
+    codeBlockTransition();
+    withPrevious();
+
+    codeBlockTransition();
+    cancelRafTransition = registerRafTransition(
+        (_, state) => {
+            state.x++;
+            console.log(state.x);
+            egg.style.setProperty("--x", state.x + "px");
+            return true;
+        },
+        { x: 0 },
+        () => {
+            egg.style.removeProperty("--x");
         },
     );
     withPrevious();
 
-    // ok, go back
-    registerClassTransition("#egg", "right", "remove");
-    nextCodeBlock();
+    cancelRafTransition();
+    codeBlockTransition();
     withPrevious();
 
-    nextCodeBlock();
-    nextCodeBlock();
+    cancelRafTransition = registerRafTransition(
+        (_, state) => {
+            state.x += 5;
+            egg.style.setProperty("--x", state.x + "px");
 
-    // move to right 1px
-    registerClassTransition("#egg", "right-1px");
-    nextCodeBlock();
-    withPrevious();
+            if (
+                state.x >
+                    newHouse.offsetLeft -
+                        oldHouse.offsetLeft -
+                        newHouse.clientWidth &&
+                !neighbor.classList.contains("active")
+            ) {
+                neighbor.classList.add("active");
+            }
 
-    // move to right 2px
-    registerClassTransition("#egg", "right-2px");
-    nextCodeBlock();
-    withPrevious();
-
-    // move to right 2px
-    registerClassTransition("#egg", "right-200px");
-    nextCodeBlock();
-    withPrevious();
-
-    // revert px moves
-    nextCodeBlock();
-    registerClassTransition("#egg", "right-200px", "remove");
-    withPrevious();
-    registerClassTransition("#egg", "right-2px", "remove");
-    withPrevious();
-    registerClassTransition("#egg", "right-1px", "remove");
-    withPrevious();
-
-    // what about a while loop?
-    nextCodeBlock();
-    registerClassTransition("#oldHouse", "hot");
+            return state.x < window.innerWidth;
+        },
+        { x: 0 },
+        (event) => {
+            if (event === "revert") {
+                neighbor.classList.remove("active");
+            } else {
+                neighbor.classList.add("active");
+            }
+            egg.style.removeProperty("--x");
+        },
+    );
+    codeBlockTransition();
     withPrevious();
 
-    // crack egg
-    registerClassTransition("#egg", "cracked");
-    
-    // show arson timeline
-    registerClassTransition("#arson-timeline", "active");
-    
-    // ok enough of that
-    registerClassTransition("#egg", "cracked", "remove");
-    registerClassTransition("#arson-timeline", "active", "remove");
-    withPrevious();
-    registerClassTransition("#oldHouse", "hot", "remove");
+    cancelRafTransition();
+    codeBlockTransition();
     withPrevious();
 
-    nextCodeBlock();
+    cancelRafTransition = registerRafTransition(
+        (_, state) => {
+            state.x += 5;
+            egg.style.setProperty("--x", state.x + "px");
+            return (
+                state.x <
+                newHouse.offsetLeft -
+                    oldHouse.offsetLeft -
+                    newHouse.clientWidth / 2
+            );
+        },
+        { x: 0 },
+        (event) => {
+            if (event === "revert") {
+                egg.style.removeProperty("--x");
+            } else {
+                egg.style.setProperty(
+                    "--x",
+                    newHouse.offsetLeft -
+                        oldHouse.offsetLeft -
+                        newHouse.clientWidth / 2 +
+                        "px",
+                );
+            }
+        },
+    );
+    codeBlockTransition();
     withPrevious();
 
-
+    cancelRafTransition();
+    codeBlockTransition();
+    withPrevious();
+    registerClassTransition("#new-house", "yard-egg");
+    withPrevious();
+    registerClassTransition("#egg", "unpacked");
+    withPrevious();
+    registerClassTransition("#old-house", "hot");
+    withPrevious();
+    registerClassTransition(".money");
+    withPrevious();
 
     // oh no, it's going too far, that's your neighbor!
     // registerClassTransition("#neighbor");
-
-    // code block controls
-    let currentCodeBlock: Element | null = null;
-    function nextCodeBlock() {
-        function activateCurrentCodeBlock() {
-            document
-                .querySelectorAll("#code-wrapper > .active")
-                .forEach((el) => el.classList.remove("active"));
-
-            currentCodeBlock?.classList.add("active");
-        }
-        registerTransition({
-            begin() {
-                if (currentCodeBlock) {
-                    currentCodeBlock = currentCodeBlock.nextElementSibling;
-                } else {
-                    currentCodeBlock =
-                        document.querySelector("#code-wrapper > *");
-                }
-                activateCurrentCodeBlock();
-            },
-            revert() {
-                if (currentCodeBlock) {
-                    currentCodeBlock = currentCodeBlock.previousElementSibling;
-                } else {
-                    currentCodeBlock = document.querySelector(
-                        "#code-wrapper > :last-child",
-                    );
-                }
-                activateCurrentCodeBlock();
-            },
-        });
-    }
-
-    function codeBlockTransition() {
-        registerTransition({
-            begin() {
-                document
-                    .getElementById("code-wrapper")
-                    ?.animate([{ rotate: "0deg" }, { rotate: "360deg" }]);
-            },
-            revert() {},
-        });
-    }
 </script>

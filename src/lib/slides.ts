@@ -79,6 +79,48 @@ export function registerWaapiTransition(
     });
 }
 
+export function registerRafTransition<TState extends {}>(callback: (timestamp: DOMHighResTimeStamp, state: TState) => boolean, state: TState, revert?: (event: "revert" | "cancel") => void) {
+    let frameId: number | undefined;
+    let trackedState = { ...state };
+    function cancel() {
+        if (frameId !== undefined) {
+            cancelAnimationFrame(frameId);
+            trackedState = { ...state };
+        }
+    }
+
+    function start() {
+        frameId = requestAnimationFrame(function update(timestamp: DOMHighResTimeStamp) {
+            if (callback(timestamp, trackedState)) {
+                frameId = requestAnimationFrame(update);
+            }
+        });
+    }
+
+    registerTransition({
+        begin() {
+            cancel();
+            start();
+        },
+        revert() {
+            cancel();
+            if (revert) revert("revert");
+        },
+    });
+
+    return () => {
+        registerTransition({
+            begin() {
+                cancel();
+                if (revert) revert("cancel");
+            },
+            revert() {
+                start();
+            },
+        })
+    }
+}
+
 export function withPrevious() {
     if (_transitions.length < 2) {
         return;
@@ -86,8 +128,8 @@ export function withPrevious() {
     const lastTwo = _transitions.splice(_transitions.length - 2);
     _transitions.push({
         begin() {
-            lastTwo[0].begin(() => {});
-            lastTwo[1].begin(() => {});
+            lastTwo[0].begin(() => { });
+            lastTwo[1].begin(() => { });
         },
         revert() {
             lastTwo[0].revert();
@@ -125,7 +167,7 @@ function updateIndexInUrl() {
         removeIndexFromURL();
         return;
     }
-    
+
     url.searchParams.set(INDEX_SEARCH_PARAM_KEY, (_transitionIndex + 1).toString());
     history.pushState(null, "", url.href);
 }
