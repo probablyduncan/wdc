@@ -79,46 +79,71 @@ export function registerWaapiTransition(
     });
 }
 
-export function registerRafTransition<TState extends {}>(callback: (timestamp: DOMHighResTimeStamp, state: TState) => boolean, state: TState, revert?: (event: "revert" | "cancel") => void) {
-    let frameId: number | undefined;
-    let trackedState = { ...state };
-    function cancel() {
-        if (frameId !== undefined) {
-            cancelAnimationFrame(frameId);
-            trackedState = { ...state };
+export function registerRafTransition<TState extends {}>(
+    defaultState: TState,
+    callback: (params: { state: TState, timestamp: DOMHighResTimeStamp, delta: DOMHighResTimeStamp }) => boolean,
+    cleanup?: (params: { state: TState, event: "revert" | "end" }) => void
+) {
+    let state: TState = { ...defaultState };
+    let prev: DOMHighResTimeStamp | undefined;
+    let isAnimating = false;
+
+    function animate(timestamp: DOMHighResTimeStamp) {
+        if (!isAnimating) return;
+
+        const delta = timestamp - (prev ?? timestamp);
+        prev = timestamp;
+
+        if (callback({ state, timestamp, delta })) {
+            requestAnimationFrame(animate);
         }
     }
 
     function start() {
-        frameId = requestAnimationFrame(function update(timestamp: DOMHighResTimeStamp) {
-            if (callback(timestamp, trackedState)) {
-                frameId = requestAnimationFrame(update);
-            }
-        });
+        if (isAnimating) {
+            state = { ...defaultState };
+            return;
+        }
+
+        isAnimating = true;
+        requestAnimationFrame((time) => {
+            prev = time;
+            requestAnimationFrame(animate);
+        })
     }
 
-    registerTransition({
-        begin() {
-            cancel();
-            start();
-        },
-        revert() {
-            cancel();
-            if (revert) revert("revert");
-        },
-    });
+    function cancel() {
+        if (isAnimating) {
+            isAnimating = false;
+            state = { ...defaultState };
+        }
+    }
 
-    return () => {
-        registerTransition({
+    return {
+        state,
+        registerStart: () => registerTransition({
+            begin() {
+                start();
+            },
+            revert() {
+                cancel();
+                if (cleanup) {
+                    cleanup({ state, event: "revert" });
+                }
+            },
+        }),
+        registerEnd: () => registerTransition({
             begin() {
                 cancel();
-                if (revert) revert("cancel");
+                if (cleanup) {
+                    cleanup({ state, event: "end" });
+                }
             },
             revert() {
                 start();
             },
         })
-    }
+    };
 }
 
 export function withPrevious() {
@@ -158,7 +183,7 @@ function goToPage(pageName: string, slide?: number) {
     if (pageName !== "index") {
         newUrl += "/" + pageName;
     }
-    
+
     if (slide) {
         newUrl += "?" + INDEX_SEARCH_PARAM_KEY + "=" + slide;
     }
@@ -258,12 +283,13 @@ function onReady() {
     // document.querySelectorAll("button[data-next-slide]").forEach(b => b.addEventListener("click", nextTransition));
     // document.querySelectorAll("button[data-prev-slide]").forEach(b => b.addEventListener("click", prevTransition));
     document.addEventListener("keydown", ({ code, shiftKey, metaKey, ctrlKey }) => {
+        const onInput = document.activeElement?.tagName === "INPUT";
         switch (code) {
             case "ArrowLeft":
                 if (shiftKey) {
                     prevPage();
                 }
-                else {
+                else if (!onInput) {
                     prevTransition();
                 }
                 break;
@@ -271,12 +297,14 @@ function onReady() {
                 if (shiftKey) {
                     nextPage();
                 }
-                else {
+                else if (!onInput) {
                     nextTransition();
                 }
                 break;
             case "KeyF":
-                document.body.requestFullscreen();
+                if (!metaKey && !ctrlKey) {
+                    document.body.requestFullscreen();
+                }
                 break;
             case "KeyR":
                 if (shiftKey && (metaKey || ctrlKey)) {

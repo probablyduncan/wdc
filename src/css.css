@@ -79,3 +79,14 @@ button {
     padding: unset;
     font-variant: unset;
 }
+
+.expressive-code input.const-control {
+    float: right;
+    accent-color: #4FC1FF;
+    margin-left: 1ch;
+    margin-top: 0.3lh;
+
+    &[hidden] {
+        display: none;
+    }
+}

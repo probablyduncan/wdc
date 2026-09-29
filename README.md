@@ -6,7 +6,7 @@ simpler examples will have sample code displayed on screen, and I won't live cod
 and then we build an animation controller? idk
 
 
-
+const editFile = `vscode://file${Astro.self.moduleId}`;
 
 
 

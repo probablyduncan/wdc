@@ -1,0 +1,291 @@
+---
+interface Props {
+    x: number | string;
+    y: number | string;
+    src?: string;
+    id?: string;
+    class?: string;
+    figure?: number | string;
+    width?: number | string;
+    border?: boolean;
+}
+
+const props = Astro.props;
+
+const x = typeof props.x === "number" ? props.x : parseFloat(props.x);
+const y = typeof props.y === "number" ? props.y : parseFloat(props.y);
+
+const width = props.width
+    ? typeof props.width === "number"
+        ? `${props.width}px`
+        : props.width
+    : "auto";
+
+if (!props.src && !Astro.slots.has("figure")) {
+    throw `figure must have a src attribute or <slot name="figure">`;
+}
+
+let classString = props.class ?? "";
+let captionHtml = "";
+if (Astro.slots.has("default")) {
+    classString += " bordered";
+
+    if (props.figure) {
+        captionHtml += "<b>Figure " + props.figure + ": </b>";
+    }
+
+    captionHtml += await Astro.slots.render("default");
+
+    let closeBacktick = true;
+    for (let i = captionHtml.length - 1; i > -1; i--) {
+        let replacement: string | undefined = undefined;
+        switch (captionHtml[i]) {
+            case "[":
+                replacement = "<sup>[";
+                break;
+            case "]":
+                replacement = "]</sup>";
+                break;
+            case "`":
+                replacement = closeBacktick ? "</code>" : "<code>";
+                closeBacktick = !closeBacktick;
+                break;
+        }
+
+        if (replacement) {
+            captionHtml =
+                captionHtml.substring(0, i) +
+                replacement +
+                captionHtml.substring(i + 1);
+        }
+    }
+}
+---
+
+<figure
+    id={props.id}
+    data-grabbable-figure
+    class={classString.trim()}
+    style={`--start-x: ${x}; --start-y: ${y}; --width: ${width};`}
+>
+    {
+        props.src ? (
+            <img
+                src={props.src}
+                alt="a very academic figure"
+                draggable="false"
+            />
+        ) : (
+            <slot name="figure" />
+        )
+    }
+    <figcaption set:html={captionHtml} />
+</figure>
+<style>
+    figure {
+        position: fixed;
+
+        --start-x: 0.5;
+        --start-y: 0.5;
+        --width: 80vw;
+        width: var(--width);
+
+        left: calc(100vw * var(--start-x));
+        top: calc(100vh * var(--start-y));
+
+        margin: 0;
+        cursor: grab;
+        user-select: none;
+        touch-action: manipulation;
+
+        --x: 0px;
+        --y: 0px;
+        --s: 1;
+        transform: translate(calc(var(--x) - 50%), calc(var(--y) - 50%))
+            scale(var(--s));
+    }
+
+    figure.bordered {
+        padding: 2vh;
+        background-color: white;
+        border: 1px solid black;
+        outline: 4px solid white;
+    }
+
+    figure:not(.active) {
+        display: none;
+    }
+
+    img {
+        image-rendering: pixelated;
+        width: 100%;
+        /* width: calc(100% - 3ch);
+        margin-inline: 1.5ch; */
+    }
+
+    figcaption {
+        margin-top: 0.5lh;
+        font-family: serif;
+        text-indent: -3ch;
+        margin-inline: 3ch;
+        line-height: 1.4;
+
+        :global(sup) {
+            line-height: 0;
+        }
+
+        :global(code) {
+            font-family: "Recursive";
+            font-variation-settings:
+                "MONO" 1,
+                "CASL" 1,
+                "slnt" -5,
+                "CRSV" 0;
+            font-size: 0.85em;
+            color: darkslategrey;
+            background-color: lavender;
+            border-radius: 0.25em;
+            padding: 0.1em 0.5ch;
+        }
+    }
+</style>
+<script>
+    import AnimationFrameController from "../lib/animationFrameController";
+    import { LerpController } from "../lib/interpolationController";
+
+    function initFigures() {
+
+        const figures = [
+            ...document.querySelectorAll<HTMLElement>(
+                "[data-grabbable-figure]",
+            ),
+        ];
+
+        const zIndexing = (() => {
+            const baseZIndex = 100;
+            const baseInvisibleZIndex = 1000;
+            return {
+                setup() {
+                    figures.forEach((figure, i) => {
+                        let zIndex = baseZIndex + i;
+                        if (!figure.checkVisibility()) {
+                            zIndex += baseInvisibleZIndex;
+                        }
+                        figure.style.zIndex = zIndex.toString();
+                    });
+                },
+                reorder(newTopIndex: number) {
+                    const zIndexOfNewTop = parseInt(
+                        figures[newTopIndex].style.zIndex,
+                    );
+                    figures.forEach((figure) => {
+                        let zIndex = parseInt(figure.style.zIndex);
+                        if (zIndex >= zIndexOfNewTop) {
+                            zIndex--;
+                        }
+                        if (
+                            zIndex > baseInvisibleZIndex &&
+                            figure.checkVisibility()
+                        ) {
+                            zIndex -= baseInvisibleZIndex;
+                        } else if (
+                            zIndex < baseInvisibleZIndex &&
+                            !figure.checkVisibility()
+                        ) {
+                            zIndex += baseInvisibleZIndex;
+                        }
+                        figure.style.zIndex = zIndex.toString();
+                    });
+                    figures[newTopIndex].style.zIndex = (
+                        baseZIndex +
+                        figures.length -
+                        1
+                    ).toString();
+                },
+            };
+        })();
+
+        zIndexing.setup();
+
+        figures.forEach((figure, i) => {
+            let grabbing = false;
+            figure.style.cursor = "grab";
+
+            const x = new LerpController();
+            const y = new LerpController();
+            const a = new AnimationFrameController((delta) => {
+                if (!grabbing && x.isAtRest() && y.isAtRest()) {
+                    return false;
+                }
+
+                figure.style.setProperty(
+                    "--x",
+                    x.step(delta).toFixed(2) + "px",
+                );
+                figure.style.setProperty(
+                    "--y",
+                    y.step(delta).toFixed(2) + "px",
+                );
+                return true;
+            });
+
+            const grabStartClientPos = [0, 0];
+            const grabStartElPos = [0, 0];
+
+            figure.addEventListener("mousedown", (e) => {
+                if (e.button !== 0) {
+                    return;
+                }
+
+                grabbing = true;
+                figure.style.cursor = "grabbing";
+                zIndexing.reorder(i);
+
+                grabStartClientPos[0] = e.clientX;
+                grabStartClientPos[1] = e.clientY;
+
+                grabStartElPos[0] = x.target = x.current;
+                grabStartElPos[1] = y.target = y.current;
+
+                // convoluted scaling based on size idk
+                const scale =
+                    1 +
+                    figure.clientWidth / 1000000 +
+                    10 / Math.sqrt(figure.clientWidth * figure.clientHeight);
+
+                figure.style.setProperty("--s", scale.toString());
+
+                const abortController = new AbortController();
+
+                window.addEventListener(
+                    "mousemove",
+                    (e) => {
+                        x.target =
+                            grabStartElPos[0] +
+                            e.clientX -
+                            grabStartClientPos[0];
+                        y.target =
+                            grabStartElPos[1] +
+                            e.clientY -
+                            grabStartClientPos[1];
+                    },
+                    { signal: abortController.signal },
+                );
+
+                window.addEventListener(
+                    "mouseup",
+                    () => {
+                        grabbing = false;
+                        figure.style.cursor = "grab";
+                        figure.style.removeProperty("--s");
+                        abortController.abort();
+                    },
+                    { once: true },
+                );
+
+                a.playIfPaused();
+            });
+        });
+    }
+    document.addEventListener("DOMContentLoaded", initFigures);
+</script>

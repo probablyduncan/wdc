@@ -1,6 +1,47 @@
 ---
 import { Code } from "astro-expressive-code/components";
 import Slide from "../components/slide.astro";
+import Figure from "../components/figure.astro";
+
+const e = [
+    `
+const egg = document.getElementById("egg")!;
+
+type Position = { x: number, y: number }
+const current: Position = { x: 0, y: 0 };
+const target: Position = { x: 0, y: 0 };
+
+const PIXELS_PER_MS = 1;
+
+window.addEventListener("mousemove", (e) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+let lastFrameTimeStamp: DOMHighResTimeStamp;
+requestAnimationFrame((thisFrameTimeStamp: DOMHighResTimeStamp) => {
+    lastFrameTimeStamp = thisFrameTimeStamp;
+    requestAnimationFrame(moveEgg);
+});
+
+function moveEgg(thisFrameTimeStamp: DOMHighResTimeStamp) {
+    const elapsedMS = thisFrameTimeStamp - lastFrameTimeStamp;
+    lastFrameTimeStamp = thisFrameTimeStamp;
+
+    const distanceToTravel = elapsedMS * PIXELS_PER_MS;
+    current.x += Math.min(distanceToTravel, target.x - current.x);
+    current.x += Math.min(distanceToTravel, target.y - current.y);
+
+    egg.style.setProperty("--x", Math.round(current.x) + "px");
+    egg.style.setProperty("--y", Math.round(current.y) + "px");
+
+    requestAnimationFrame(moveEgg);
+}
+`,
+    `
+
+`,
+];
 ---
 
 <Slide prev="index">
@@ -13,11 +54,12 @@ import Slide from "../components/slide.astro";
         />
         <Code
             lang="css"
-            collapse={["5-8", "11-15"]}
+            collapse={["6-9", "12-16"]}
             collapseStyle="collapsible-start"
             code={`
 #egg {
-    --x: 0; --y: 0;
+    --x: 0;
+    --y: 0;
     transform: translate(var(--x), var(--y));
 
     position: fixed;
@@ -26,7 +68,7 @@ import Slide from "../components/slide.astro";
     user-select: none;
 }
 
-@media (prefers-reduced-motion) {
+@media (prefers-reduced-motion: reduce) {
     #egg {
         display: none;
     }
@@ -35,68 +77,20 @@ import Slide from "../components/slide.astro";
         />
     </div>
     <div id="js-code">
-        <!-- <Code
-            lang="typescript"
-            code={`
-const egg = document.getElementById("egg");
-window.addEventListener("mousemove", (e) => {
-    egg.style.setProperty("--x", e.clientX);
-    egg.style.setProperty("--y", e.clientY);
-});
-    `}
-        /> -->
-        <!-- <Code
-            lang="typescript"
-            ins={[2, 3, 5, 6, 9, 10, 11, 12, 13, 14]}
-            code={`
-const egg = document.getElementById("egg");
-const current = { x: 0, y: 0 };
-const target = { x: 0, y: 0 };
-const FRAME_RATE: number = 12;
-window.addEventListener("mousemove", (e) => {
-    target.x = e.clientX;
-    target.y = e.clientY;
-});
-
-function animate() {
-    current.x = Math.sign(target.x - current.x) * 20;
-    current.y = Math.sign(target.y - current.y) * 20;
-    egg.style.setProperty("--x", current.x);
-    egg.style.setProperty("--y", current.y);
-}
-    `}
-        /> -->
-        <Code
-            lang="typescript"
-            code={`
-const egg = document.getElementById("egg"); 
-const current = { x: 0, y: 0 };
-const target = { x: 0, y: 0 };
-
-window.addEventListener("mousemove", (e) => {
-    target.x = e.clientX;
-    target.y = e.clientY;
-});
-
-// ms to travel halfway to target
-const SEC_TO_HALF = 0.2;
-
-function animate(timestampMS: DOMHighResTimeStamp) {
-    const deltaS = (timestampMS - prevTimestampMS) / 1000;
-    const lerp = Math.min(1, deltaS * 0.5 / SEC_TO_HALF);
-    current.x += (target.x - current.x) * lerp;
-    current.y += (target.y - current.y) * lerp;
-    egg.style.setProperty("--x", current.x + "px");
-    egg.style.setProperty("--y", current.y + "px");
-
-    requestAnimationFrame(animate);
-}
-
-requestAnimationFrame(animate);
-`}
-        />
+        <Code lang="typescript" code={e[0]} />
     </div>
     <img id="egg" src="/images/egg.webp" alt="my best egg" />
+    <Figure
+        id="cameron"
+        src="/images/www.cameronsworld.net.png"
+        x="0.5"
+        y="0.5"
+        class="active"
+        figure="5"
+        width="50rem"
+    >
+        a visage[4] of the early web. This is a screenshot from `cameronsworld.net`, a postmodern adventure of the soul through gif art.[5]
+    </Figure>
 </Slide>
 <style>
     :global(:root) {
@@ -108,7 +102,7 @@ requestAnimationFrame(animate);
         pointer-events: none;
         user-select: none;
 
-        @media (prefers-reduced-motion) {
+        @media (prefers-reduced-motion: reduce) {
             display: none;
         }
 
@@ -141,6 +135,8 @@ requestAnimationFrame(animate);
     }
 </style>
 <script>
+    import { addConstControl } from "../lib/addConstControl";
+
     const egg = document.getElementById("egg")!;
     type Pos = { x: number; y: number };
     const target: Pos = { x: 0, y: 0 };
@@ -151,125 +147,38 @@ requestAnimationFrame(animate);
         target.y = clientY;
     });
 
+    const pixelsPerMS = addConstControl("PIXELS_PER_MS", [
+        "0.0675",
+        "0.125",
+        "0.25",
+        "0.5",
+        "1",
+        "2",
+        "4",
+        "8",
+        "16",
+        "32",
+    ]);
+
     let prev: DOMHighResTimeStamp | undefined = undefined;
-    let secondsToHalfway: number;
 
-    function animate(timestamp?: DOMHighResTimeStamp) {
-        if (prev === undefined || timestamp === undefined) {
-            prev = timestamp;
-            requestAnimationFrame(animate);
-            return;
-        }
+    let lastFrameTimeStamp: DOMHighResTimeStamp;
+    requestAnimationFrame((thisFrameTimeStamp: DOMHighResTimeStamp) => {
+        lastFrameTimeStamp = thisFrameTimeStamp;
+        requestAnimationFrame(moveEgg);
+    });
 
-        const delta = timestamp - prev;
-        prev = timestamp;
+    function moveEgg(thisFrameTimeStamp: DOMHighResTimeStamp) {
+        const elapsedMS = thisFrameTimeStamp - lastFrameTimeStamp;
+        lastFrameTimeStamp = thisFrameTimeStamp;
 
-        // delta is the number of milliseconds since the last frame
-        // and we want to travel half the distance per second
-        // so the distance we want to travel is 0.5 * delta / 1000
-        // travel half the distance per amount of time:
+        const distanceToTravel = elapsedMS * parseFloat(pixelsPerMS.get());
+        current.x += Math.min(distanceToTravel, target.x - current.x);
+        current.y += Math.min(distanceToTravel, target.y - current.y);
 
-        const lerp = Math.min((0.5 * delta) / secondsToHalfway / 1000, 1);
-        current.x += (target.x - current.x) * lerp;
-        current.y += (target.y - current.y) * lerp;
+        egg.style.setProperty("--x", Math.round(current.x) + "px");
+        egg.style.setProperty("--y", Math.round(current.y) + "px");
 
-        // travel a certain number of pixels per amount of time, on each axis:
-        // current.x += Math.sign(target.x - current.x) * Math.min(Math.abs(target.x - current.x), delta);
-        // current.y += Math.sign(target.y - current.y) * Math.min(Math.abs(target.y - current.y), delta);
-
-        // travel a certain number of pixels in the correct direction:
-        // const dir = Math.atan2(target.y - current.y, target.x - current.x);
-        // current.x +=
-        //     Math.sign(target.x - current.x) *
-        //     Math.min(
-        //         Math.abs(target.x - current.x),
-        //         Math.abs(Math.cos(dir) * delta),
-        //     );
-        // current.y +=
-        //     Math.sign(target.y - current.y) *
-        //     Math.min(
-        //         Math.abs(target.y - current.y),
-        //         Math.abs(Math.sin(dir) * delta),
-        //     );
-
-        egg.style.setProperty("--x", current.x + "px");
-        egg.style.setProperty("--y", current.y + "px");
-
-        requestAnimationFrame(animate);
+        requestAnimationFrame(moveEgg);
     }
-
-    animate();
-
-    // mock 12fps
-    // setInterval(() => animate(performance.now()), 175);
-
-    function attachRange(
-        name: string,
-        values: string[],
-        onChange: (value: string, input: HTMLInputElement) => void,
-    ) {
-        document
-            .querySelectorAll<HTMLElement>(".expressive-code .code")
-            .forEach((line) => {
-                if (!line.innerText.startsWith("const " + name)) {
-                    return;
-                }
-
-                let nameEl: HTMLElement | undefined;
-                let valueEl: HTMLElement | undefined;
-                for (let i = 0; i < line.children.length; i++) {
-                    const el = line.children[i] as HTMLElement;
-                    if (!nameEl && el.innerText === name) {
-                        nameEl = el;
-                    } else if (!valueEl && el.innerText === ";") {
-                        valueEl = line.children[i - 1] as HTMLElement;
-                    }
-
-                    if (nameEl && valueEl) {
-                        break;
-                    }
-                }
-
-                if (!nameEl || !valueEl) {
-                    return;
-                }
-
-                // create slider
-                const input = document.createElement("input");
-                input.type = "range";
-
-                // set value
-                let index = values.indexOf(valueEl.innerHTML);
-                if (index === -1) {
-                    index = Math.floor(values.length / 2);
-                    valueEl.innerHTML = values[index];
-                }
-                input.value = index.toString();
-
-                // set min/max
-                input.min = "0";
-                input.max = (values.length - 1).toString();
-
-                // set styles
-                input.style.float = "right";
-                input.style.accentColor = nameEl.style.getPropertyValue("--0");
-
-                line.appendChild(input);
-
-                function update() {
-                    const newValue = values[parseFloat(input.value)];
-                    valueEl!.innerText = newValue;
-                    onChange(newValue, input);
-                }
-
-                input.addEventListener("input", update);
-                update();
-            });
-    }
-
-    attachRange(
-        "SEC_TO_HALF",
-        ["0.01", "0.05", "0.1", "0.2", "0.5", "1"],
-        (value) => (secondsToHalfway = parseFloat(value)),
-    );
 </script>
