@@ -9,7 +9,7 @@ export function addConstControl(constName: string, values: string[], hidden: boo
     const inputEls: HTMLInputElement[] = [];
     const valueEls: HTMLElement[] = [];
     let initialIndex = 0;
-    let index = 0;
+    let index = Math.floor(values.length / 2);
 
     const listeners: ((value: string) => void)[] = [];
     function addListener(callback: (value: string) => void) {
@@ -53,11 +53,12 @@ export function addConstControl(constName: string, values: string[], hidden: boo
             input.type = "range";
 
             // set value
-            index = values.indexOf(valueEl.innerText);
-            if (index === -1) {
-                index = Math.floor(values.length / 2);
-                valueEl.innerHTML = values[index];
+            const foundValueIndex = values.indexOf(valueEl.innerText);
+            if (foundValueIndex === -1) {
+                index = foundValueIndex;
             }
+            
+            valueEl.innerHTML = values[index];
             input.value = index.toString();
 
             // set min/max

@@ -3,8 +3,31 @@ import { Code } from "astro-expressive-code/components";
 import Slide from "../components/slide.astro";
 import Figure from "../components/figure.astro";
 
-const final =
-    `
+const htmlFinal = `
+<img id="egg" alt="my best egg"
+    src="egg.webp" draggable="false" />
+`;
+
+const cssFinal = `
+#egg {
+    --x: 0;
+    --y: 0;
+    transform: translate(var(--x), var(--y));
+
+    position: fixed;
+    width: 5rem;
+    pointer-events: none;
+    user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #egg {
+        display: none;
+    }
+}
+`;
+
+const tsFinal = `
 const egg = document.getElementById("egg")!;
 
 type Position = { x: number, y: number }
@@ -41,53 +64,30 @@ function moveEgg(nowNowNow: DOMHighResTimeStamp) {
 ---
 
 <Slide prev="index">
-    <div id="html-css-code" hidden>
-        <Code
-            lang="html"
-            code={`
-<img id="egg" alt="my best egg"
-    src="egg.webp" draggable="false" />`}
-        />
-        <Code
-            lang="css"
-            collapse={["6-9", "12-16"]}
-            collapseStyle="collapsible-start"
-            code={`
-#egg {
-    --x: 0;
-    --y: 0;
-    transform: translate(var(--x), var(--y));
-
-    position: fixed;
-    width: 5rem;
-    pointer-events: none;
-    user-select: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    #egg {
-        display: none;
-    }
-}
-    `}
-        />
-    </div>
-    <div id="js-code" hidden>
-        <Code lang="typescript" code={final} />
-    </div>
-    <img id="egg" src="/images/egg.webp" alt="my best egg" />
-    <Figure
+    <!-- <Figure
         id="cameron"
         src="/images/www.cameronsworld.net.png"
         x="0.5"
         y="0.5"
-        class="activee"
+        class="active"
         figure="5"
         width="50rem"
     >
-        a `visage`[4] of the early web. This is a screenshot from `<a href="https://www.cameronsworld.net">cameronsworld.net</a>`, a postmodern <a href="aha">adventure</a> of the soul through gif art.[5]
-    </Figure>
+        a `visage`[4] of the early web. This is a screenshot from `<a
+            href="https://www.cameronsworld.net">cameronsworld.net</a
+        >`, a postmodern <a href="aha">adventure</a> of the soul through gif art.[5]
+    </Figure> -->
+
+
+
+
+
+    <img id="egg" src="/images/egg.webp" alt="my best egg" />
+
+
+
     <div id="code-progression">
+        
         <!-- so it would be really great if we could take our egg with us wherever we went -->
         <!-- that way, if god forbid anything happens to our new house, we'll be ok -->
         <!-- so lets try and create a cursor -->
@@ -97,7 +97,11 @@ function moveEgg(nowNowNow: DOMHighResTimeStamp) {
 <img src="egg.png" />
 `}
         />
+
+
     </div>
+
+
 </Slide>
 <style>
     #egg {
@@ -105,6 +109,7 @@ function moveEgg(nowNowNow: DOMHighResTimeStamp) {
         inset: 0;
         pointer-events: none;
         user-select: none;
+        z-index: 99999999999;
 
         @media (prefers-reduced-motion: reduce) {
             display: none;
@@ -172,7 +177,7 @@ function moveEgg(nowNowNow: DOMHighResTimeStamp) {
     let prev: DOMHighResTimeStamp;
     requestAnimationFrame((thisFrameTimeStamp: DOMHighResTimeStamp) => {
         prev = thisFrameTimeStamp;
-        requestAnimationFrame(moveEgg);
+        // requestAnimationFrame(moveEgg);
     });
 
     function moveEgg(time: DOMHighResTimeStamp) {
