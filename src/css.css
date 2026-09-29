@@ -85,8 +85,8 @@ button {
     accent-color: #4FC1FF;
     margin-left: 1ch;
     margin-top: 0.3lh;
+}
 
-    &[hidden] {
-        display: none;
-    }
+[hidden] {
+    display: none !important;
 }

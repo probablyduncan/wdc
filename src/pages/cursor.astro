@@ -3,7 +3,7 @@ import { Code } from "astro-expressive-code/components";
 import Slide from "../components/slide.astro";
 import Figure from "../components/figure.astro";
 
-const e = [
+const final =
     `
 const egg = document.getElementById("egg")!;
 
@@ -11,41 +11,37 @@ type Position = { x: number, y: number }
 const current: Position = { x: 0, y: 0 };
 const target: Position = { x: 0, y: 0 };
 
-const PIXELS_PER_MS = 1;
+const HALF_LIFE = 0.005; // in milliseconds
 
 window.addEventListener("mousemove", (e) => {
     target.x = e.clientX;
     target.y = e.clientY;
 });
 
-let lastFrameTimeStamp: DOMHighResTimeStamp;
-requestAnimationFrame((thisFrameTimeStamp: DOMHighResTimeStamp) => {
-    lastFrameTimeStamp = thisFrameTimeStamp;
+let oldOldOld: DOMHighResTimeStamp;
+requestAnimationFrame((nowNowNow: DOMHighResTimeStamp) => {
+    oldOldOld = nowNowNow;
     requestAnimationFrame(moveEgg);
 });
 
-function moveEgg(thisFrameTimeStamp: DOMHighResTimeStamp) {
-    const elapsedMS = thisFrameTimeStamp - lastFrameTimeStamp;
-    lastFrameTimeStamp = thisFrameTimeStamp;
+function moveEgg(nowNowNow: DOMHighResTimeStamp) {
+    const deltaMS = nowNowNow - oldOldOld;
+    oldOldOld = nowNowNow;
 
-    const distanceToTravel = elapsedMS * PIXELS_PER_MS;
-    current.x += Math.min(distanceToTravel, target.x - current.x);
-    current.x += Math.min(distanceToTravel, target.y - current.y);
+    const lerpValue = Math.min(1, 0.5 * deltaMS / HALF_LIFE);
+    current.x += (target.x - current.x) * lerpValue;
+    current.y += (target.y - current.y) * lerpValue;
 
-    egg.style.setProperty("--x", Math.round(current.x) + "px");
-    egg.style.setProperty("--y", Math.round(current.y) + "px");
+    egg.style.setProperty("--x", current.x + "px");
+    egg.style.setProperty("--y", current.y + "px");
 
     requestAnimationFrame(moveEgg);
 }
-`,
-    `
-
-`,
-];
+`;
 ---
 
 <Slide prev="index">
-    <div id="html-css-code">
+    <div id="html-css-code" hidden>
         <Code
             lang="html"
             code={`
@@ -76,8 +72,8 @@ function moveEgg(thisFrameTimeStamp: DOMHighResTimeStamp) {
     `}
         />
     </div>
-    <div id="js-code">
-        <Code lang="typescript" code={e[0]} />
+    <div id="js-code" hidden>
+        <Code lang="typescript" code={final} />
     </div>
     <img id="egg" src="/images/egg.webp" alt="my best egg" />
     <Figure
@@ -85,17 +81,25 @@ function moveEgg(thisFrameTimeStamp: DOMHighResTimeStamp) {
         src="/images/www.cameronsworld.net.png"
         x="0.5"
         y="0.5"
-        class="active"
+        class="activee"
         figure="5"
         width="50rem"
     >
-        a visage[4] of the early web. This is a screenshot from `cameronsworld.net`, a postmodern adventure of the soul through gif art.[5]
+        a `visage`[4] of the early web. This is a screenshot from `<a href="https://www.cameronsworld.net">cameronsworld.net</a>`, a postmodern <a href="aha">adventure</a> of the soul through gif art.[5]
     </Figure>
+    <div id="code-progression">
+        <!-- so it would be really great if we could take our egg with us wherever we went -->
+        <!-- that way, if god forbid anything happens to our new house, we'll be ok -->
+        <!-- so lets try and create a cursor -->
+        <Code
+            lang="typescript"
+            code={`
+<img src="egg.png" />
+`}
+        />
+    </div>
 </Slide>
 <style>
-    :global(:root) {
-        /* cursor: none; */
-    }
     #egg {
         position: fixed;
         inset: 0;
@@ -136,49 +140,46 @@ function moveEgg(thisFrameTimeStamp: DOMHighResTimeStamp) {
 </style>
 <script>
     import { addConstControl } from "../lib/addConstControl";
+    import { LerpController } from "../lib/interpolationController";
 
     const egg = document.getElementById("egg")!;
-    type Pos = { x: number; y: number };
-    const target: Pos = { x: 0, y: 0 };
-    const current: Pos = { x: 0, y: 0 };
+    const x = new LerpController();
+    const y = new LerpController();
 
     window.addEventListener("mousemove", ({ clientX, clientY }) => {
-        target.x = clientX;
-        target.y = clientY;
+        x.target = clientX;
+        y.target = clientY;
     });
 
-    const pixelsPerMS = addConstControl("PIXELS_PER_MS", [
-        "0.0675",
-        "0.125",
-        "0.25",
-        "0.5",
-        "1",
-        "2",
-        "4",
-        "8",
-        "16",
-        "32",
+    const halfLifeControl = addConstControl("HALF_LIFE", [
+        "0",
+        "5",
+        "20",
+        "50",
+        "100",
+        "200",
+        "500",
+        "1000",
+        "2000",
     ]);
 
-    let prev: DOMHighResTimeStamp | undefined = undefined;
+    halfLifeControl.listen((value) => {
+        const num = parseFloat(value);
+        x.halfLife = num;
+        y.halfLife = num;
+    });
 
-    let lastFrameTimeStamp: DOMHighResTimeStamp;
+    let prev: DOMHighResTimeStamp;
     requestAnimationFrame((thisFrameTimeStamp: DOMHighResTimeStamp) => {
-        lastFrameTimeStamp = thisFrameTimeStamp;
+        prev = thisFrameTimeStamp;
         requestAnimationFrame(moveEgg);
     });
 
-    function moveEgg(thisFrameTimeStamp: DOMHighResTimeStamp) {
-        const elapsedMS = thisFrameTimeStamp - lastFrameTimeStamp;
-        lastFrameTimeStamp = thisFrameTimeStamp;
-
-        const distanceToTravel = elapsedMS * parseFloat(pixelsPerMS.get());
-        current.x += Math.min(distanceToTravel, target.x - current.x);
-        current.y += Math.min(distanceToTravel, target.y - current.y);
-
-        egg.style.setProperty("--x", Math.round(current.x) + "px");
-        egg.style.setProperty("--y", Math.round(current.y) + "px");
-
+    function moveEgg(time: DOMHighResTimeStamp) {
+        const delta = time - prev;
+        prev = time;
+        egg.style.setProperty("--x", x.step(delta).toFixed() + "px");
+        egg.style.setProperty("--y", y.step(delta).toFixed() + "px");
         requestAnimationFrame(moveEgg);
     }
 </script>

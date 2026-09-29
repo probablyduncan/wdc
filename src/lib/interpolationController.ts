@@ -1,5 +1,4 @@
-interface InterpolationController<Options> {
-    options: Options;
+interface InterpolationController {
     current: number;
     target: number;
     step(deltaMS: DOMHighResTimeStamp): number;
@@ -12,7 +11,7 @@ interface SpringOptions {
     mass: number;
 }
 
-export class SpringController implements InterpolationController<SpringOptions> {
+export class SpringController implements InterpolationController {
 
     current: number = 0;
     target: number = 0;
@@ -44,30 +43,31 @@ export class SpringController implements InterpolationController<SpringOptions> 
     }
 }
 
-interface LerpOptions {
-    /**
-     * will travel this amount of the distance towards the target per millisecond.
-     * 1 means it will cover the whole distance instantly.
-     * */
-    lerpValue: number;
-}
-
-export class LerpController implements InterpolationController<LerpOptions> {
+export class LerpController implements InterpolationController {
 
     current: number = 0;
     target: number = 0;
 
-    options: LerpOptions = {
-        lerpValue: 0.0125,
-    };
+    /**
+     * the amount of time (milliseconds) it
+     * takes to get halfway to the target
+     * */
+    halfLife: number = 100;
 
-    constructor(options: Partial<LerpOptions> = {}) {
-        Object.assign(this.options, options);
+    constructor(halfLife?: number) {
+        if (halfLife !== undefined) {
+            this.halfLife = halfLife
+        }
     }
 
     step(deltaMS: DOMHighResTimeStamp): number {
-        const lerp = Math.min(1, deltaMS * this.options.lerpValue);
-        this.current += lerp * (this.target - this.current);
+        if (this.halfLife <= 0) {
+            this.current = this.target;
+        }
+        else {
+            const lerp = Math.min(1, 0.5 * deltaMS / this.halfLife);
+            this.current += (this.target - this.current) * lerp;
+        }
         return this.current;
     }
 
@@ -77,29 +77,24 @@ export class LerpController implements InterpolationController<LerpOptions> {
     }
 }
 
-interface AccelerationOptions {
-    /** px/s/s */
-    acceleration: number;
-}
-
-export class AccelerationController implements InterpolationController<AccelerationOptions> {
+export class AccelerationController implements InterpolationController {
     current: number = 0;
     target: number = 0;
     velocity: number = 0;
 
-    options: AccelerationOptions = {
-        acceleration: 200,
-    };
+    acceleration: number = 100;
 
-    constructor(options: Partial<AccelerationOptions> = {}) {
-        Object.assign(this.options, options)
+    constructor(acceleration?: number) {
+        if (acceleration !== undefined) {
+            this.acceleration = acceleration
+        }
     }
 
     step(deltaMS: DOMHighResTimeStamp): number {
         
         const deltaS = deltaMS / 1000;
         const right = this.target > this.current;
-        this.velocity += this.options.acceleration * deltaS * (right ? 1 : -1);
+        this.velocity += this.acceleration * deltaS * (right ? 1 : -1);
         this.current += this.velocity * deltaS;
 
         // hard stop, need to improve this

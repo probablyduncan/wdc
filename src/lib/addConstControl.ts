@@ -4,16 +4,26 @@ export function addConstControl(constName: string, values: string[], hidden: boo
     reset: () => void;
     show: () => void;
     hide: () => void;
+    listen: (callback: (value: string) => void) => void;
 } {
     const inputEls: HTMLInputElement[] = [];
     const valueEls: HTMLElement[] = [];
     let initialIndex = 0;
     let index = 0;
 
+    const listeners: ((value: string) => void)[] = [];
+    function addListener(callback: (value: string) => void) {
+        if (!listeners.includes(callback)) {
+            listeners.push(callback);
+        }
+        callback(values[index]);
+    }
+
     function set(value: string) {
         index = values.indexOf(value);
         valueEls.forEach(el => el.innerText = value);
         inputEls.forEach(el => el.value = index.toString());
+        listeners.forEach(callback => callback(value));
     }
 
     function show() {
@@ -77,5 +87,6 @@ export function addConstControl(constName: string, values: string[], hidden: boo
         },
         show,
         hide,
+        listen: addListener,
     }
 }

@@ -77,11 +77,8 @@ import Control from "../components/control.astro";
     label.classList.add("name-tag");
     document.body.appendChild(label);
 
-    const labelLerpOptions = {
-        lerpValue: 0.0030625 * 0.8,
-    };
-    const labelX = new LerpController(labelLerpOptions);
-    const labelY = new LerpController(labelLerpOptions);
+    const labelX = new LerpController();
+    const labelY = new LerpController();
     const labelAngle = label.clientHeight > label.clientWidth ? -1 : 1;
 
     const animation = new AnimationFrameController((deltaMS) => {

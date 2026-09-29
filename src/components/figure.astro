@@ -31,7 +31,7 @@ if (Astro.slots.has("default")) {
     classString += " bordered";
 
     if (props.figure) {
-        captionHtml += "<b>Figure " + props.figure + ": </b>";
+        captionHtml += "<b>Figure " + props.figure + ":</b> &nbsp; &nbsp; ";
     }
 
     captionHtml += await Astro.slots.render("default");
@@ -107,9 +107,9 @@ if (Astro.slots.has("default")) {
 
     figure.bordered {
         padding: 2vh;
-        background-color: white;
+        background-color: #fafaff;
         border: 1px solid black;
-        outline: 4px solid white;
+        outline: 4px solid #fafaff;
     }
 
     figure:not(.active) {
@@ -125,7 +125,7 @@ if (Astro.slots.has("default")) {
 
     figcaption {
         margin-top: 0.5lh;
-        font-family: serif;
+        font-family: math, serif;
         text-indent: -3ch;
         margin-inline: 3ch;
         line-height: 1.4;
@@ -147,6 +147,13 @@ if (Astro.slots.has("default")) {
             border-radius: 0.25em;
             padding: 0.1em 0.5ch;
         }
+
+        :global(a) {
+            color: darkslateblue;
+            &:hover {
+                text-decoration: none;
+            }
+        }
     }
 </style>
 <script>
@@ -154,7 +161,6 @@ if (Astro.slots.has("default")) {
     import { LerpController } from "../lib/interpolationController";
 
     function initFigures() {
-
         const figures = [
             ...document.querySelectorAll<HTMLElement>(
                 "[data-grabbable-figure]",
@@ -233,7 +239,7 @@ if (Astro.slots.has("default")) {
             const grabStartElPos = [0, 0];
 
             figure.addEventListener("mousedown", (e) => {
-                if (e.button !== 0) {
+                if (e.button !== 0 || (e.target as HTMLElement)?.closest("a")) {
                     return;
                 }
 
