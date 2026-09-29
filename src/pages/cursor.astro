@@ -3,64 +3,18 @@ import { Code } from "astro-expressive-code/components";
 import Slide from "../components/slide.astro";
 import Figure from "../components/figure.astro";
 
-const htmlFinal = `
-<img id="egg" alt="my best egg"
-    src="egg.webp" draggable="false" />
-`;
-
-const cssFinal = `
-#egg {
-    --x: 0;
-    --y: 0;
-    transform: translate(var(--x), var(--y));
-
-    position: fixed;
-    width: 5rem;
-    pointer-events: none;
-    user-select: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    #egg {
-        display: none;
-    }
-}
-`;
-
-const tsFinal = `
-const egg = document.getElementById("egg")!;
-
-type Position = { x: number, y: number }
-const current: Position = { x: 0, y: 0 };
-const target: Position = { x: 0, y: 0 };
-
-const HALF_LIFE = 0.005; // in milliseconds
-
-window.addEventListener("mousemove", (e) => {
-    target.x = e.clientX;
-    target.y = e.clientY;
-});
-
-let oldOldOld: DOMHighResTimeStamp;
-requestAnimationFrame((nowNowNow: DOMHighResTimeStamp) => {
-    oldOldOld = nowNowNow;
-    requestAnimationFrame(moveEgg);
-});
-
-function moveEgg(nowNowNow: DOMHighResTimeStamp) {
-    const deltaMS = nowNowNow - oldOldOld;
-    oldOldOld = nowNowNow;
-
-    const lerpValue = Math.min(1, 0.5 * deltaMS / HALF_LIFE);
-    current.x += (target.x - current.x) * lerpValue;
-    current.y += (target.y - current.y) * lerpValue;
-
-    egg.style.setProperty("--x", current.x + "px");
-    egg.style.setProperty("--y", current.y + "px");
-
-    requestAnimationFrame(moveEgg);
-}
-`;
+/**
+ *
+ * steps I need:
+ *
+ * oops, mousemove isn't great, use requestAnimationFrame
+ * oops, make it centered on cursor
+ * oops, make it not draggable, remove pointer-events, etc
+ *
+ *
+ *
+ *
+ */
 ---
 
 <Slide prev="index">
@@ -77,77 +31,679 @@ function moveEgg(nowNowNow: DOMHighResTimeStamp) {
             href="https://www.cameronsworld.net">cameronsworld.net</a
         >`, a postmodern <a href="aha">adventure</a> of the soul through gif art.[5]
     </Figure> -->
+    <Figure
+        id="wcaglette"
+        src="/images/wcaglette.jpg"
+        x="0.4"
+        y="0.3"
+        figure="12"
+        width="30rem"
+    >
+        “You can’t meet WCAG without breaking a few eggs,” or so the saying goes.[72] Image courtesy of <a href="//commons.wikimedia.org/wiki/User:Stripey_the_crab" target="_blank">Stripey the crab</a> (<a href="https://commons.wikimedia.org/w/index.php?curid=12172841" target="_blank">link</a>).
+    </Figure>
 
+    <!-- TYPESCRIPT -->
 
+    <div id="left">
+        <div id="ts" class="code-block-wrapper">
+            <Code
+                lang="typescript"
+                code={`
+const egg = document.getElementById("egg")!;
 
-
-
-    <img id="egg" src="/images/egg.webp" alt="my best egg" />
-
-
-
-    <div id="code-progression">
-        
-        <!-- so it would be really great if we could take our egg with us wherever we went -->
-        <!-- that way, if god forbid anything happens to our new house, we'll be ok -->
-        <!-- so lets try and create a cursor -->
-        <Code
-            lang="typescript"
-            code={`
-<img src="egg.png" />
+document.addEventListener("mousemove", (e: MouseEvent) => {
+    egg.style.transform = \`translate(\${e.clientX}px, \${e.clientY}px)\`;
+});
 `}
-        />
+            />
+            <Code
+                lang="typescript"
+                ins={[3, 6, 7]}
+                code={`
+const egg = document.getElementById("egg")!;
 
+const target: { x: number, y: number };
 
+document.addEventListener("mousemove", (e: MouseEvent) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+`}
+            />
+            <Code
+                lang="typescript"
+                ins={[10, 11, 12]}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const target: { x: number, y: number };
+
+document.addEventListener("mousemove", (e: MouseEvent) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+requestAnimationFrame(function moveEgg() {
+    egg.style.transform = \`translate(\${target.x}px, \${target.y}px)\`;
+});
+`}
+            />
+            <Code
+                lang="typescript"
+                code={`
+const egg = document.getElementById("egg")!;
+
+const target: { x: number, y: number };
+
+document.addEventListener("mousemove", (e: MouseEvent) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+requestAnimationFrame(function moveEgg() {
+    egg.style.transform = \`translate(\${target.x}px, \${target.y}px)\`;
+});
+`}
+            />
+            <Code
+                lang="typescript"
+                ins={["calc(", "- 50%)"]}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const target: { x: number, y: number };
+
+document.addEventListener("mousemove", (e: MouseEvent) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+requestAnimationFrame(function moveEgg() {
+    egg.style.transform = \`translate(calc(\${target.x}px - 50%), calc(\${target.y}px - 50%))\`;
+});
+`}
+            />
+            <Code
+                lang="typescript"
+                ins={[11, 12]}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const target: { x: number, y: number };
+
+document.addEventListener("mousemove", (e: MouseEvent) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+requestAnimationFrame(function moveEgg() {
+    egg.style.setProperty("--x", target.x + "px");
+    egg.style.setProperty("--y", target.y + "px");
+});
+`}
+            />
+        </div>
     </div>
 
+    <div id="right">
+        <!-- CSS -->
 
+        <div id="css" class="code-block-wrapper">
+            <Code
+                lang="css"
+                code={`#egg {
+    position: fixed;
+    width: 5rem;
+}`}
+            />
+            <Code
+                lang="css"
+                ins={4}
+                code={`#egg {
+    position: fixed;
+    width: 5rem;
+    z-index: 2;
+    /** biggest number I can think of */
+}`}
+            />
+            <Code
+                lang="css"
+                ins={[6, 7]}
+                code={`#egg {
+    width: 5rem;
+    position: fixed;
+    z-index: 2;
+    
+    pointer-events: none;
+    user-select: none;
+}`}
+            />
+            <Code
+                lang="css"
+                code={`#egg {
+    width: 5rem;
+    position: fixed;
+    z-index: 2;
+    
+    pointer-events: none;
+    user-select: none;
+}`}
+            />
+            <Code
+                lang="css"
+                ins={[9, 10]}
+                code={`#egg {
+    width: 5rem;
+    position: fixed;
+    z-index: 2;
+    
+    pointer-events: none;
+    user-select: none;
+
+    --x: 0px;
+    --y: 0px;
+}`}
+            />
+            <Code
+                lang="css"
+                ins={[11, 12, 13]}
+                code={`#egg {
+    width: 5rem;
+    position: fixed;
+    z-index: 2;
+    
+    pointer-events: none;
+    user-select: none;
+
+    --x: 0px;
+    --y: 0px;
+    transform: translate(
+        calc(var(--x) - 50%),
+        calc(var(--y) - 50%));
+}`}
+            />
+            <Code
+                lang="css"
+                ins={[11, 12, 13]}
+                code={`#egg {
+    width: 5rem;
+    position: fixed;
+    z-index: 2;
+    
+    pointer-events: none;
+    user-select: none;
+
+    --x-calc: calc(var(--x, 0px) - 50%);
+    --y-calc: calc(var(--y, 0px) - 50%);
+    transform: translate(var(--x-calc), var(--y-calc));
+}`}
+            />
+            <Code
+                lang="css"
+                code={`#egg {
+    width: 5rem;
+    position: fixed;
+    z-index: 2;
+    
+    pointer-events: none;
+    user-select: none;
+
+    --x-calc: calc(var(--x, 0px) - 50%);
+    --y-calc: calc(var(--y, 0px) - 50%);
+    transform: translate(var(--x-calc), var(--y-calc));
+}`}
+            />
+            <Code
+                lang="css"
+                ins={[14, 15, 16, 17, 18]}
+                code={`#egg {
+    width: 5rem;
+    position: fixed;
+    z-index: 2;
+    
+    pointer-events: none;
+    user-select: none;
+
+    --x-calc: calc(var(--x, 0px) - 50%);
+    --y-calc: calc(var(--y, 0px) - 50%);
+    transform: translate(var(--x-calc), var(--y-calc));
+}
+    
+@media (prefers-reduced-motion: reduce) {
+    #egg {
+        display: none;
+    }
+}`}
+            />
+            <Code
+                lang="css"
+                code={`#egg {
+    width: 5rem;
+    position: fixed;
+    z-index: 2;
+    
+    pointer-events: none;
+    user-select: none;
+
+    --x-calc: calc(var(--x, 0px) - 50%);
+    --y-calc: calc(var(--y, 0px) - 50%);
+    transform: translate(var(--x-calc), var(--y-calc));
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #egg {
+        display: none;
+    }
+}`}
+            />
+        </div>
+
+        <!-- HTML -->
+
+        <div id="html" class="code-block-wrapper">
+            <Code
+                lang="html"
+                code={`<img src="egg.webp" alt="my best egg" />`}
+            />
+            <Code
+                lang="html"
+                ins={`id="egg"`}
+                code={`<img id="egg" src="egg.webp" alt="my best egg" />`}
+            />
+            <Code
+                lang="html"
+                code={`<img id="egg" src="egg.webp" alt="my best egg" />`}
+            />
+            <Code
+                lang="html"
+                ins={`draggable="false"`}
+                code={`<img id="egg" draggable="false"
+    src="egg.webp" alt="my best egg" />`}
+            />
+            <Code
+                lang="html"
+                code={`<img id="egg" draggable="false" 
+    src="egg.webp" alt="my best egg" />`}
+            />
+        </div>
+    </div>
+
+    <img id="egg" src="/images/egg.webp" alt="my best egg" />
 </Slide>
 <style>
     #egg {
         position: fixed;
         inset: 0;
-        pointer-events: none;
-        user-select: none;
-        z-index: 99999999999;
 
-        @media (prefers-reduced-motion: reduce) {
+        &:not(.nothing) {
             display: none;
         }
 
-        width: 5rem;
+        &.sized {
+            width: 5rem;
+        }
 
-        --x: 0px;
-        --y: 0px;
-        transform: translate(calc(var(--x) - 50%), calc(var(--y) - 50%));
+        z-index: 1;
+        &.front {
+            z-index: 50;
+        }
 
-        transition: opacity 0.4s;
+        transform: translate(var(--x, 0px), var(--y, 0px));
+        &.center {
+            transform: translate(
+                calc(var(--x, 0px) - 50%),
+                calc(var(--y, 0px) - 50%)
+            );
+        }
+
+        &.no-pointer {
+            transition: opacity 0.4s;
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-drag: none;
+            -webkit-user-select: none;
+        }
+
+        &.no-motion {
+            @media (prefers-reduced-motion: reduce) {
+                display: none;
+            }
+        }
     }
 
-    #html-css-code {
-        position: fixed;
-        top: 2ch;
-        right: 2ch;
-        display: flex;
-        flex-flow: column;
-        gap: 2ch;
+    :global(body:has(.expressive-code.active:hover)) #egg.no-pointer {
+        opacity: 0.4;
     }
 
-    #js-code {
+    #left {
         position: fixed;
         top: 2ch;
         left: 2ch;
+        z-index: 3;
     }
 
-    :global(body:has(.expressive-code:hover)) #egg {
-        opacity: 0.4;
+    #right {
+        position: fixed;
+        top: 2ch;
+        bottom: 2ch;
+        right: 2ch;
+        display: flex;
+        flex-flow: column;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 2ch;
+        z-index: 3;
+    }
+
+    #ts :global(.expressive-code) {
+        max-width: calc(50vw - 3ch);
+    }
+
+    #css :global(.expressive-code) {
+        /* max-width: min(50ch, 50vw - 3ch); */
+    }
+
+    :global(.expressive-code) {
+        &:not(.active) {
+            display: none;
+        }
+    }
+
+    #css :global(.code) {
+        /* width: 45ch; */
     }
 </style>
 <script>
     import { addConstControl } from "../lib/addConstControl";
     import { LerpController } from "../lib/interpolationController";
+    import { registerClassTransition, registerRafTransition, withPrevious } from "../lib/slides";
+    import { registerTransition } from "../lib/slides";
 
     const egg = document.getElementById("egg")!;
+
+    const target = { x: 0, y: 0 };
+    window.addEventListener("mousemove", (e) => {
+        target.x = e.clientX;
+        target.y = e.clientY;
+    });
+
+    const animationOptions: {
+        lerpType:
+            | "half"
+            | "instant"
+            | "constant-speed"
+            | "constant-speed-positive-only";
+    } = {
+        lerpType: "instant",
+    };
+
+    function toggleAnimationOption<TKey extends keyof typeof animationOptions>(
+        key: TKey,
+        value: (typeof animationOptions)[TKey],
+    ) {
+        let prevValue: any;
+        registerTransition({
+            begin() {
+                prevValue = animationOptions[key];
+                animationOptions[key] = value;
+            },
+            revert() {
+                animationOptions[key] = prevValue;
+            },
+        });
+    }
+
+    function toggleEggClass(className: string, remove: boolean = false) {
+        const beginAction = remove ? "remove" : "add";
+        const revertAction = remove ? "add" : "remove";
+        registerTransition({
+            begin() {
+                egg.classList[beginAction](className);
+            },
+            revert() {
+                egg.classList[revertAction](className);
+            },
+        });
+    }
+
+    const raf = registerRafTransition(
+        { current: { x: 0, y: 0 } },
+        ({ delta, state: { current } }) => {
+            if (animationOptions.lerpType === "instant") {
+                egg.style.setProperty("--x", target.x + "px");
+                egg.style.setProperty("--y", target.y + "px");
+                return true;
+            }
+
+            if (animationOptions.lerpType === "half") {
+                const lerpValue = Math.min(1, (0.5 * delta) / 100);
+                current.x += (target.x - current.x) * lerpValue;
+                current.y += (target.y - current.y) * lerpValue;
+                egg.style.setProperty("--x", current.x + "px");
+                egg.style.setProperty("--y", current.y + "px");
+            }
+
+            return true;
+        },
+    );
+
+    const { html, css, ts } = (() => {
+        const langs = ["html", "css", "ts"] as const;
+        type Lang = (typeof langs)[number];
+        type CodeBlockAction = "next" | "show" | "hide";
+        return langs.reduce(
+            (map, lang) => {
+                const wrapperEl = document.getElementById(lang);
+                if (!wrapperEl) return map;
+
+                const codeBlockEls = [
+                    ...wrapperEl.querySelectorAll<HTMLElement>(
+                        ".expressive-code",
+                    ),
+                ];
+
+                let index = codeBlockEls.findIndex((el) =>
+                    el.classList.contains("active"),
+                );
+
+                function toggleCurrent(type: "remove" | "add") {
+                    if (index > -1 && index < codeBlockEls.length) {
+                        const currentEl = codeBlockEls[index];
+                        currentEl.classList[type]("active");
+
+                        // reset scroll?
+                        if (type === "add") {
+                            currentEl
+                                .querySelector<HTMLPreElement>(`pre`)
+                                ?.scrollTo({ behavior: "instant", left: 0 });
+                        }
+                    }
+                }
+
+                function isHidden() {
+                    if (index > -1 && index < codeBlockEls.length) {
+                        return !codeBlockEls[index].classList.contains(
+                            "active",
+                        );
+                    }
+
+                    return false;
+                }
+
+                function registerNext() {
+                    let hiddenOnBegin = false;
+                    registerTransition({
+                        begin() {
+                            hiddenOnBegin = isHidden();
+                            const atEnd = index >= codeBlockEls.length - 1;
+
+                            if (!hiddenOnBegin && !atEnd) {
+                                toggleCurrent("remove");
+                            }
+
+                            index++;
+                            if (!atEnd) {
+                                toggleCurrent("add");
+                            }
+                        },
+                        revert() {
+                            toggleCurrent("remove");
+                            index--;
+                            if (!hiddenOnBegin) {
+                                toggleCurrent("add");
+                            }
+                        },
+                    });
+                }
+
+                function registerHide() {
+                    let hiddenOnBegin = false;
+                    registerTransition({
+                        begin() {
+                            hiddenOnBegin = isHidden();
+                            toggleCurrent("remove");
+                        },
+                        revert() {
+                            if (!hiddenOnBegin) {
+                                toggleCurrent("add");
+                            }
+                        },
+                    });
+                }
+
+                function registerShow() {
+                    let hiddenOnBegin = false;
+                    registerTransition({
+                        begin() {
+                            hiddenOnBegin = isHidden();
+                            toggleCurrent("add");
+                        },
+                        revert() {
+                            if (hiddenOnBegin) {
+                                toggleCurrent("remove");
+                            }
+                        },
+                    });
+                }
+
+                map[lang] = {
+                    hide: registerHide,
+                    show: registerShow,
+                    next: registerNext,
+                };
+
+                return map;
+            },
+            {} as Record<Lang, Record<CodeBlockAction, () => void>>,
+        );
+    })();
+
+    // egg appears
+    html.next();
+    toggleEggClass("nothing");
+    withPrevious();
+
+    // add some css
+    css.next();
+
+    // oops, add id
+    html.next();
+    toggleEggClass("sized");
+    withPrevious();
+
+    // now try first simple mousemove
+    raf.registerStart();
+    ts.next();
+    withPrevious();
+    registerTransition({
+        begin: () => {},
+        revert() {
+            // when we revert before this point, should reset egg pos
+            egg.style.removeProperty("--x");
+            egg.style.removeProperty("--y");
+        },
+    });
+    withPrevious();
+    html.next();
+    withPrevious();
+
+    // remove style updates from mousemove
+    raf.registerEnd();
+    ts.next();
+    withPrevious();
+
+    // add raf loop
+    ts.next();
+    raf.registerStart();
+    withPrevious();
+
+    // z index, move egg to front
+    css.next();
+    ts.next();
+    withPrevious();
+    toggleEggClass("front");
+    withPrevious();
+
+    // pointer events, draggable, etc
+    html.next();
+    css.next();
+    withPrevious();
+    toggleEggClass("no-pointer");
+    withPrevious();
+    registerTransition({
+        begin() {
+            egg.draggable = false;
+        },
+        revert() {
+            egg.draggable = true;
+        },
+    });
+    withPrevious();
+
+    // center on cursor using ts
+    ts.next();
+    toggleEggClass("center");
+    withPrevious();
+    css.next();
+    withPrevious();
+    html.next();
+    withPrevious();
+
+    // but we want to use css props
+    css.next();
+
+    // add css transform, set props in ts
+    css.next();
+    ts.next();
+    withPrevious();
+
+    // or use variables with defaults?
+    css.next();
+    
+    // show wcaglette popup
+    registerClassTransition("#wcaglette");
+    css.next();
+    withPrevious();
+    
+    // hide wcaglette popup, add reduced motion css
+    registerClassTransition("#wcaglette", "active", "remove");
+    toggleEggClass("no-motion");
+    withPrevious();
+    css.next();
+    withPrevious();
+
+    css.next();
+
+    // last thing we want to do before making the animation better
+    // wcaglette
+
+    // test animation options?
+    // ts.next();
+    // toggleAnimationOption("lerpType", "half");
+    // withPrevious();
+
+    // ------------------------------------------------------------------------------
+
     const x = new LerpController();
     const y = new LerpController();
 

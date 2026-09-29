@@ -1,15 +1,10 @@
 type Transition = {
     /**
      * function called when transition should start
-     * optionally returns a function which, if called, will fast forward the transition
-     * if function isn't returned, transition is assumed to be instantaneous
-     * complete should be called when a non-instantaneous transition is complete
-     * @param complete should be called when a transition with fast-forward is complete
      */
-    begin(complete: () => void): (() => void) | void;
+    begin(): void;
     /**
      * function called when transition should be reverted
-     * should be instant
      */
     revert(): void;
 }
@@ -153,8 +148,8 @@ export function withPrevious() {
     const lastTwo = _transitions.splice(_transitions.length - 2);
     _transitions.push({
         begin() {
-            lastTwo[0].begin(() => { });
-            lastTwo[1].begin(() => { });
+            lastTwo[0].begin();
+            lastTwo[1].begin();
         },
         revert() {
             lastTwo[0].revert();
@@ -171,8 +166,6 @@ export function withPrevious() {
  * */
 let _transitionIndex = -1;
 const _transitions: Transition[] = [];
-
-let _fastForwardFunction: (() => void) | void = undefined;
 
 const getCurrentTransition = () => _transitions[_transitionIndex];
 
@@ -214,20 +207,13 @@ function fastForwardToUrlIndex() {
     if (start && !isNaN(start) && start > 0) {
         _transitionIndex = Math.min(start, _transitions.length) - 1;
         for (let i = 0; i <= _transitionIndex; i++) {
-            _transitions[i].begin(() => { });
+            _transitions[i].begin();
         }
     }
     updateIndexInUrl();
 }
 
 export function nextTransition() {
-
-    // if transitioning, fast forward
-    if (_fastForwardFunction) {
-        _fastForwardFunction();
-        _fastForwardFunction = undefined;
-        return;
-    }
 
     // if we're already done with the last transition, nothing to do
     if (_transitionIndex + 1 >= _transitions.length) {
@@ -236,21 +222,11 @@ export function nextTransition() {
 
     // otherwise, increment and start next transition
     _transitionIndex++;
-    _fastForwardFunction = getCurrentTransition().begin(() => { _fastForwardFunction = undefined; });
+    getCurrentTransition().begin();
     updateIndexInUrl();
 }
 
 export function prevTransition() {
-
-    // if currently transitioning, revert it
-    if (_fastForwardFunction) {
-        _fastForwardFunction();
-        _fastForwardFunction = undefined;
-        getCurrentTransition().revert();
-        _transitionIndex--;
-        updateIndexInUrl();
-        return;
-    }
 
     // if no transitions are active, do nothing
     if (_transitionIndex < 0) {

@@ -167,6 +167,11 @@ if (Astro.slots.has("default")) {
             ),
         ];
 
+        const prefersReducedMotion = (() => {
+            const query = window.matchMedia("(prefers-reduced-motion: reduce)");;
+            return () => query.matches;
+        })();
+
         const zIndexing = (() => {
             const baseZIndex = 100;
             const baseInvisibleZIndex = 1000;
@@ -253,13 +258,15 @@ if (Astro.slots.has("default")) {
                 grabStartElPos[0] = x.target = x.current;
                 grabStartElPos[1] = y.target = y.current;
 
-                // convoluted scaling based on size idk
-                const scale =
-                    1 +
-                    figure.clientWidth / 1000000 +
-                    10 / Math.sqrt(figure.clientWidth * figure.clientHeight);
-
-                figure.style.setProperty("--s", scale.toString());
+                if (!prefersReducedMotion()) {
+                    // convoluted scaling based on size idk
+                    const scale =
+                        1 +
+                        figure.clientWidth / 1000000 +
+                        10 / Math.sqrt(figure.clientWidth * figure.clientHeight);
+    
+                    figure.style.setProperty("--s", scale.toString());
+                }
 
                 const abortController = new AbortController();
 
@@ -274,6 +281,11 @@ if (Astro.slots.has("default")) {
                             grabStartElPos[1] +
                             e.clientY -
                             grabStartClientPos[1];
+
+                            if (prefersReducedMotion()) {
+                                x.current = x.target;
+                                y.current = y.target;
+                            }
                     },
                     { signal: abortController.signal },
                 );
