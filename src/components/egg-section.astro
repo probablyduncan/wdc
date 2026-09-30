@@ -18,7 +18,7 @@ const distance = newHouse.offsetLeft - oldHouse.offsetLeft;`}
             code={`
 // calculate distance to new house:
 const distance = newHouse.offsetLeft - oldHouse.offsetLeft;
-// update egg's position:
+// update egg’s position:
 egg.style.translate = distance + "px";`}
         />
         <Code
@@ -27,7 +27,7 @@ egg.style.translate = distance + "px";`}
             code={`
 // calculate distance to new house:
 const distance = newHouse.offsetLeft - oldHouse.offsetLeft;
-// update egg's position:
+// update egg’s position:
 egg.style.translate = distance + "px";`}
         />
         <Code
@@ -166,7 +166,7 @@ requestAnimationFrame(animate);
             ins={2}
             code={`
 function animate() {
-    console.log("i've been framed!");
+    console.log("i’ve been framed!");
 }
 requestAnimationFrame(animate);
 `}
@@ -176,11 +176,11 @@ requestAnimationFrame(animate);
             ins={3}
             code={`
 function animate() {
-    console.log(\`i've been framed on \${new Date()}!\`);
+    console.log(\`i’ve been framed on \${new Date()}!\`);
     requestAnimationFrame(animate);
 }
-requestAnimationFrame(animate);
-`} />
+requestAnimationFrame(animate);`}
+        />
         <Code
             lang="typescript"
             code={`
@@ -309,13 +309,31 @@ requestAnimationFrame(moveEgg);
             The defunct and forsaken browser function `setInterval`.
         </Figure>
         <Figure x={0.5} y={0.5} figure={4} src="/images/mdn-raf.png">
-            The much-adored JavaScript™ function `window.requestAnimationFrame` became Baseline in mid 2015.[39] From MDN and the Mozilla Corporation. Available at <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame" target="_blank">https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame</a>
+            The much-adored JavaScript™ function `window.requestAnimationFrame`
+            became Baseline in mid 2015.[39] From MDN and the Mozilla
+            Corporation. Available at <a
+                href="https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame"
+                target="_blank"
+                >https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame</a
+            >
         </Figure>
-        <Figure x={0.65} y={0.15} figure={5} src="/images/friendship-original.jpg">
-            Pakistani government worker Asif Raza Rana announces he is no longer friends with a man named Mudasir[40] (2015). Available at: <a href="https://knowyourmeme.com/memes/friendship-ended-with-mudasir" target="_blank">https://knowyourmeme.com/memes/</a>
+        <Figure
+            x={0.65}
+            y={0.15}
+            figure={5}
+            src="/images/friendship-original.jpg"
+        >
+            Pakistani government worker Asif Raza Rana announces he is no longer
+            friends with a man named Mudasir[40] (2015). Available at: <a
+                href="https://knowyourmeme.com/memes/friendship-ended-with-mudasir"
+                target="_blank">https://knowyourmeme.com/memes/</a
+            >
         </Figure>
         <Figure x={0.4} y={0.55} figure={6} src="/images/friendship.webp">
-            Internet <i>meme</i> created by an anonymous internet user[41] exemplifies the widespread jubilation[42] felt by millions after `window.requestAnimationFrame`, the JavaScript™ function, became generally available in all browsers in mid-2015.[43]
+            Internet <i>meme</i> created by an anonymous internet user[41] exemplifies
+            the widespread jubilation[42] felt by millions after `window.requestAnimationFrame`,
+            the JavaScript™ function, became generally available in all browsers in
+            mid-2015.[43]
         </Figure>
     </div>
 </section>
@@ -604,7 +622,10 @@ requestAnimationFrame(moveEgg);
     }
 </style>
 <script>
-    import { addConstControl, addLiveCommentDisplay } from "../lib/codeBlockHooks";
+    import {
+        addConstControl,
+        addLiveCommentDisplay,
+    } from "../lib/codeBlockHooks";
     import {
         registerClassTransition,
         registerRafTransition,
@@ -617,7 +638,7 @@ requestAnimationFrame(moveEgg);
     const newHouse = document.getElementById("new-house")!;
     const neighbor = document.getElementById("neighbor")!;
 
-    const x = addLiveCommentDisplay("xpos");
+    const x = addLiveCommentDisplay<number>("xpos", 0);
 
     function translateEgg(value: number | "unset") {
         registerTransition(() => {
@@ -629,7 +650,7 @@ requestAnimationFrame(moveEgg);
                         x.set(0);
                         egg.style.removeProperty("--x");
                     } else {
-                        x.set(value)
+                        x.set(value);
                         egg.style.setProperty("--x", x.get() + "px");
                     }
                 },
@@ -696,7 +717,7 @@ requestAnimationFrame(moveEgg);
         function startInterval() {
             cancelInterval();
             intervalId = setInterval(() => {
-                x.set(prev => prev + 1);
+                x.set((prev) => prev + 1);
                 egg.style.setProperty("--x", x.get() + "px");
             }, 1);
         }
@@ -796,7 +817,7 @@ requestAnimationFrame(moveEgg);
         function start() {
             stop();
             intervalId = setInterval(() => {
-                x.set(prev => prev + 321_739 + 7);
+                x.set((prev) => prev + 321_739 + 7);
             }, 0);
         }
 
@@ -809,7 +830,7 @@ requestAnimationFrame(moveEgg);
 
         // show arson timeline, stop increasing x
         registerClassTransition("#arson-timeline", "active");
-        
+
         // ok enough of that
         registerClassTransition("#arson-timeline", "active", "remove");
         registerClassTransition("#old-house", "hot", "remove");
@@ -825,27 +846,32 @@ requestAnimationFrame(moveEgg);
         withPrevious();
     }
 
-
     // try set interval
     codeBlockTransition();
     beginSetInterval();
     withPrevious();
 
     // show interval figures
-    document.querySelectorAll("#set-interval-figures > figure").forEach(el => {
-        registerTransition({
-            begin() {
-                el.classList.add("active");
-            },
-            revert() {
-                el.classList.remove("active");
-            },
-        })
-    });
-    
+    document
+        .querySelectorAll("#set-interval-figures > figure")
+        .forEach((el) => {
+            registerTransition({
+                begin() {
+                    el.classList.add("active");
+                },
+                revert() {
+                    el.classList.remove("active");
+                },
+            });
+        });
+
     // cancel interval, no good
     endSetInterval();
-    registerClassTransition("#set-interval-figures > figure", "active", "remove");
+    registerClassTransition(
+        "#set-interval-figures > figure",
+        "active",
+        "remove",
+    );
     withPrevious();
     codeBlockTransition();
     withPrevious();
@@ -853,7 +879,7 @@ requestAnimationFrame(moveEgg);
     // raf single console log timestamp
     registerTransition({
         begin() {
-            requestAnimationFrame(() => console.log(`i've been framed!`));
+            requestAnimationFrame(() => console.log(`i’ve been framed!`));
         },
         revert() {
             // console.clear();
@@ -862,12 +888,16 @@ requestAnimationFrame(moveEgg);
     codeBlockTransition();
     withPrevious();
 
-    const logRafHandler = registerRafTransition({}, () => {
-        console.log(`i've been framed on ${new Date()}!`);
-        return true;
-    }, () => {
-        // console.clear();
-    });
+    const logRafHandler = registerRafTransition(
+        {},
+        () => {
+            console.log(`i’ve been framed on ${new Date()}!`);
+            return true;
+        },
+        () => {
+            // console.clear();
+        },
+    );
 
     logRafHandler.registerStart();
     codeBlockTransition();
@@ -876,13 +906,17 @@ requestAnimationFrame(moveEgg);
     logRafHandler.registerEnd();
     codeBlockTransition();
     withPrevious();
-    
+
     // building our frame loop
     codeBlockTransition();
     codeBlockTransition();
     codeBlockTransition();
 
-    const pxPerFrame = addConstControl("PIXELS_PER_FRAME", [-20, -10, -5, -1, 0, 1, 5, 10, 20], true);
+    const pxPerFrame = addConstControl(
+        "PIXELS_PER_FRAME",
+        [-20, -10, -5, -1, 0, 1, 5, 10, 20],
+        true,
+    );
     let stopEggAtHouse: boolean = false;
     let stopLoopingAtHouse: boolean = false;
 
@@ -893,9 +927,11 @@ requestAnimationFrame(moveEgg);
             neighborShown: false,
         },
         ({ state }) => {
-            x.set(prev => prev + pxPerFrame.get());
+            x.set((prev) => prev + pxPerFrame.get());
 
-            const max = Math.floor(state.neighborLeft - state.eggStartRight - (egg.clientWidth / 2));
+            const max = Math.floor(
+                state.neighborLeft - state.eggStartRight - egg.clientWidth / 2,
+            );
             if (x.get() > max && stopEggAtHouse) {
                 x.set(max);
             }
@@ -905,14 +941,14 @@ requestAnimationFrame(moveEgg);
                 neighbor.classList.add("active");
                 pxPerFrame.show();
             }
-            
+
             egg.style.setProperty("--x", x.get() + "px");
             console.log("x:", x.get());
 
             return !stopLoopingAtHouse || x.get() < max;
         },
         ({ event }) => {
-            if (event === "revert" ) {
+            if (event === "revert") {
                 egg.style.removeProperty("--x");
                 neighbor.classList.remove("active");
                 pxPerFrame.reset();
@@ -929,14 +965,18 @@ requestAnimationFrame(moveEgg);
         begin() {},
         revert() {
             x.set(0);
-        }
+        },
     });
     withPrevious();
 
     codeBlockTransition();
     registerTransition({
-        begin() { stopEggAtHouse = true; },
-        revert() { stopEggAtHouse = false; },
+        begin() {
+            stopEggAtHouse = true;
+        },
+        revert() {
+            stopEggAtHouse = false;
+        },
     });
     withPrevious();
     registerClassTransition("#neighbor", "active", "add");
@@ -948,13 +988,15 @@ requestAnimationFrame(moveEgg);
         revert() {
             pxPerFrame.hide();
             pxPerFrame.reset();
-        }
+        },
     });
     withPrevious();
 
     codeBlockTransition();
     registerTransition({
-        begin() { stopLoopingAtHouse = true; },
+        begin() {
+            stopLoopingAtHouse = true;
+        },
         revert() {
             stopLoopingAtHouse = false;
             x.set(0);
