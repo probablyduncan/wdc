@@ -19,6 +19,13 @@ export function registerTransition(transition: TransitionSetup) {
     _transitions.push(transition);
 }
 
+// export function registerTransition(transition: (event: "begin" | "revert") => void) {
+//     _transitions.push({
+//         begin: () => transition("begin"),
+//         revert: () => transition("revert"),
+//     });
+// }
+
 export function registerElementTransition<T extends HTMLElement>(
     query: string,
     onTransition: (el: T, op: keyof Transition) => void,
@@ -137,7 +144,9 @@ export function registerRafTransition<TState extends {}>(
             revert() {
                 start();
             },
-        })
+        }),
+        start,
+        cancel,
     };
 }
 

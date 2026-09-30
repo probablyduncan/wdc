@@ -39,7 +39,46 @@ import Figure from "../components/figure.astro";
         figure="12"
         width="30rem"
     >
-        “You can’t meet WCAG without breaking a few eggs,” or so the saying goes.[72] Image courtesy of <a href="//commons.wikimedia.org/wiki/User:Stripey_the_crab" target="_blank">Stripey the crab</a> (<a href="https://commons.wikimedia.org/w/index.php?curid=12172841" target="_blank">link</a>).
+        “You can’t meet WCAG without breaking a few eggs,” or so the saying
+        goes.[72] Image courtesy of <a
+            href="//commons.wikimedia.org/wiki/User:Stripey_the_crab"
+            target="_blank">Stripey the crab</a
+        > (<a
+            href="https://commons.wikimedia.org/w/index.php?curid=12172841"
+            target="_blank">link</a
+        >).
+    </Figure>
+    <Figure
+        id="zeno"
+        src="/images/zeno.png"
+        x="0.6"
+        y="0.4"
+        width="50em"
+    >
+        <span style="width: 100%; display: inline-flex; justify-content: space-between;">
+            <span>
+                <b>Figure 21:</b> &nbsp; &nbsp; &nbsp; Zeno! &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Zeno!&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Zeno! &nbsp; &nbsp; &nbsp; &nbsp; Zeno! &nbsp; &nbsp; &nbsp;Zen &nbsp; o &nbsp;en ! o
+            </span>
+            <span>
+                (from <i><a href="https://en.wikipedia.org/wiki/Zeno%27s_paradoxes" target="_blank">Wikipedia</a></i>)
+            </span>
+        </span>
+    </Figure>
+    <Figure
+        id="dichotomy"
+        src="/images/the-dichotomy.png"
+        x="0.6"
+        y="0.4"
+        width="40em"
+    >
+        <span style="width: 100%; display: inline-flex; justify-content: space-between;">
+            <span>
+                <b>Figure 22:</b> &nbsp; <i>The dichotomy</i>
+            </span>
+            <span>
+                (from <i><a href="https://commons.wikimedia.org/w/index.php?curid=55976282" target="_blank">Wikipedia</a></i>)
+            </span>
+        </span>
     </Figure>
 
     <!-- TYPESCRIPT -->
@@ -52,7 +91,8 @@ import Figure from "../components/figure.astro";
 const egg = document.getElementById("egg")!;
 
 document.addEventListener("mousemove", (e: MouseEvent) => {
-    egg.style.transform = \`translate(\${e.clientX}px, \${e.clientY}px)\`;
+    egg.style.transform =
+        \`translate(\${e.clientX}px, \${e.clientY}px)\`;
 });
 `}
             />
@@ -62,46 +102,132 @@ document.addEventListener("mousemove", (e: MouseEvent) => {
                 code={`
 const egg = document.getElementById("egg")!;
 
-const target: { x: number, y: number };
+const pos = { x: number, y: number };
 
 document.addEventListener("mousemove", (e: MouseEvent) => {
-    target.x = e.clientX;
-    target.y = e.clientY;
+    pos.x = e.clientX;
+    pos.y = e.clientY;
 });
 `}
             />
             <Code
                 lang="typescript"
-                ins={[10, 11, 12]}
+                ins={[10, 11, 12, 13]}
                 code={`
 const egg = document.getElementById("egg")!;
 
-const target: { x: number, y: number };
+const pos = { x: number, y: number };
 
 document.addEventListener("mousemove", (e: MouseEvent) => {
-    target.x = e.clientX;
-    target.y = e.clientY;
+    pos.x = e.clientX;
+    pos.y = e.clientY;
 });
 
-requestAnimationFrame(function moveEgg() {
-    egg.style.transform = \`translate(\${target.x}px, \${target.y}px)\`;
+function moveEgg() {
+    egg.style.transform =
+        \`translate(\${pos.x}px, \${pos.y}px)\`;
+}`}
+            />
+            <Code
+                lang="typescript"
+                ins={[15]}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const pos = { x: number, y: number };
+
+document.addEventListener("mousemove", (e: MouseEvent) => {
+    pos.x = e.clientX;
+    pos.y = e.clientY;
 });
-`}
+
+function moveEgg() {
+    egg.style.transform =
+        \`translate(\${pos.x}px, \${pos.y}px)\`;
+}
+
+moveEgg();`}
+            />
+            <Code
+                lang="typescript"
+                ins={[16]}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const pos = { x: number, y: number };
+
+document.addEventListener("mousemove", (e: MouseEvent) => {
+    pos.x = e.clientX;
+    pos.y = e.clientY;
+});
+
+function moveEgg() {
+    egg.style.transform =
+        \`translate(\${pos.x}px, \${pos.y}px)\`;
+}
+
+moveEgg();
+moveEgg();`}
+            />
+            <Code
+                lang="typescript"
+                ins={[17]}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const pos = { x: number, y: number };
+
+document.addEventListener("mousemove", (e: MouseEvent) => {
+    pos.x = e.clientX;
+    pos.y = e.clientY;
+});
+
+function moveEgg() {
+    egg.style.transform =
+        \`translate(\${pos.x}px, \${pos.y}px)\`;
+}
+
+moveEgg();
+moveEgg();
+moveEgg();`}
+            />
+            <Code
+                lang="typescript"
+                ins={[14, 17, /(requestAnimationFrame\()function/g]}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const pos = { x: number, y: number };
+
+document.addEventListener("mousemove", (e: MouseEvent) => {
+    pos.x = e.clientX;
+    pos.y = e.clientY;
+});  
+
+requestAnimationFrame(function moveEgg() {
+    egg.style.transform =
+        \`translate(\${pos.x}px, \${pos.y}px)\`;
+
+    requestAnimationFrame(moveEgg);
+});`}
             />
             <Code
                 lang="typescript"
                 code={`
 const egg = document.getElementById("egg")!;
 
-const target: { x: number, y: number };
+const pos = { x: number, y: number };
 
 document.addEventListener("mousemove", (e: MouseEvent) => {
-    target.x = e.clientX;
-    target.y = e.clientY;
+    pos.x = e.clientX;
+    pos.y = e.clientY;
 });
 
 requestAnimationFrame(function moveEgg() {
-    egg.style.transform = \`translate(\${target.x}px, \${target.y}px)\`;
+    egg.style.transform =
+        \`translate(\${pos.x}px, \${pos.y}px)\`;
+
+    requestAnimationFrame(moveEgg);
 });
 `}
             />
@@ -111,15 +237,18 @@ requestAnimationFrame(function moveEgg() {
                 code={`
 const egg = document.getElementById("egg")!;
 
-const target: { x: number, y: number };
+const pos = { x: number, y: number };
 
 document.addEventListener("mousemove", (e: MouseEvent) => {
-    target.x = e.clientX;
-    target.y = e.clientY;
+    pos.x = e.clientX;
+    pos.y = e.clientY;
 });
 
 requestAnimationFrame(function moveEgg() {
-    egg.style.transform = \`translate(calc(\${target.x}px - 50%), calc(\${target.y}px - 50%))\`;
+    egg.style.transform =
+        \`translate(calc(\${pos.x}px - 50%), calc(\${pos.y}px - 50%))\`;
+
+    requestAnimationFrame(moveEgg);
 });
 `}
             />
@@ -129,7 +258,49 @@ requestAnimationFrame(function moveEgg() {
                 code={`
 const egg = document.getElementById("egg")!;
 
+const pos = { x: number, y: number };
+
+document.addEventListener("mousemove", (e: MouseEvent) => {
+    pos.x = e.clientX;
+    pos.y = e.clientY;
+});
+
+requestAnimationFrame(function moveEgg() {
+    egg.style.setProperty("--x", pos.x + "px");
+    egg.style.setProperty("--y", pos.y + "px");
+
+    requestAnimationFrame(moveEgg);
+});
+`}
+            />
+            <Code
+                lang="typescript"
+                code={`
+const egg = document.getElementById("egg")!;
+
+const pos = { x: number, y: number };
+
+document.addEventListener("mousemove", (e: MouseEvent) => {
+    pos.x = e.clientX;
+    pos.y = e.clientY;
+});
+
+requestAnimationFrame(function moveEgg() {
+    egg.style.setProperty("--x", pos.x + "px");
+    egg.style.setProperty("--y", pos.y + "px");
+
+    requestAnimationFrame(moveEgg);
+});
+`}
+            />
+            <Code
+                lang="typescript"
+                ins={[3, 4, /(target)\./g, /(current)\./g]}
+                code={`
+const egg = document.getElementById("egg")!;
+
 const target: { x: number, y: number };
+const current: { x: number, y: number };
 
 document.addEventListener("mousemove", (e: MouseEvent) => {
     target.x = e.clientX;
@@ -137,8 +308,355 @@ document.addEventListener("mousemove", (e: MouseEvent) => {
 });
 
 requestAnimationFrame(function moveEgg() {
-    egg.style.setProperty("--x", target.x + "px");
-    egg.style.setProperty("--y", target.y + "px");
+    egg.style.setProperty("--x", current.x + "px");
+    egg.style.setProperty("--y", current.y + "px");
+
+    requestAnimationFrame(moveEgg);
+});
+`}
+            />
+            <Code
+                lang="typescript"
+                collapse={"1-9"}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const target: { x: number, y: number };
+const current: { x: number, y: number };
+
+document.addEventListener("mousemove", (e: MouseEvent) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+requestAnimationFrame(function moveEgg() {
+    egg.style.setProperty("--x", current.x + "px");
+    egg.style.setProperty("--y", current.y + "px");
+
+    requestAnimationFrame(moveEgg);
+});
+`}
+            />
+            <Code
+                lang="typescript"
+                ins={[11, 14, 15]}
+                collapse={"1-9"}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const target: { x: number, y: number };
+const current: { x: number, y: number };
+
+document.addEventListener("mousemove", (e: MouseEvent) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+const PIXELS_PER_FRAME = 0;
+
+requestAnimationFrame(function moveEgg() {
+    current.x += PIXELS_PER_FRAME;
+    current.y += PIXELS_PER_FRAME;
+
+    egg.style.setProperty("--x", current.x + "px");
+    egg.style.setProperty("--y", current.y + "px");
+
+    requestAnimationFrame(moveEgg);
+});
+`}
+            />
+            <Code
+                lang="typescript"
+                ins={[/= Math.*/g]}
+                collapse={"1-9"}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const target: { x: number, y: number };
+const current: { x: number, y: number };
+
+document.addEventListener("mousemove", (e: MouseEvent) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+const PIXELS_PER_FRAME = 0;
+
+requestAnimationFrame(function moveEgg() {
+    current.x = Math.min(current.x + PIXELS_PER_FRAME, target.x);
+    current.y = Math.min(current.x + PIXELS_PER_FRAME, target.y);
+
+    egg.style.setProperty("--x", current.x + "px");
+    egg.style.setProperty("--y", current.y + "px");
+
+    requestAnimationFrame(moveEgg);
+});
+`}
+            />
+            <Code
+                lang="typescript"
+                ins={[14, 15, 16, 17]}
+                collapse={"1-9"}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const target: { x: number, y: number };
+const current: { x: number, y: number };
+
+document.addEventListener("mousemove", (e: MouseEvent) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+const PIXELS_PER_FRAME = 0;
+
+requestAnimationFrame(function moveEgg() {
+    const distanceToTarget = {
+        x: target.x - current.x,
+        y: target.y - current.y,
+    };
+
+    current.x = Math.min(current.x + 1, target.x);
+    current.y = Math.min(current.x + 1, target.y);
+
+    egg.style.setProperty("--x", current.x + "px");
+    egg.style.setProperty("--y", current.y + "px");
+
+    requestAnimationFrame(moveEgg);
+});
+`}
+            />
+            <Code
+                lang="typescript"
+                ins={[/min\((PIXELS.*[xy]\))/g, /\* Math\.sign.*\)/g]}
+                collapse={"1-9"}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const target: { x: number, y: number };
+const current: { x: number, y: number };
+
+document.addEventListener("mousemove", (e: MouseEvent) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+const PIXELS_PER_FRAME = 0;
+
+requestAnimationFrame(function moveEgg() {
+    const distanceToTarget = {
+        x: target.x - current.x,
+        y: target.y - current.y,
+    };
+
+    current.x += Math.min(PIXELS_PER_FRAME, Math.abs(distanceToTarget.x))
+        * Math.sign(distanceToTarget.x);
+    current.y += Math.min(PIXELS_PER_FRAME, Math.abs(distanceToTarget.y))
+        * Math.sign(distanceToTarget.y);
+
+    egg.style.setProperty("--x", current.x + "px");
+    egg.style.setProperty("--y", current.y + "px");
+
+    requestAnimationFrame(moveEgg);
+});
+`}
+            />
+            <Code
+                lang="typescript"
+                ins={[19]}
+                collapse={"1-9"}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const target: { x: number, y: number };
+const current: { x: number, y: number };
+
+document.addEventListener("mousemove", (e: MouseEvent) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+const PIXELS_PER_FRAME = 0;
+
+requestAnimationFrame(function moveEgg() {
+    const distanceToTarget = {
+        x: target.x - current.x,
+        y: target.y - current.y,
+    };
+
+    const angleToTarget = Math.atan2(distanceToTarget.y, distanceToTarget.x);
+
+    current.x += Math.min(PIXELS_PER_FRAME, Math.abs(distanceToTarget.x))
+        * Math.sign(distanceToTarget.x);
+    current.y += Math.min(PIXELS_PER_FRAME, Math.abs(distanceToTarget.y))
+        * Math.sign(distanceToTarget.y);
+
+    egg.style.setProperty("--x", current.x + "px");
+    egg.style.setProperty("--y", current.y + "px");
+
+    requestAnimationFrame(moveEgg);
+});
+`}
+            />
+            <Code
+                lang="typescript"
+                ins={[21, 22, 23, 24]}
+                collapse={"1-9"}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const target: { x: number, y: number };
+const current: { x: number, y: number };
+
+document.addEventListener("mousemove", (e: MouseEvent) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+const PIXELS_PER_FRAME = 0;
+
+requestAnimationFrame(function moveEgg() {
+    const distanceToTarget = {
+        x: target.x - current.x,
+        y: target.y - current.y,
+    };
+
+    const angleToTarget = Math.atan2(distanceToTarget.y, distanceToTarget.x);
+
+    const distanceToTravel = {
+        x: Math.cos(angleToTarget) * PIXELS_PER_FRAME,
+        y: Math.sin(angleToTarget) * PIXELS_PER_FRAME,
+    };
+
+    current.x += Math.min(PIXELS_PER_FRAME, Math.abs(distanceToTarget.x))
+        * Math.sign(distanceToTarget.x);
+    current.y += Math.min(PIXELS_PER_FRAME, Math.abs(distanceToTarget.y))
+        * Math.sign(distanceToTarget.y);
+
+    egg.style.setProperty("--x", current.x + "px");
+    egg.style.setProperty("--y", current.y + "px");
+
+    requestAnimationFrame(moveEgg);
+});
+`}
+            />
+            <Code
+                lang="typescript"
+                ins={/Math.abs\(distanceToTravel\.[xy]\)/g}
+                collapse={"1-9"}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const target: { x: number, y: number };
+const current: { x: number, y: number };
+
+document.addEventListener("mousemove", (e: MouseEvent) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+const PIXELS_PER_FRAME = 0;
+
+requestAnimationFrame(function moveEgg() {
+    const distanceToTarget = {
+        x: target.x - current.x,
+        y: target.y - current.y,
+    };
+
+    const angleToTarget = Math.atan2(distanceToTarget.y, distanceToTarget.x);
+
+    const distanceToTravel = {
+        x: Math.cos(angleToTarget) * PIXELS_PER_FRAME,
+        y: Math.sin(angleToTarget) * PIXELS_PER_FRAME,
+    };
+
+    current.x += Math.min(Math.abs(distanceToTravel.x), Math.abs(distanceToTarget.x))
+        * Math.sign(distanceToTarget.x);
+    current.y += Math.min(Math.abs(distanceToTravel.y), Math.abs(distanceToTarget.y))
+        * Math.sign(distanceToTarget.y);
+
+    egg.style.setProperty("--x", current.x + "px");
+    egg.style.setProperty("--y", current.y + "px");
+
+    requestAnimationFrame(moveEgg);
+});
+`}
+            />
+            <Code
+                lang="typescript"
+                collapse={"1-9"}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const target: { x: number, y: number };
+const current: { x: number, y: number };
+
+document.addEventListener("mousemove", (e: MouseEvent) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+requestAnimationFrame(function moveEgg() {
+    egg.style.setProperty("--x", current.x + "px");
+    egg.style.setProperty("--y", current.y + "px");
+
+    requestAnimationFrame(moveEgg);
+});
+`}
+            />
+            <Code
+                lang="typescript"
+                ins={[13, 14]}
+                collapse={"1-9"}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const target: { x: number, y: number };
+const current: { x: number, y: number };
+
+document.addEventListener("mousemove", (e: MouseEvent) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+requestAnimationFrame(function moveEgg() {
+    
+    current.x += (target.x - current.x) * 0.5;
+    current.y += (target.y - current.y) * 0.5;
+
+    egg.style.setProperty("--x", current.x + "px");
+    egg.style.setProperty("--y", current.y + "px");
+
+    requestAnimationFrame(moveEgg);
+});
+`}
+            />
+            <Code
+                lang="typescript"
+                ins={[11, /(LERP_VALUE);/g]}
+                collapse={"1-9"}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const target: { x: number, y: number };
+const current: { x: number, y: number };
+
+document.addEventListener("mousemove", (e: MouseEvent) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+const LERP_VALUE = 0.5;
+
+requestAnimationFrame(function moveEgg() {
+    
+    current.x += (target.x - current.x) * LERP_VALUE;
+    current.y += (target.y - current.y) * LERP_VALUE;
+
+    egg.style.setProperty("--x", current.x + "px");
+    egg.style.setProperty("--y", current.y + "px");
+
+    requestAnimationFrame(moveEgg);
 });
 `}
             />
@@ -146,6 +664,34 @@ requestAnimationFrame(function moveEgg() {
     </div>
 
     <div id="right">
+        <!-- HTML -->
+
+        <div id="html" class="code-block-wrapper">
+            <Code
+                lang="html"
+                code={`<img src="egg.webp" alt="my best egg" />`}
+            />
+            <Code
+                lang="html"
+                ins={`id="egg"`}
+                code={`<img id="egg" src="egg.webp" alt="my best egg" />`}
+            />
+            <Code
+                lang="html"
+                code={`<img id="egg" src="egg.webp" alt="my best egg" />`}
+            />
+            <Code
+                lang="html"
+                ins={`draggable="false"`}
+                code={`<img id="egg" draggable="false"
+    src="egg.webp" alt="my best egg" />`}
+            />
+            <Code
+                lang="html"
+                code={`<img id="egg" draggable="false" 
+    src="egg.webp" alt="my best egg" />`}
+            />
+        </div>
         <!-- CSS -->
 
         <div id="css" class="code-block-wrapper">
@@ -224,7 +770,7 @@ requestAnimationFrame(function moveEgg() {
             />
             <Code
                 lang="css"
-                ins={[11, 12, 13]}
+                ins={", 0px"}
                 code={`#egg {
     width: 5rem;
     position: fixed;
@@ -233,13 +779,14 @@ requestAnimationFrame(function moveEgg() {
     pointer-events: none;
     user-select: none;
 
-    --x-calc: calc(var(--x, 0px) - 50%);
-    --y-calc: calc(var(--y, 0px) - 50%);
-    transform: translate(var(--x-calc), var(--y-calc));
+    transform: translate(
+        calc(var(--x, 0px) - 50%),
+        calc(var(--y, 0px) - 50%));
 }`}
             />
             <Code
                 lang="css"
+                collapse={["2-7"]}
                 code={`#egg {
     width: 5rem;
     position: fixed;
@@ -248,13 +795,14 @@ requestAnimationFrame(function moveEgg() {
     pointer-events: none;
     user-select: none;
 
-    --x-calc: calc(var(--x, 0px) - 50%);
-    --y-calc: calc(var(--y, 0px) - 50%);
-    transform: translate(var(--x-calc), var(--y-calc));
+    transform: translate(
+        calc(var(--x, 0px) - 50%),
+        calc(var(--y, 0px) - 50%));
 }`}
             />
             <Code
                 lang="css"
+                collapse={["2-7"]}
                 ins={[14, 15, 16, 17, 18]}
                 code={`#egg {
     width: 5rem;
@@ -264,9 +812,9 @@ requestAnimationFrame(function moveEgg() {
     pointer-events: none;
     user-select: none;
 
-    --x-calc: calc(var(--x, 0px) - 50%);
-    --y-calc: calc(var(--y, 0px) - 50%);
-    transform: translate(var(--x-calc), var(--y-calc));
+    transform: translate(
+        calc(var(--x, 0px) - 50%),
+        calc(var(--y, 0px) - 50%));
 }
     
 @media (prefers-reduced-motion: reduce) {
@@ -277,6 +825,7 @@ requestAnimationFrame(function moveEgg() {
             />
             <Code
                 lang="css"
+                collapse={["2-7", "14-18"]}
                 code={`#egg {
     width: 5rem;
     position: fixed;
@@ -285,45 +834,16 @@ requestAnimationFrame(function moveEgg() {
     pointer-events: none;
     user-select: none;
 
-    --x-calc: calc(var(--x, 0px) - 50%);
-    --y-calc: calc(var(--y, 0px) - 50%);
-    transform: translate(var(--x-calc), var(--y-calc));
+    transform: translate(
+        calc(var(--x, 0px) - 50%),
+        calc(var(--y, 0px) - 50%));
 }
-
+    
 @media (prefers-reduced-motion: reduce) {
     #egg {
         display: none;
     }
 }`}
-            />
-        </div>
-
-        <!-- HTML -->
-
-        <div id="html" class="code-block-wrapper">
-            <Code
-                lang="html"
-                code={`<img src="egg.webp" alt="my best egg" />`}
-            />
-            <Code
-                lang="html"
-                ins={`id="egg"`}
-                code={`<img id="egg" src="egg.webp" alt="my best egg" />`}
-            />
-            <Code
-                lang="html"
-                code={`<img id="egg" src="egg.webp" alt="my best egg" />`}
-            />
-            <Code
-                lang="html"
-                ins={`draggable="false"`}
-                code={`<img id="egg" draggable="false"
-    src="egg.webp" alt="my best egg" />`}
-            />
-            <Code
-                lang="html"
-                code={`<img id="egg" draggable="false" 
-    src="egg.webp" alt="my best egg" />`}
             />
         </div>
     </div>
@@ -354,10 +874,11 @@ requestAnimationFrame(function moveEgg() {
                 calc(var(--x, 0px) - 50%),
                 calc(var(--y, 0px) - 50%)
             );
+            transition: opacity 0.4s;
+            opacity: calc(1 - var(--over-code, 0) * 0.5);
         }
 
         &.no-pointer {
-            transition: opacity 0.4s;
             pointer-events: none;
             user-select: none;
             -webkit-user-drag: none;
@@ -369,10 +890,6 @@ requestAnimationFrame(function moveEgg() {
                 display: none;
             }
         }
-    }
-
-    :global(body:has(.expressive-code.active:hover)) #egg.no-pointer {
-        opacity: 0.4;
     }
 
     #left {
@@ -390,13 +907,13 @@ requestAnimationFrame(function moveEgg() {
         display: flex;
         flex-flow: column;
         align-items: flex-end;
-        justify-content: space-between;
+        /* justify-content: space-between; */
         gap: 2ch;
         z-index: 3;
     }
 
     #ts :global(.expressive-code) {
-        max-width: calc(50vw - 3ch);
+        /* max-width: calc(50vw - 3ch); */
     }
 
     #css :global(.expressive-code) {
@@ -415,8 +932,11 @@ requestAnimationFrame(function moveEgg() {
 </style>
 <script>
     import { addConstControl } from "../lib/addConstControl";
-    import { LerpController } from "../lib/interpolationController";
-    import { registerClassTransition, registerRafTransition, withPrevious } from "../lib/slides";
+    import {
+        registerClassTransition,
+        registerRafTransition,
+        withPrevious,
+    } from "../lib/slides";
     import { registerTransition } from "../lib/slides";
 
     const egg = document.getElementById("egg")!;
@@ -429,18 +949,21 @@ requestAnimationFrame(function moveEgg() {
 
     const animationOptions: {
         lerpType:
-            | "half"
             | "instant"
+            | "current-not-updating"
+            | "current-just-bottom-right"
+            | "constant-speed-positive-only"
             | "constant-speed"
-            | "constant-speed-positive-only";
+            | "constant-speed-trig"
+            | "basic-half"
+            | "half";
     } = {
         lerpType: "instant",
     };
 
-    function toggleAnimationOption<TKey extends keyof typeof animationOptions>(
-        key: TKey,
-        value: (typeof animationOptions)[TKey],
-    ) {
+    function animationOptionTransition<
+        TKey extends keyof typeof animationOptions,
+    >(key: TKey, value: (typeof animationOptions)[TKey]) {
         let prevValue: any;
         registerTransition({
             begin() {
@@ -466,25 +989,17 @@ requestAnimationFrame(function moveEgg() {
         });
     }
 
-    const raf = registerRafTransition(
-        { current: { x: 0, y: 0 } },
-        ({ delta, state: { current } }) => {
-            if (animationOptions.lerpType === "instant") {
-                egg.style.setProperty("--x", target.x + "px");
-                egg.style.setProperty("--y", target.y + "px");
-                return true;
-            }
+    const pxPerFrameControl = addConstControl(
+        "PIXELS_PER_FRAME",
+        [-20, -5, -2, -1, 0, 1, 2, 5, 20],
+        true,
+    );
 
-            if (animationOptions.lerpType === "half") {
-                const lerpValue = Math.min(1, (0.5 * delta) / 100);
-                current.x += (target.x - current.x) * lerpValue;
-                current.y += (target.y - current.y) * lerpValue;
-                egg.style.setProperty("--x", current.x + "px");
-                egg.style.setProperty("--y", current.y + "px");
-            }
+    const halfLifeBasicControl = addConstControl("LERP_VALUE", [0, 0.005, 0.05, 0.5]);
 
-            return true;
-        },
+    const halfLifeControl = addConstControl(
+        "HALF_LIFE",
+        [0, 5, 20, 50, 100, 200, 500, 1000, 2000],
     );
 
     const { html, css, ts } = (() => {
@@ -506,17 +1021,28 @@ requestAnimationFrame(function moveEgg() {
                     el.classList.contains("active"),
                 );
 
-                function toggleCurrent(type: "remove" | "add") {
+                function getCurrent() {
                     if (index > -1 && index < codeBlockEls.length) {
-                        const currentEl = codeBlockEls[index];
-                        currentEl.classList[type]("active");
+                        return codeBlockEls[index];
+                    }
+                }
 
-                        // reset scroll?
-                        if (type === "add") {
-                            currentEl
-                                .querySelector<HTMLPreElement>(`pre`)
-                                ?.scrollTo({ behavior: "instant", left: 0 });
-                        }
+                function toggleCurrent(type: "remove" | "add") {
+                    const currentEl = getCurrent();
+                    if (!currentEl) return;
+
+                    currentEl.classList[type]("active");
+
+                    // reset scroll and close collapsible sections
+                    if (type === "add") {
+                        currentEl
+                            .querySelector<HTMLPreElement>(`pre`)
+                            ?.scrollTo({ behavior: "instant", left: 0 });
+                        currentEl
+                            .querySelectorAll("details")
+                            .forEach((detail) => {
+                                detail.open = false;
+                            });
                     }
                 }
 
@@ -590,13 +1116,128 @@ requestAnimationFrame(function moveEgg() {
                     hide: registerHide,
                     show: registerShow,
                     next: registerNext,
+                    currentElement: getCurrent,
                 };
 
                 return map;
             },
-            {} as Record<Lang, Record<CodeBlockAction, () => void>>,
+            {} as Record<
+                Lang,
+                Record<CodeBlockAction, () => void> & {
+                    currentElement: () => HTMLElement | undefined;
+                }
+            >,
         );
     })();
+
+    function isEggOverCode() {
+        const eggRect = egg.getBoundingClientRect();
+        const eggX = eggRect.left + eggRect.width / 2;
+        const eggY = eggRect.top + eggRect.height / 2;
+        function checkEggOverlap(el: HTMLElement | undefined) {
+            if (!el) return false;
+
+            const codeRect = el.getBoundingClientRect();
+            return !(
+                eggX < codeRect.left ||
+                eggX > codeRect.right ||
+                eggY < codeRect.top ||
+                eggY > codeRect.bottom
+            );
+        }
+
+        return (
+            checkEggOverlap(ts.currentElement()) ||
+            checkEggOverlap(css.currentElement()) ||
+            checkEggOverlap(html.currentElement())
+        );
+    }
+
+    const raf = registerRafTransition(
+        { current: { x: 0, y: 0 } },
+        ({ delta, state: { current } }) => {
+            switch (animationOptions.lerpType) {
+                case "instant":
+                    current.x = target.x;
+                    current.y = target.y;
+                    break;
+                case "current-not-updating":
+                    break;
+                case "current-just-bottom-right":
+                    current.x += pxPerFrameControl.get();
+                    current.y += pxPerFrameControl.get();
+                    break;
+                case "constant-speed-positive-only":
+                    current.x = Math.min(
+                        target.x,
+                        current.x + pxPerFrameControl.get(),
+                    );
+                    current.y = Math.min(
+                        target.y,
+                        current.y + pxPerFrameControl.get(),
+                    );
+                    break;
+                case "constant-speed":
+                    const distanceX = target.x - current.x;
+                    const distanceY = target.y - current.y;
+                    current.x +=
+                        Math.min(pxPerFrameControl.get(), Math.abs(distanceX)) *
+                        Math.sign(distanceX);
+                    current.y +=
+                        Math.min(pxPerFrameControl.get(), Math.abs(distanceY)) *
+                        Math.sign(distanceY);
+                    break;
+                case "constant-speed-trig":
+                    const distanceToTarget = {
+                        x: target.x - current.x,
+                        y: target.y - current.y,
+                    };
+                    const angleToTarget = Math.atan2(
+                        distanceToTarget.y,
+                        distanceToTarget.x,
+                    );
+                    const distanceToTravel = {
+                        x: Math.cos(angleToTarget) * pxPerFrameControl.get(),
+                        y: Math.sin(angleToTarget) * pxPerFrameControl.get(),
+                    };
+                    const distanceToTravelFinalFinalNoEdits = {
+                        x: Math.min(
+                            Math.abs(distanceToTarget.x),
+                            Math.abs(distanceToTravel.x),
+                        ),
+                        y: Math.min(
+                            Math.abs(distanceToTarget.y),
+                            Math.abs(distanceToTravel.y),
+                        ),
+                    };
+                    current.x +=
+                        distanceToTravelFinalFinalNoEdits.x *
+                        Math.sign(distanceToTarget.x);
+                    current.y +=
+                        distanceToTravelFinalFinalNoEdits.y *
+                        Math.sign(distanceToTarget.y);
+                    break;
+                case "basic-half":
+                    current.x += (target.x - current.x) * halfLifeBasicControl.get();
+                    current.y += (target.y - current.y) * halfLifeBasicControl.get();
+                    break;
+                case "half":
+                    const lerpValue = Math.min(
+                        1,
+                        (0.5 * delta) / halfLifeControl.get(),
+                    );
+                    current.x += (target.x - current.x) * lerpValue;
+                    current.y += (target.y - current.y) * lerpValue;
+                    break;
+            }
+
+            egg.style.setProperty("--x", current.x + "px");
+            egg.style.setProperty("--y", current.y + "px");
+            egg.style.setProperty("--over-code", isEggOverCode() ? "1" : "0");
+
+            return true;
+        },
+    );
 
     // egg appears
     html.next();
@@ -632,7 +1273,23 @@ requestAnimationFrame(function moveEgg() {
     ts.next();
     withPrevious();
 
-    // add raf loop
+    // add moveEgg function
+    ts.next();
+
+    for(let i = 0; i < 3; i++) {
+        // call moveEgg once, update position once
+        ts.next();
+        registerTransition({
+            begin() {
+                egg.style.setProperty("--x", target.x + "px");
+                egg.style.setProperty("--y", target.y + "px");
+            },
+            revert() {}
+        });
+        withPrevious();
+    }
+
+    // make recursive, start loop
     ts.next();
     raf.registerStart();
     withPrevious();
@@ -679,68 +1336,97 @@ requestAnimationFrame(function moveEgg() {
 
     // or use variables with defaults?
     css.next();
-    
+    ts.next();
+    withPrevious();
+
+    css.next();
+
     // show wcaglette popup
-    registerClassTransition("#wcaglette");
+    registerClassTransition("#wcaglette", "active");
+
+    // add reduced motion css
+    toggleEggClass("no-motion");
     css.next();
+    withPrevious();
+
+    // hide wcaglette popup, condense css
+    registerClassTransition("#wcaglette", "active", "remove");
+    css.next();
+    withPrevious();
+
+    // so now we get to lerping! what fun
+
+    // add current, but we're not updating it yet
+    animationOptionTransition("lerpType", "current-not-updating");
+    ts.next();
+    withPrevious();
+
+    // collapse stuff on top
+    ts.next();
+
+    // go towards bottom right
+    animationOptionTransition("lerpType", "current-just-bottom-right");
+    ts.next();
+    withPrevious();
+    registerTransition({
+        begin() {
+            pxPerFrameControl.show();
+        },
+        revert() {
+            pxPerFrameControl.hide();
+            pxPerFrameControl.reset();
+        },
+    });
+    withPrevious();
+
+    // go towards current every frame, but only positive
+    animationOptionTransition("lerpType", "constant-speed-positive-only");
+    ts.next();
+    withPrevious();
+
+    ts.next();
+
+    // go towards current every frame
+    animationOptionTransition("lerpType", "constant-speed");
+    ts.next();
     withPrevious();
     
-    // hide wcaglette popup, add reduced motion css
-    registerClassTransition("#wcaglette", "active", "remove");
-    toggleEggClass("no-motion");
+    // build up trig
+    ts.next();
+    ts.next();
+    ts.next();
+    animationOptionTransition("lerpType", "constant-speed-trig");
     withPrevious();
-    css.next();
+
+    // but this is kind of boring anyway, can we do something more interesting?
+    // if we lerp proportionally it's a lot easier, we can do it per axis
+
+    ts.next();
+
+    registerClassTransition("#zeno", "active");
+    registerClassTransition("#dichotomy", "active");
+
+    registerClassTransition("#zeno", "active", "remove");
+    registerClassTransition("#dichotomy", "active", "remove");
     withPrevious();
 
-    css.next();
+    ts.next();
+    animationOptionTransition("lerpType", "basic-half");
+    withPrevious();
 
-    // last thing we want to do before making the animation better
-    // wcaglette
+    ts.next();
 
-    // test animation options?
-    // ts.next();
-    // toggleAnimationOption("lerpType", "half");
-    // withPrevious();
+    // so we add fps counter
+    // show how animation speed changes
 
-    // ------------------------------------------------------------------------------
+    // how do we solve this problem?
+    // i've been keeping something from you
+    // unlike your neighbor, requestAnimationFrame gives you the time of day
+    // the callback has an argument. I'm convinced!
+    // calculate delta
+    // HALF_LIFE instead of some random number
+    // show FPS changes with new delta-based lerping
 
-    const x = new LerpController();
-    const y = new LerpController();
+    // then ACT II comes in
 
-    window.addEventListener("mousemove", ({ clientX, clientY }) => {
-        x.target = clientX;
-        y.target = clientY;
-    });
-
-    const halfLifeControl = addConstControl("HALF_LIFE", [
-        "0",
-        "5",
-        "20",
-        "50",
-        "100",
-        "200",
-        "500",
-        "1000",
-        "2000",
-    ]);
-
-    halfLifeControl.listen((value) => {
-        const num = parseFloat(value);
-        x.halfLife = num;
-        y.halfLife = num;
-    });
-
-    let prev: DOMHighResTimeStamp;
-    requestAnimationFrame((thisFrameTimeStamp: DOMHighResTimeStamp) => {
-        prev = thisFrameTimeStamp;
-        // requestAnimationFrame(moveEgg);
-    });
-
-    function moveEgg(time: DOMHighResTimeStamp) {
-        const delta = time - prev;
-        prev = time;
-        egg.style.setProperty("--x", x.step(delta).toFixed() + "px");
-        egg.style.setProperty("--y", y.step(delta).toFixed() + "px");
-        requestAnimationFrame(moveEgg);
-    }
 </script>

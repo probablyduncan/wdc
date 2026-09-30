@@ -51,7 +51,7 @@ function moveEgg() {
         <Code
             lang="typescript"
             ins={6}
-            code={`let x = 0;
+            code={`let x = 0;  // {xpos}
 function moveEgg() {
     x++;
     egg.style.transform = \`translateX(\${x}px)\`;
@@ -61,7 +61,7 @@ moveEgg();`}
         <Code
             lang="typescript"
             ins={7}
-            code={`let x = 0;
+            code={`let x = 0;  // {xpos}
 function moveEgg() {
     x++;
     egg.style.transform = \`translateX(\${x}px)\`;
@@ -72,7 +72,7 @@ moveEgg();`}
         <Code
             lang="typescript"
             ins={8}
-            code={`let x = 0;
+            code={`let x = 0;  // {xpos}
 function moveEgg() {
     x++;
     egg.style.transform = \`translateX(\${x}px)\`;
@@ -84,7 +84,7 @@ moveEgg();`}
         <Code
             lang="typescript"
             ins={9}
-            code={`let x = 0;
+            code={`let x = 0;  // {xpos}
 function moveEgg() {
     x++;
     egg.style.transform = \`translateX(\${x}px)\`;
@@ -98,7 +98,7 @@ moveEgg();`}
             wrap={true}
             lang="typescript"
             ins={10}
-            code={`let x = 0;
+            code={`let x = 0;  // {xpos}
 function moveEgg() {
     x++;
     egg.style.transform = \`translateX(\${x}px)\`;
@@ -112,7 +112,7 @@ moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();
         <Code
             lang="typescript"
             ins={7}
-            code={`let x = 0;
+            code={`let x = 0;  // {xpos}
 function moveEgg() {
     x++;
     egg.style.transform = \`translateX(\${x}px)\`;
@@ -121,7 +121,7 @@ function moveEgg() {
         <Code
             lang="typescript"
             ins={[7, 8, 9]}
-            code={`let x = 0;
+            code={`let x = 0;  // {xpos}
 function moveEgg() {
     x++;
     egg.style.transform = \`translateX(\${x}px)\`;
@@ -133,7 +133,7 @@ while(true) {
         />
         <Code
             lang="typescript"
-            code={`let x = 0;
+            code={`let x = 0;  // {xpos}
 function moveEgg() {
     x++;
     egg.style.transform = \`translateX(\${x}px)\`;
@@ -146,7 +146,7 @@ function moveEgg() {
         <Code
             lang="typescript"
             ins={[2, 5]}
-            code={`let x = 0;
+            code={`let x = 0;  // {xpos}
 setInterval(() => {
     x++;
     egg.style.transform = \`translateX(\${x}px)\`;
@@ -230,7 +230,7 @@ function moveEgg() {
             ins={8}
             code={`
 const PIXELS_PER_FRAME = 1;
-let x = 0;
+let x = 0;  // {xpos}
 function moveEgg() {
     x += PIXELS_PER_FRAME;
     egg.style.transform = \`translateX(\${x}px)\`;
@@ -243,7 +243,7 @@ requestAnimationFrame(moveEgg);`}
             ins={[3, "currentX", 5]}
             code={`
 const PIXELS_PER_FRAME = 1;
-let currentX = 0;
+let currentX = 0;  // {xpos}
 let targetX = newHouse.offsetLeft - oldHouse.offsetLeft;
 function moveEgg() {
     currentX = Math.min(currentX + PIXELS_PER_FRAME, targetX);
@@ -257,7 +257,7 @@ requestAnimationFrame(moveEgg);`}
             ins={"if (currentX < targetX)"}
             code={`
 const PIXELS_PER_FRAME = 1;
-let currentX = 0;
+let currentX = 0;  // {xpos}
 let targetX = newHouse.offsetLeft - oldHouse.offsetLeft;
 function moveEgg() {
     currentX = Math.min(currentX + PIXELS_PER_FRAME, targetX);
@@ -604,7 +604,7 @@ requestAnimationFrame(moveEgg);
     }
 </style>
 <script>
-    import { addConstControl } from "../lib/addConstControl";
+    import { addConstControl, trackNumberVariable } from "../lib/addConstControl";
     import {
         registerClassTransition,
         registerRafTransition,
@@ -617,22 +617,28 @@ requestAnimationFrame(moveEgg);
     const newHouse = document.getElementById("new-house")!;
     const neighbor = document.getElementById("neighbor")!;
 
-    function translateEgg(x: string | "unset") {
+    const x = trackNumberVariable("xpos");
+
+    function translateEgg(value: number | "unset") {
         registerTransition(() => {
-            let prev: string | undefined;
+            let prev: number;
             return {
                 begin() {
-                    prev = egg.style.getPropertyValue("--x");
-                    if (x === "unset") {
+                    prev = x.get();
+                    if (value === "unset") {
+                        x.set(0);
                         egg.style.removeProperty("--x");
                     } else {
-                        egg.style.setProperty("--x", x);
+                        x.set(value)
+                        egg.style.setProperty("--x", x.get() + "px");
                     }
                 },
                 revert() {
                     if (prev) {
-                        egg.style.setProperty("--x", prev);
+                        x.set(prev);
+                        egg.style.setProperty("--x", x.get() + "px");
                     } else {
+                        x.set(0);
                         egg.style.removeProperty("--x");
                     }
                 },
@@ -686,19 +692,12 @@ requestAnimationFrame(moveEgg);
 
     const { beginSetInterval, endSetInterval } = (() => {
         let intervalId: NodeJS.Timeout | undefined = undefined;
-        let x = 0;
-        function setX() {
-            egg.style.setProperty("--x", x + "px");
-        }
-        function resetX() {
-            egg.style.removeProperty("--x");
-            x = 0;
-        }
+
         function startInterval() {
             cancelInterval();
             intervalId = setInterval(() => {
-                x++;
-                setX();
+                x.set(prev => prev + 1);
+                egg.style.setProperty("--x", x.get() + "px");
             }, 1);
         }
         function cancelInterval() {
@@ -706,29 +705,21 @@ requestAnimationFrame(moveEgg);
                 clearInterval(intervalId);
                 intervalId = undefined;
             }
+            egg.style.removeProperty("--x");
+            x.set(0);
         }
 
         // start setInterval
         return {
             beginSetInterval: () =>
                 registerTransition({
-                    begin() {
-                        startInterval();
-                    },
-                    revert() {
-                        cancelInterval();
-                        resetX();
-                    },
+                    begin: startInterval,
+                    revert: cancelInterval,
                 }),
             endSetInterval: () =>
                 registerTransition({
-                    begin() {
-                        cancelInterval();
-                        resetX();
-                    },
-                    revert() {
-                        startInterval();
-                    },
+                    begin: cancelInterval,
+                    revert: startInterval,
                 }),
         };
     })();
@@ -763,23 +754,23 @@ requestAnimationFrame(moveEgg);
     codeBlockTransition();
 
     codeBlockTransition();
-    translateEgg("1px");
+    translateEgg(1);
     withPrevious();
 
     codeBlockTransition();
-    translateEgg("2px");
+    translateEgg(2);
     withPrevious();
 
     codeBlockTransition();
-    translateEgg("3px");
+    translateEgg(3);
     withPrevious();
 
     codeBlockTransition();
-    translateEgg("4px");
+    translateEgg(4);
     withPrevious();
 
     codeBlockTransition();
-    translateEgg("200px");
+    translateEgg(200);
     withPrevious();
 
     // ok, back to drawing board
@@ -793,9 +784,37 @@ requestAnimationFrame(moveEgg);
     withPrevious();
     registerClassTransition("#egg", "hot");
     withPrevious();
+    {
+        let intervalId: NodeJS.Timeout | undefined;
+        function stop() {
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = undefined;
+            }
+            x.set(0);
+        }
+        function start() {
+            stop();
+            intervalId = setInterval(() => {
+                x.set(prev => prev + 321_739 + 7);
+            }, 0);
+        }
 
-    // show arson timeline
-    registerClassTransition("#arson-timeline", "active");
+        // start increasing x with while loop
+        registerTransition({
+            begin: start,
+            revert: stop,
+        });
+        withPrevious();
+
+        // show arson timeline, stop increasing x
+        registerClassTransition("#arson-timeline", "active");
+        registerTransition({
+            begin: stop,
+            revert: start,
+        });
+        withPrevious();
+    }
 
     // ok enough of that
     registerClassTransition("#arson-timeline", "active", "remove");
@@ -836,7 +855,7 @@ requestAnimationFrame(moveEgg);
             requestAnimationFrame(() => console.log(`i've been framed!`));
         },
         revert() {
-            console.clear();
+            // console.clear();
         },
     });
     codeBlockTransition();
@@ -846,7 +865,7 @@ requestAnimationFrame(moveEgg);
         console.log(`i've been framed on ${new Date()}!`);
         return true;
     }, () => {
-        console.clear();
+        // console.clear();
     });
 
     logRafHandler.registerStart();
@@ -862,40 +881,43 @@ requestAnimationFrame(moveEgg);
     codeBlockTransition();
     codeBlockTransition();
 
-    const pxPerFrame = addConstControl("PIXELS_PER_FRAME", ["-20", "-10", "-5", "-1", "0", "1", "5", "10", "20"], true);
+    const pxPerFrame = addConstControl("PIXELS_PER_FRAME", [-20, -10, -5, -1, 0, 1, 5, 10, 20], true);
     let stopEggAtHouse: boolean = false;
     let stopLoopingAtHouse: boolean = false;
 
     const moveBoxRafHandler = registerRafTransition(
         {
-            x: 0,
             neighborLeft: neighbor.getBoundingClientRect().left,
             eggStartRight: egg.getBoundingClientRect().right,
             neighborShown: false,
         },
         ({ state }) => {
-            state.x += parseFloat(pxPerFrame.get());
+            x.set(prev => prev + pxPerFrame.get());
 
-            const max = state.neighborLeft - state.eggStartRight - (egg.clientWidth / 2);
-            if (state.x > max && stopEggAtHouse) {
-                state.x = max;
+            const max = Math.floor(state.neighborLeft - state.eggStartRight - (egg.clientWidth / 2));
+            if (x.get() > max && stopEggAtHouse) {
+                x.set(max);
             }
 
-            if (!state.neighborShown && state.x >= max) {
+            if (!state.neighborShown && x.get() >= max) {
                 state.neighborShown = true;
                 neighbor.classList.add("active");
+                pxPerFrame.show();
             }
             
-            egg.style.setProperty("--x", state.x + "px");
-            console.log("x:", state.x);
+            egg.style.setProperty("--x", x.get() + "px");
+            console.log("x:", x.get());
 
-            return !stopLoopingAtHouse || state.x < max;
+            return !stopLoopingAtHouse || x.get() < max;
         },
-        () => {
-            egg.style.removeProperty("--x");
-            neighbor.classList.remove("active");
-            pxPerFrame.reset();
-            console.clear();
+        ({ event }) => {
+            if (event === "revert" ) {
+                egg.style.removeProperty("--x");
+                neighbor.classList.remove("active");
+                pxPerFrame.reset();
+                pxPerFrame.hide();
+                // console.clear();
+            }
         },
     );
 
@@ -903,6 +925,24 @@ requestAnimationFrame(moveEgg);
     codeBlockTransition();
     withPrevious();
 
+    // registerTransition({
+    //     begin() {
+    //         pxPerFrame.show();
+    //     },
+    //     revert() {
+    //         pxPerFrame.hide();
+    //         pxPerFrame.reset();
+    //     }
+    // });
+
+    codeBlockTransition();
+    registerTransition({
+        begin() { stopEggAtHouse = true; },
+        revert() { stopEggAtHouse = false; },
+    });
+    withPrevious();
+    registerClassTransition("#neighbor", "active", "add");
+    withPrevious();
     registerTransition({
         begin() {
             pxPerFrame.show();
@@ -912,20 +952,17 @@ requestAnimationFrame(moveEgg);
             pxPerFrame.reset();
         }
     });
-
-    codeBlockTransition();
-    registerTransition({
-        begin() { stopEggAtHouse = true; },
-        revert() { stopEggAtHouse = false; },
-    });
-    withPrevious();
-    registerClassTransition("#neighbor");
     withPrevious();
 
     codeBlockTransition();
     registerTransition({
         begin() { stopLoopingAtHouse = true; },
-        revert() { stopLoopingAtHouse = false; },
+        revert() {
+            stopLoopingAtHouse = false;
+            x.set(0);
+            egg.style.removeProperty("--x");
+            moveBoxRafHandler.start();
+        },
     });
     withPrevious();
 
@@ -933,7 +970,10 @@ requestAnimationFrame(moveEgg);
     codeBlockTransition();
     withPrevious();
     registerTransition({
-        begin: pxPerFrame.hide,
+        begin() {
+            pxPerFrame.hide();
+            pxPerFrame.reset();
+        },
         revert: pxPerFrame.show,
     });
     withPrevious();

@@ -9,4 +9,7 @@ export default defineEcConfig({
     styleOverrides: {
         codeFontSize: "1rem",
     },
+    defaultProps: {
+        collapseStyle: "collapsible-start",
+    }
 })
