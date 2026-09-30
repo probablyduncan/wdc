@@ -604,7 +604,7 @@ requestAnimationFrame(moveEgg);
     }
 </style>
 <script>
-    import { addConstControl, trackNumberVariable } from "../lib/codeBlockHooks";
+    import { addConstControl, addLiveCommentDisplay } from "../lib/codeBlockHooks";
     import {
         registerClassTransition,
         registerRafTransition,
@@ -617,7 +617,7 @@ requestAnimationFrame(moveEgg);
     const newHouse = document.getElementById("new-house")!;
     const neighbor = document.getElementById("neighbor")!;
 
-    const x = trackNumberVariable("xpos");
+    const x = addLiveCommentDisplay("xpos");
 
     function translateEgg(value: number | "unset") {
         registerTransition(() => {

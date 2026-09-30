@@ -106,7 +106,7 @@ export function registerRafTransition<TState extends {}>(
             state = { ...defaultState };
             return;
         }
-
+        
         isAnimating = true;
         requestAnimationFrame((time) => {
             prev = time;

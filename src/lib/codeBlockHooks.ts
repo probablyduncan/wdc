@@ -92,11 +92,11 @@ export function addConstControl<TValue extends number | string>(constName: strin
     }
 }
 
-export function trackNumberVariable(name: string) {
+export function addLiveCommentDisplay<TValue extends string | number>(name: string, initialValue: TValue) {
 
     const token = `{${name}}`;
     const elements: HTMLElement[] = [];
-    let value: number;
+    let value: TValue = initialValue;
 
     for (let codeBlock of document.getElementsByClassName("expressive-code")) {
         for (let line of codeBlock.getElementsByClassName("code") as HTMLCollectionOf<HTMLElement>) {
@@ -114,10 +114,7 @@ export function trackNumberVariable(name: string) {
             }
 
             // get color
-            const commentColor = commentStartElement.style.getPropertyValue("--0") ?? "";            
-
-            // get start value
-            value ??= parseFloat(line.innerText.substring(line.innerText.indexOf("=") + 1, line.innerText.indexOf(";")).trim());
+            const commentColor = commentStartElement.style.getPropertyValue("--0") ?? "";
 
             // create pre-value span
             const commentBeforeTokenSpan = document.createElement("span");
@@ -152,7 +149,7 @@ export function trackNumberVariable(name: string) {
         get() {
             return value;
         },
-        set(arg: number | ((prev: number) => number)) {
+        set(arg: TValue | ((prev: TValue) => TValue)) {
 
             if (typeof arg === "function") {
                 value = arg(value);

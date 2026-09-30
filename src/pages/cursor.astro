@@ -72,8 +72,8 @@ import Figure from "../components/figure.astro";
     <Figure
         id="dichotomy"
         src="/images/the-dichotomy.png"
-        x="0.6"
-        y="0.4"
+        x="0.4"
+        y="0.6"
         width="40em"
     >
         <span
@@ -91,6 +91,15 @@ import Figure from "../components/figure.astro";
                 >)
             </span>
         </span>
+    </Figure>
+    <Figure
+        id="half-life-larp"
+        src="/images/half-life-larp.webp"
+        x="0.4"
+        y="0.6"
+        width="40em"
+    >
+        A <i>photo-montage</i> of fans of the video-game <i>Half-Life</i>™ (1998). The game was ground-breaking for its time. “Environments are completely interactive,” gushed the <i>LA Times</i>. “Players may turn on the hand dryers.”[17]
     </Figure>
 
     <!-- TYPESCRIPT -->
@@ -200,7 +209,12 @@ moveEgg();`}
             />
             <Code
                 lang="typescript"
-                ins={[14, 16, /(requestAnimationFrame\()function/g]}
+                ins={[
+                    14,
+                    16,
+                    /(requestAnimationFrame\()function/g,
+                    "requestAnimationFrame(moveEgg);",
+                ]}
                 code={`
 const egg = document.getElementById("egg")!;
 
@@ -646,6 +660,181 @@ requestAnimationFrame(function moveEgg() {
 });
 `}
             />
+            <Code
+                lang="typescript"
+                ins={["theGlitteringNow"]}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const target: { x: 0, y: 0 };
+const current: { x: 0, y: 0 };
+
+document.addEventListener("mousemove", (e) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+const LERP_VALUE = 0.5;
+
+requestAnimationFrame(function moveEgg(theGlitteringNow) {
+    
+    current.x += (target.x - current.x) * LERP_VALUE;
+    current.y += (target.y - current.y) * LERP_VALUE;
+
+    egg.style.setProperty("--x", current.x + "px");
+    egg.style.setProperty("--y", current.y + "px");
+
+    requestAnimationFrame(moveEgg);
+});
+`}
+            />
+            <Code
+                lang="typescript"
+                ins={[14]}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const target: { x: 0, y: 0 };
+const current: { x: 0, y: 0 };
+
+document.addEventListener("mousemove", (e) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+const LERP_VALUE = 0.5;
+
+requestAnimationFrame(function moveEgg(theGlitteringNow) {
+    console.log(theGlitteringNow);
+    current.x += (target.x - current.x) * LERP_VALUE;
+    current.y += (target.y - current.y) * LERP_VALUE;
+
+    egg.style.setProperty("--x", current.x + "px");
+    egg.style.setProperty("--y", current.y + "px");
+
+    requestAnimationFrame(moveEgg);
+});
+`}
+            />
+            <Code
+                lang="typescript"
+                ins={[12, 14, 15]}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const target: { x: 0, y: 0 };
+const current: { x: 0, y: 0 };
+
+document.addEventListener("mousemove", (e) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+const LERP_VALUE = 0.5;
+let theTiredPast: DOMHighResTimeStamp ;
+requestAnimationFrame(function moveEgg(theGlitteringNow) {
+    const theMarchOfProgress = theGlitteringNow - theTiredPast;
+    theTiredPast = theGlitteringNow;
+    current.x += (target.x - current.x) * LERP_VALUE;
+    current.y += (target.y - current.y) * LERP_VALUE;
+
+    egg.style.setProperty("--x", current.x + "px");
+    egg.style.setProperty("--y", current.y + "px");
+
+    requestAnimationFrame(moveEgg);
+});
+`}
+            />
+            <Code
+                lang="typescript"
+                ins={[16]}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const target: { x: 0, y: 0 };
+const current: { x: 0, y: 0 };
+
+document.addEventListener("mousemove", (e) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+const LERP_VALUE = 0.5;
+let theTiredPast: DOMHighResTimeStamp;
+requestAnimationFrame(function moveEgg(theGlitteringNow) {
+    const theMarchOfProgress = theGlitteringNow - theTiredPast;
+    theTiredPast = theGlitteringNow;
+    console.log(theMarchOfProgress);
+    current.x += (target.x - current.x) * LERP_VALUE;
+    current.y += (target.y - current.y) * LERP_VALUE;
+
+    egg.style.setProperty("--x", current.x + "px");
+    egg.style.setProperty("--y", current.y + "px");
+
+    requestAnimationFrame(moveEgg);
+});
+`}
+            />
+            <Code
+                lang="typescript"
+                code={`
+const egg = document.getElementById("egg")!;
+
+const target: { x: 0, y: 0 };
+const current: { x: 0, y: 0 };
+
+document.addEventListener("mousemove", (e) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+const LERP_VALUE = 0.5;
+let theTiredPast: DOMHighResTimeStamp;
+requestAnimationFrame(function moveEgg(theGlitteringNow) {
+    const theMarchOfProgress = theGlitteringNow - theTiredPast;
+    theTiredPast = theGlitteringNow;
+
+    current.x += (target.x - current.x) * LERP_VALUE;
+    current.y += (target.y - current.y) * LERP_VALUE;
+
+    egg.style.setProperty("--x", current.x + "px");
+    egg.style.setProperty("--y", current.y + "px");
+
+    requestAnimationFrame(moveEgg);
+});
+`}
+            />
+            <Code
+                lang="typescript"
+                ins={[11, 17]}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const target: { x: 0, y: 0 };
+const current: { x: 0, y: 0 };
+
+document.addEventListener("mousemove", (e) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+const HALF_LIFE = 100;  // ms
+let theTiredPast: DOMHighResTimeStamp;
+requestAnimationFrame(function moveEgg(theGlitteringNow) {
+    const theMarchOfProgress = theGlitteringNow - theTiredPast;
+    theTiredPast = theGlitteringNow;
+
+    const halfLifeLerp = 0.5 * theMarchOfProgress / HALF_LIFE;
+    current.x += (target.x - current.x) * halfLifeLerp;
+    current.y += (target.y - current.y) * halfLifeLerp;
+
+    egg.style.setProperty("--x", current.x + "px");
+    egg.style.setProperty("--y", current.y + "px");
+
+    requestAnimationFrame(moveEgg);
+});
+`}
+            />
         </div>
     </div>
 
@@ -733,8 +922,8 @@ requestAnimationFrame(function moveEgg() {
     user-select: none;
 
     translate:
-        calc(var(--x, 0px) - 50%)
-        calc(var(--y, 0px) - 50%);
+        calc(var(--x, 0) - 50%)
+        calc(var(--y, 0) - 50%);
 }`}
             />
             <Code
@@ -749,8 +938,8 @@ requestAnimationFrame(function moveEgg() {
     user-select: none;
 
     translate:
-        calc(var(--x, 0px) - 50%)
-        calc(var(--y, 0px) - 50%);
+        calc(var(--x, 0) - 50%)
+        calc(var(--y, 0) - 50%);
 }`}
             />
             <Code
@@ -766,8 +955,8 @@ requestAnimationFrame(function moveEgg() {
     user-select: none;
 
     translate:
-        calc(var(--x, 0px) - 50%)
-        calc(var(--y, 0px) - 50%);
+        calc(var(--x, 0) - 50%)
+        calc(var(--y, 0) - 50%);
 }
     
 @media (prefers-reduced-motion: reduce) {
@@ -788,8 +977,8 @@ requestAnimationFrame(function moveEgg() {
     user-select: none;
 
     translate:
-        calc(var(--x, 0px) - 50%)
-        calc(var(--y, 0px) - 50%);
+        calc(var(--x, 0) - 50%)
+        calc(var(--y, 0) - 50%);
 }
     
 @media (prefers-reduced-motion: reduce) {
@@ -821,9 +1010,9 @@ requestAnimationFrame(function moveEgg() {
             z-index: 50;
         }
 
-        translate: var(--x, 0px) var(--y, 0px);
+        translate: var(--x, 0) var(--y, 0);
         &.center {
-            translate: calc(var(--x, 0px) - 50%) calc(var(--y, 0px) - 50%);
+            translate: calc(var(--x, 0) - 50%) calc(var(--y, 0) - 50%);
             /* transition: opacity 0.1s; */
             /* opacity: calc(1 - var(--over-code, 0) * 0.2); */
         }
@@ -881,7 +1070,7 @@ requestAnimationFrame(function moveEgg() {
     }
 </style>
 <script>
-    import { addConstControl } from "../lib/codeBlockHooks";
+    import { addConstControl, addLiveCommentDisplay } from "../lib/codeBlockHooks";
     import {
         registerClassTransition,
         registerRafTransition,
@@ -891,13 +1080,14 @@ requestAnimationFrame(function moveEgg() {
 
     const egg = document.getElementById("egg")!;
 
+    const current = { x: 0, y: 0 };
     const target = { x: 0, y: 0 };
     window.addEventListener("mousemove", (e) => {
         target.x = e.clientX;
         target.y = e.clientY;
     });
 
-    function updateEggPos(pos: { x: number, y: number }) {
+    function updateEggPos(pos: { x: number; y: number }) {
         egg.style.setProperty("--x", pos.x + "px");
         egg.style.setProperty("--y", pos.y + "px");
     }
@@ -909,6 +1099,7 @@ requestAnimationFrame(function moveEgg() {
 
     const animationOptions: {
         lerpType:
+            | "none"
             | "instant"
             | "current-not-updating"
             | "current-just-bottom-right"
@@ -917,8 +1108,10 @@ requestAnimationFrame(function moveEgg() {
             | "constant-speed-trig"
             | "basic-half"
             | "half";
+        log: "none" | "timestamp" | "delta";
     } = {
         lerpType: "instant",
+        log: "none",
     };
 
     function animationOptionTransition<
@@ -964,6 +1157,10 @@ requestAnimationFrame(function moveEgg() {
         "HALF_LIFE",
         [0, 5, 20, 50, 100, 200, 500, 1000, 2000],
     );
+
+    const fpsDisplay = addLiveCommentDisplay<string>("FPS", "");
+    const timestampDisplay = addLiveCommentDisplay<string>("TIMESTAMP", "");
+    const deltaDisplay = addLiveCommentDisplay<string>("DELTA", "");
 
     const { html, css, ts } = (() => {
         const langs = ["html", "css", "ts"] as const;
@@ -1116,92 +1313,102 @@ requestAnimationFrame(function moveEgg() {
         );
     }
 
-    const raf = registerRafTransition(
-        { current: { x: 0, y: 0 } },
-        ({ delta, state: { current } }) => {
-            switch (animationOptions.lerpType) {
-                case "instant":
-                    current.x = target.x;
-                    current.y = target.y;
-                    break;
-                case "current-not-updating":
-                    break;
-                case "current-just-bottom-right":
-                    current.x += pxPerFrameControl.get();
-                    current.y += pxPerFrameControl.get();
-                    break;
-                case "constant-speed-positive-only":
-                    current.x = Math.min(
-                        target.x,
-                        current.x + pxPerFrameControl.get(),
-                    );
-                    current.y = Math.min(
-                        target.y,
-                        current.y + pxPerFrameControl.get(),
-                    );
-                    break;
-                case "constant-speed":
-                    const distanceX = target.x - current.x;
-                    const distanceY = target.y - current.y;
-                    current.x +=
-                        Math.min(pxPerFrameControl.get(), Math.abs(distanceX)) *
-                        Math.sign(distanceX);
-                    current.y +=
-                        Math.min(pxPerFrameControl.get(), Math.abs(distanceY)) *
-                        Math.sign(distanceY);
-                    break;
-                case "constant-speed-trig":
-                    const distanceToTarget = {
-                        x: target.x - current.x,
-                        y: target.y - current.y,
-                    };
-                    const angleToTarget = Math.atan2(
-                        distanceToTarget.y,
-                        distanceToTarget.x,
-                    );
-                    const distanceToTravel = {
-                        x: Math.cos(angleToTarget) * pxPerFrameControl.get(),
-                        y: Math.sin(angleToTarget) * pxPerFrameControl.get(),
-                    };
-                    const distanceToTravelFinalFinalNoEdits = {
-                        x: Math.min(
-                            Math.abs(distanceToTarget.x),
-                            Math.abs(distanceToTravel.x),
-                        ),
-                        y: Math.min(
-                            Math.abs(distanceToTarget.y),
-                            Math.abs(distanceToTravel.y),
-                        ),
-                    };
-                    current.x +=
-                        distanceToTravelFinalFinalNoEdits.x *
-                        Math.sign(distanceToTarget.x);
-                    current.y +=
-                        distanceToTravelFinalFinalNoEdits.y *
-                        Math.sign(distanceToTarget.y);
-                    break;
-                case "basic-half":
-                    current.x +=
-                        (target.x - current.x) * halfLifeBasicControl.get();
-                    current.y +=
-                        (target.y - current.y) * halfLifeBasicControl.get();
-                    break;
-                case "half":
-                    const lerpValue = Math.min(
-                        1,
-                        (0.5 * delta) / halfLifeControl.get(),
-                    );
-                    current.x += (target.x - current.x) * lerpValue;
-                    current.y += (target.y - current.y) * lerpValue;
-                    break;
-            }
+    const raf = registerRafTransition({}, ({ delta, timestamp }) => {
+        switch (animationOptions.log) {
+            case "timestamp":
+                console.log(timestamp);
+                break;
+            case "delta":
+                console.log(delta);
+                break;
+        }
 
-            updateEggPos(current);
-            // egg.style.setProperty("--over-code", isEggOverCode() ? "1" : "0");
+        fpsDisplay.set((1000 / delta).toFixed(0));
+        timestampDisplay.set(timestamp.toString());
+        deltaDisplay.set(delta.toFixed(2));
 
-            return true;
-        },
-    );
+        switch (animationOptions.lerpType) {
+            case "instant":
+                current.x = target.x;
+                current.y = target.y;
+                break;
+            case "current-not-updating":
+                break;
+            case "current-just-bottom-right":
+                current.x += pxPerFrameControl.get();
+                current.y += pxPerFrameControl.get();
+                break;
+            case "constant-speed-positive-only":
+                current.x = Math.min(
+                    target.x,
+                    current.x + pxPerFrameControl.get(),
+                );
+                current.y = Math.min(
+                    target.y,
+                    current.y + pxPerFrameControl.get(),
+                );
+                break;
+            case "constant-speed":
+                const distanceX = target.x - current.x;
+                const distanceY = target.y - current.y;
+                current.x +=
+                    Math.min(pxPerFrameControl.get(), Math.abs(distanceX)) *
+                    Math.sign(distanceX);
+                current.y +=
+                    Math.min(pxPerFrameControl.get(), Math.abs(distanceY)) *
+                    Math.sign(distanceY);
+                break;
+            case "constant-speed-trig":
+                const distanceToTarget = {
+                    x: target.x - current.x,
+                    y: target.y - current.y,
+                };
+                const angleToTarget = Math.atan2(
+                    distanceToTarget.y,
+                    distanceToTarget.x,
+                );
+                const distanceToTravel = {
+                    x: Math.cos(angleToTarget) * pxPerFrameControl.get(),
+                    y: Math.sin(angleToTarget) * pxPerFrameControl.get(),
+                };
+                const distanceToTravelFinalFinalNoEdits = {
+                    x: Math.min(
+                        Math.abs(distanceToTarget.x),
+                        Math.abs(distanceToTravel.x),
+                    ),
+                    y: Math.min(
+                        Math.abs(distanceToTarget.y),
+                        Math.abs(distanceToTravel.y),
+                    ),
+                };
+                current.x +=
+                    distanceToTravelFinalFinalNoEdits.x *
+                    Math.sign(distanceToTarget.x);
+                current.y +=
+                    distanceToTravelFinalFinalNoEdits.y *
+                    Math.sign(distanceToTarget.y);
+                break;
+            case "basic-half":
+                current.x +=
+                    (target.x - current.x) * halfLifeBasicControl.get();
+                current.y +=
+                    (target.y - current.y) * halfLifeBasicControl.get();
+                break;
+            case "half":
+                const lerpValue = Math.min(
+                    1,
+                    (0.5 * delta) / halfLifeControl.get(),
+                );
+                current.x += (target.x - current.x) * lerpValue;
+                current.y += (target.y - current.y) * lerpValue;
+                break;
+        }
+
+        updateEggPos(current);
+        // egg.style.setProperty("--over-code", isEggOverCode() ? "1" : "0");
+
+        return true;
+    });
 
     // egg appears
     html.next();
@@ -1222,7 +1429,10 @@ requestAnimationFrame(function moveEgg() {
     withPrevious();
     // when we revert before this point, should reset egg pos
     registerTransition({
-        begin: () => {},
+        begin() {
+            target.x = 0;
+            target.y = 0;
+        },
         revert: resetEggPos,
     });
     withPrevious();
@@ -1230,7 +1440,7 @@ requestAnimationFrame(function moveEgg() {
     withPrevious();
 
     // remove style updates from mousemove
-    raf.registerEnd();
+    animationOptionTransition("lerpType", "none");
     ts.next();
     withPrevious();
 
@@ -1239,17 +1449,21 @@ requestAnimationFrame(function moveEgg() {
 
     for (let i = 0; i < 3; i++) {
         // call moveEgg once, update position once
-        ts.next();
+        function sync() {
+            current.x = target.x;
+            current.y = target.y;
+        }
         registerTransition({
-            begin: () => updateEggPos(target),
-            revert: () => updateEggPos(target),
+            begin: sync,
+            revert() {},
         });
+        ts.next();
         withPrevious();
     }
 
     // make recursive, start loop
+    animationOptionTransition("lerpType", "instant");
     ts.next();
-    raf.registerStart();
     withPrevious();
 
     // z index, move egg to front
@@ -1283,7 +1497,7 @@ requestAnimationFrame(function moveEgg() {
     withPrevious();
     html.next();
     withPrevious();
-    
+
     // but we want to use css props
     // add css translate, set props in ts
     css.next();
@@ -1369,6 +1583,44 @@ requestAnimationFrame(function moveEgg() {
     withPrevious();
 
     ts.next();
+
+    // now show FPS!!
+
+    // HERE FPS
+    // SHOW HOW IT BREAKS!!
+
+    // something I've been keeping from you
+    // the callback has an argument. I'm convinced!
+    // gives you the time of day
+    // add timestamp arg
+    ts.next();
+
+    ts.next();
+    animationOptionTransition("log", "timestamp");
+    withPrevious();
+
+    // calculate delta
+    ts.next();
+    animationOptionTransition("log", "none");
+    withPrevious();
+
+    // log delta
+    ts.next();
+    animationOptionTransition("log", "delta");
+    withPrevious();
+    
+    // ok no more logging
+    ts.next();
+    animationOptionTransition("log", "none");
+    withPrevious();
+
+    ts.next();
+    animationOptionTransition("lerpType", "half");
+    withPrevious();
+    
+    registerClassTransition("#half-life-larp", "active");
+    registerClassTransition("#half-life-larp", "active", "remove");
+
 
     // should we track and values using trackNumberVariable?
 
