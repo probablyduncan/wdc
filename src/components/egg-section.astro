@@ -19,7 +19,7 @@ const distance = newHouse.offsetLeft - oldHouse.offsetLeft;`}
 // calculate distance to new house:
 const distance = newHouse.offsetLeft - oldHouse.offsetLeft;
 // update egg's position:
-egg.style.transform = translateX(\`\${distance}px\`);`}
+egg.style.translate = distance + "px";`}
         />
         <Code
             class="full-width"
@@ -28,7 +28,7 @@ egg.style.transform = translateX(\`\${distance}px\`);`}
 // calculate distance to new house:
 const distance = newHouse.offsetLeft - oldHouse.offsetLeft;
 // update egg's position:
-egg.style.transform = translateX(\`\${distance}px\`);`}
+egg.style.translate = distance + "px";`}
         />
         <Code
             lang="typescript"
@@ -45,26 +45,26 @@ function moveEgg() {
             code={`let x = 0;
 function moveEgg() {
     x++;
-    egg.style.transform = \`translateX(\${x}px)\`;
+    egg.style.translate = x + "px";
 }`}
         />
         <Code
             lang="typescript"
             ins={6}
-            code={`let x = 0;  // {xpos}
+            code={`let x = 0;  // {xpos}px
 function moveEgg() {
     x++;
-    egg.style.transform = \`translateX(\${x}px)\`;
+    egg.style.translate = x + "px";
 }
 moveEgg();`}
         />
         <Code
             lang="typescript"
             ins={7}
-            code={`let x = 0;  // {xpos}
+            code={`let x = 0;  // {xpos}px
 function moveEgg() {
     x++;
-    egg.style.transform = \`translateX(\${x}px)\`;
+    egg.style.translate = x + "px";
 }
 moveEgg();
 moveEgg();`}
@@ -72,10 +72,10 @@ moveEgg();`}
         <Code
             lang="typescript"
             ins={8}
-            code={`let x = 0;  // {xpos}
+            code={`let x = 0;  // {xpos}px
 function moveEgg() {
     x++;
-    egg.style.transform = \`translateX(\${x}px)\`;
+    egg.style.translate = x + "px";
 }
 moveEgg();
 moveEgg();
@@ -84,10 +84,10 @@ moveEgg();`}
         <Code
             lang="typescript"
             ins={9}
-            code={`let x = 0;  // {xpos}
+            code={`let x = 0;  // {xpos}px
 function moveEgg() {
     x++;
-    egg.style.transform = \`translateX(\${x}px)\`;
+    egg.style.translate = x + "px";
 }
 moveEgg();
 moveEgg();
@@ -98,10 +98,10 @@ moveEgg();`}
             wrap={true}
             lang="typescript"
             ins={10}
-            code={`let x = 0;  // {xpos}
+            code={`let x = 0;  // {xpos}px
 function moveEgg() {
     x++;
-    egg.style.transform = \`translateX(\${x}px)\`;
+    egg.style.translate = x + "px";
 }
 moveEgg();
 moveEgg();
@@ -112,19 +112,19 @@ moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();moveEgg();
         <Code
             lang="typescript"
             ins={7}
-            code={`let x = 0;  // {xpos}
+            code={`let x = 0;  // {xpos}px
 function moveEgg() {
     x++;
-    egg.style.transform = \`translateX(\${x}px)\`;
+    egg.style.translate = x + "px";
 }`}
         />
         <Code
             lang="typescript"
             ins={[7, 8, 9]}
-            code={`let x = 0;  // {xpos}
+            code={`let x = 0;  // {xpos}px
 function moveEgg() {
     x++;
-    egg.style.transform = \`translateX(\${x}px)\`;
+    egg.style.translate = x + "px";
 }
 
 while(true) {
@@ -133,10 +133,10 @@ while(true) {
         />
         <Code
             lang="typescript"
-            code={`let x = 0;  // {xpos}
+            code={`let x = 0;  // {xpos}px
 function moveEgg() {
     x++;
-    egg.style.transform = \`translateX(\${x}px)\`;
+    egg.style.translate = x + "px";
 }
 
 // we want to call moveEgg() in a loop
@@ -146,10 +146,10 @@ function moveEgg() {
         <Code
             lang="typescript"
             ins={[2, 5]}
-            code={`let x = 0;  // {xpos}
+            code={`let x = 0;  // {xpos}px
 setInterval(() => {
     x++;
-    egg.style.transform = \`translateX(\${x}px)\`;
+    egg.style.translate = x + "px";
 }, 1);`}
         />
         <Code
@@ -207,7 +207,7 @@ function moveEgg() {
 let x = 0;
 function moveEgg() {
     x += 1;
-    egg.style.transform = \`translateX(\${x}px)\`;
+    egg.style.translate = x + "px";
     requestAnimationFrame(moveEgg);
 }
 `}
@@ -220,7 +220,7 @@ const PIXELS_PER_FRAME = 1;
 let x = 0;
 function moveEgg() {
     x += PIXELS_PER_FRAME;
-    egg.style.transform = \`translateX(\${x}px)\`;
+    egg.style.translate = x + "px";
     requestAnimationFrame(moveEgg);
 }
 `}
@@ -230,10 +230,10 @@ function moveEgg() {
             ins={8}
             code={`
 const PIXELS_PER_FRAME = 1;
-let x = 0;  // {xpos}
+let x = 0;  // {xpos}px
 function moveEgg() {
     x += PIXELS_PER_FRAME;
-    egg.style.transform = \`translateX(\${x}px)\`;
+    egg.style.translate = x + "px";
     requestAnimationFrame(moveEgg);
 }
 requestAnimationFrame(moveEgg);`}
@@ -243,11 +243,11 @@ requestAnimationFrame(moveEgg);`}
             ins={[3, "currentX", 5]}
             code={`
 const PIXELS_PER_FRAME = 1;
-let currentX = 0;  // {xpos}
+let currentX = 0;  // {xpos}px
 let targetX = newHouse.offsetLeft - oldHouse.offsetLeft;
 function moveEgg() {
     currentX = Math.min(currentX + PIXELS_PER_FRAME, targetX);
-    egg.style.transform = \`translateX(\${currentX}px)\`;
+    egg.style.translate = currentX + "px";
     requestAnimationFrame(moveEgg);
 }
 requestAnimationFrame(moveEgg);`}
@@ -257,11 +257,11 @@ requestAnimationFrame(moveEgg);`}
             ins={"if (currentX < targetX)"}
             code={`
 const PIXELS_PER_FRAME = 1;
-let currentX = 0;  // {xpos}
+let currentX = 0;  // {xpos}px
 let targetX = newHouse.offsetLeft - oldHouse.offsetLeft;
 function moveEgg() {
     currentX = Math.min(currentX + PIXELS_PER_FRAME, targetX);
-    egg.style.transform = \`translateX(\${currentX}px)\`;
+    egg.style.translate = currentX + "px";
     if (currentX < targetX) requestAnimationFrame(moveEgg);
 }
 requestAnimationFrame(moveEgg);
@@ -276,7 +276,7 @@ let targetX = newHouse.offsetLeft - oldHouse.offsetLeft;
 
 function moveEgg() {
     currentX = Math.min(currentX + PIXELS_PER_FRAME, targetX);    
-    egg.style.transform = \`translateX(\${currentX}px)\`;
+    egg.style.translate = currentX + "px";
 
     if (currentX < targetX) {
         requestAnimationFrame(moveEgg);
@@ -430,7 +430,7 @@ requestAnimationFrame(moveEgg);
 
         --initial-x: 9vw;
         --x: 0px;
-        transform: translateX(calc(var(--initial-x) + var(--x)));
+        translate: calc(var(--initial-x) + var(--x));
 
         &.unpacked {
             display: none;
@@ -466,22 +466,22 @@ requestAnimationFrame(moveEgg);
 
     @keyframes shake {
         0% {
-            transform: rotate(0deg);
+            rotate: 0deg;
         }
         20% {
-            transform: rotate(-10deg);
+            rotate: -10deg;
         }
         40% {
-            transform: rotate(8deg);
+            rotate: 8deg;
         }
         60% {
-            transform: rotate(-4deg);
+            rotate: -4deg;
         }
         80% {
-            transform: rotate(2deg);
+            rotate: 2deg;
         }
         100% {
-            transform: rotate(0deg);
+            rotate: 0deg;
         }
     }
 
@@ -809,6 +809,15 @@ requestAnimationFrame(moveEgg);
 
         // show arson timeline, stop increasing x
         registerClassTransition("#arson-timeline", "active");
+        
+        // ok enough of that
+        registerClassTransition("#arson-timeline", "active", "remove");
+        registerClassTransition("#old-house", "hot", "remove");
+        withPrevious();
+        registerClassTransition("#egg", "hot", "remove");
+        withPrevious();
+        codeBlockTransition();
+        withPrevious();
         registerTransition({
             begin: stop,
             revert: start,
@@ -816,14 +825,6 @@ requestAnimationFrame(moveEgg);
         withPrevious();
     }
 
-    // ok enough of that
-    registerClassTransition("#arson-timeline", "active", "remove");
-    registerClassTransition("#old-house", "hot", "remove");
-    withPrevious();
-    registerClassTransition("#egg", "hot", "remove");
-    withPrevious();
-    codeBlockTransition();
-    withPrevious();
 
     // try set interval
     codeBlockTransition();
@@ -924,16 +925,13 @@ requestAnimationFrame(moveEgg);
     moveBoxRafHandler.registerStart();
     codeBlockTransition();
     withPrevious();
-
-    // registerTransition({
-    //     begin() {
-    //         pxPerFrame.show();
-    //     },
-    //     revert() {
-    //         pxPerFrame.hide();
-    //         pxPerFrame.reset();
-    //     }
-    // });
+    registerTransition({
+        begin() {},
+        revert() {
+            x.set(0);
+        }
+    });
+    withPrevious();
 
     codeBlockTransition();
     registerTransition({
