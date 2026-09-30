@@ -195,7 +195,7 @@ function moveEgg() {
             code={`
 let x = 0;
 function moveEgg() {
-    x += 1;
+    x = x + 1;
     requestAnimationFrame(moveEgg);
 }
 `}
@@ -206,7 +206,7 @@ function moveEgg() {
             code={`
 let x = 0;
 function moveEgg() {
-    x += 1;
+    x = x + 1;
     egg.style.translate = x + "px";
     requestAnimationFrame(moveEgg);
 }
@@ -219,7 +219,7 @@ function moveEgg() {
 const PIXELS_PER_FRAME = 1;
 let x = 0;
 function moveEgg() {
-    x += PIXELS_PER_FRAME;
+    x = x + PIXELS_PER_FRAME;
     egg.style.translate = x + "px";
     requestAnimationFrame(moveEgg);
 }
@@ -232,7 +232,7 @@ function moveEgg() {
 const PIXELS_PER_FRAME = 1;
 let x = 0;  // {xpos}px
 function moveEgg() {
-    x += PIXELS_PER_FRAME;
+    x = x + PIXELS_PER_FRAME;
     egg.style.translate = x + "px";
     requestAnimationFrame(moveEgg);
 }
@@ -240,29 +240,29 @@ requestAnimationFrame(moveEgg);`}
         />
         <Code
             lang="typescript"
-            ins={[3, "currentX", 5]}
+            ins={[3, "Math.min(", ", max)"]}
             code={`
 const PIXELS_PER_FRAME = 1;
-let currentX = 0;  // {xpos}px
-let targetX = newHouse.offsetLeft - oldHouse.offsetLeft;
+let x = 0;  // {xpos}px
+let max = newHouse.offsetLeft - oldHouse.offsetLeft;
 function moveEgg() {
-    currentX = Math.min(currentX + PIXELS_PER_FRAME, targetX);
-    egg.style.translate = currentX + "px";
+    x = Math.min(x + PIXELS_PER_FRAME, max);
+    egg.style.translate = x + "px";
     requestAnimationFrame(moveEgg);
 }
 requestAnimationFrame(moveEgg);`}
         />
         <Code
             lang="typescript"
-            ins={"if (currentX < targetX)"}
+            ins={"if (x < max)"}
             code={`
 const PIXELS_PER_FRAME = 1;
-let currentX = 0;  // {xpos}px
-let targetX = newHouse.offsetLeft - oldHouse.offsetLeft;
+let x = 0;  // {xpos}px
+let max = newHouse.offsetLeft - oldHouse.offsetLeft;
 function moveEgg() {
-    currentX = Math.min(currentX + PIXELS_PER_FRAME, targetX);
-    egg.style.translate = currentX + "px";
-    if (currentX < targetX) requestAnimationFrame(moveEgg);
+    x = Math.min(x + PIXELS_PER_FRAME, max);
+    egg.style.translate = x + "px";
+    if (x < max) requestAnimationFrame(moveEgg);
 }
 requestAnimationFrame(moveEgg);
 `}
@@ -271,14 +271,14 @@ requestAnimationFrame(moveEgg);
             lang="typescript"
             code={`
 const PIXELS_PER_FRAME = 1;
-let currentX = 0;
-let targetX = newHouse.offsetLeft - oldHouse.offsetLeft;
+let x = 0;
+let max = newHouse.offsetLeft - oldHouse.offsetLeft;
 
 function moveEgg() {
-    currentX = Math.min(currentX + PIXELS_PER_FRAME, targetX);    
-    egg.style.translate = currentX + "px";
+    x = Math.min(x + PIXELS_PER_FRAME, max);    
+    egg.style.translate = x + "px";
 
-    if (currentX < targetX) {
+    if (x < max) {
         requestAnimationFrame(moveEgg);
     }
 }
