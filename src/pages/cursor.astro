@@ -931,7 +931,7 @@ requestAnimationFrame(function moveEgg() {
     }
 </style>
 <script>
-    import { addConstControl } from "../lib/addConstControl";
+    import { addConstControl } from "../lib/codeBlockHooks";
     import {
         registerClassTransition,
         registerRafTransition,
@@ -1415,6 +1415,8 @@ requestAnimationFrame(function moveEgg() {
     withPrevious();
 
     ts.next();
+
+    // should we track and values using trackNumberVariable?
 
     // so we add fps counter
     // show how animation speed changes
