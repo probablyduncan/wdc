@@ -2,6 +2,7 @@
 import { Code } from "astro-expressive-code/components";
 import Slide from "../components/slide.astro";
 import Figure from "../components/figure.astro";
+import Lever from "../components/lever.astro";
 
 /**
  *
@@ -17,7 +18,7 @@ import Figure from "../components/figure.astro";
  */
 ---
 
-<Slide prev="index">
+<Slide prev="index" next="springtime">
     <!-- <Figure
         id="cameron"
         src="/images/www.cameronsworld.net.png"
@@ -93,13 +94,47 @@ import Figure from "../components/figure.astro";
         </span>
     </Figure>
     <Figure
+        id="lerp-with-apples"
+        src="/images/lerp-with-apples.jpg"
+        x={0.6}
+        y={0.5}
+        width={"38em"}
+        figure={23}
+    >
+        A nice picture explaining <i>Linear Interpolation</i>[4] that I found on Google Images. Created by Engineering Hack for youtube.com (<a href="https://www.youtube.com/watch?v=QXpilXhDsNA" title="Youtube: Engineering Hack" target="_blank">link</a>).
+    </Figure>
+    <Figure id="fps-figure" x={0.618} y={0.618}>
+        <div id="fps-display" slot="figure">
+            <figcaption>FPS:</figcaption>
+            <output name="fps" data-live-display="FPS">00.0</output>
+        </div>
+    </Figure>
+    <Figure
+        id="w3c-raf"
+        src="/images/w3c-raf.webp"
+        x={0.5}
+        y={0.5}
+        figure={24}
+    >
+        From <i>Timing control for script-based animations (W3C Working Group Note 22 September 2015)</i>. From <a href="https://www.w3.org/TR/animation-timing/" target="_blank">https://www.w3.org/TR/animation-timing/</a>.
+    </Figure>
+    <Lever
+        startValue={0}
+        name="fps-throttle"
+        values={[Infinity, 34, 12, 6, 3, 1]}
+    />
+    <Figure
         id="half-life-larp"
         src="/images/half-life-larp.webp"
         x="0.4"
         y="0.6"
         width="40em"
+        figure={25}
     >
-        A <i>photo-montage</i> of fans of the video-game <i>Half-Life</i>™ (1998). The game was ground-breaking for its time. “Environments are completely interactive,” gushed the <i>LA Times</i>. “Players may turn on the hand dryers.”[17]
+        A <i>photo-montage</i> of fans of the video-game <i>Half-Life</i>™
+        (1998). The game was ground-breaking for its time. “Environments are
+        completely interactive,” gushed the <i>LA Times</i>. “Players may turn
+        on the hand dryers.”[17]
     </Figure>
 
     <!-- TYPESCRIPT -->
@@ -524,8 +559,9 @@ requestAnimationFrame(function moveEgg() {
         x: target.x - current.x,
         y: target.y - current.y,
     };
-
+    
     const angleToTarget = Math.atan2(distanceToTarget.y, distanceToTarget.x);
+    mathm athmathmathma = Math.thmat(hmathmathmathmat.h, mathmathmathmath.m);
 
     const distanceToTravel = {
         x: Math.cos(angleToTarget) * PIXELS_PER_FRAME,
@@ -705,7 +741,8 @@ document.addEventListener("mousemove", (e) => {
 const LERP_VALUE = 0.5;
 
 requestAnimationFrame(function moveEgg(theGlitteringNow) {
-    console.log(theGlitteringNow);
+    console.log(theGlitteringNow);  // logs: {TIMESTAMP}ms
+
     current.x += (target.x - current.x) * LERP_VALUE;
     current.y += (target.y - current.y) * LERP_VALUE;
 
@@ -731,10 +768,11 @@ document.addEventListener("mousemove", (e) => {
 });
 
 const LERP_VALUE = 0.5;
-let theTiredPast: DOMHighResTimeStamp ;
+let theTiredPast = 0;
 requestAnimationFrame(function moveEgg(theGlitteringNow) {
     const theMarchOfProgress = theGlitteringNow - theTiredPast;
     theTiredPast = theGlitteringNow;
+
     current.x += (target.x - current.x) * LERP_VALUE;
     current.y += (target.y - current.y) * LERP_VALUE;
 
@@ -760,11 +798,12 @@ document.addEventListener("mousemove", (e) => {
 });
 
 const LERP_VALUE = 0.5;
-let theTiredPast: DOMHighResTimeStamp;
+let theTiredPast = 0;
 requestAnimationFrame(function moveEgg(theGlitteringNow) {
     const theMarchOfProgress = theGlitteringNow - theTiredPast;
     theTiredPast = theGlitteringNow;
-    console.log(theMarchOfProgress);
+    console.log(theMarchOfProgress);  // logs: {DELTA}ms
+
     current.x += (target.x - current.x) * LERP_VALUE;
     current.y += (target.y - current.y) * LERP_VALUE;
 
@@ -789,7 +828,7 @@ document.addEventListener("mousemove", (e) => {
 });
 
 const LERP_VALUE = 0.5;
-let theTiredPast: DOMHighResTimeStamp;
+let theTiredPast = 0;
 requestAnimationFrame(function moveEgg(theGlitteringNow) {
     const theMarchOfProgress = theGlitteringNow - theTiredPast;
     theTiredPast = theGlitteringNow;
@@ -806,7 +845,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
             />
             <Code
                 lang="typescript"
-                ins={[11, 17]}
+                ins={[11, 17, 18]}
                 code={`
 const egg = document.getElementById("egg")!;
 
@@ -818,13 +857,46 @@ document.addEventListener("mousemove", (e) => {
     target.y = e.clientY;
 });
 
-const HALF_LIFE = 100;  // ms
-let theTiredPast: DOMHighResTimeStamp;
+const HALF_LIFE = 100;  // milliseconds
+let theTiredPast = 0;
 requestAnimationFrame(function moveEgg(theGlitteringNow) {
     const theMarchOfProgress = theGlitteringNow - theTiredPast;
     theTiredPast = theGlitteringNow;
 
+    // value: {HALF_LIFE_LERP}
     const halfLifeLerp = 0.5 * theMarchOfProgress / HALF_LIFE;
+    current.x += (target.x - current.x) * halfLifeLerp;
+    current.y += (target.y - current.y) * halfLifeLerp;
+
+    egg.style.setProperty("--x", current.x + "px");
+    egg.style.setProperty("--y", current.y + "px");
+
+    requestAnimationFrame(moveEgg);
+});
+`}
+            />
+            <Code
+                lang="typescript"
+                ins={["Math.min(1,", /HALF_LIFE(\))/g]}
+                code={`
+const egg = document.getElementById("egg")!;
+
+const target: { x: 0, y: 0 };
+const current: { x: 0, y: 0 };
+
+document.addEventListener("mousemove", (e) => {
+    target.x = e.clientX;
+    target.y = e.clientY;
+});
+
+const HALF_LIFE = 100;  // milliseconds
+let theTiredPast = 0;
+requestAnimationFrame(function moveEgg(theGlitteringNow) {
+    const theMarchOfProgress = theGlitteringNow - theTiredPast;
+    theTiredPast = theGlitteringNow;
+
+    // value: {HALF_LIFE_LERP}
+    const halfLifeLerp = Math.min(1, 0.5 * theMarchOfProgress / HALF_LIFE); 
     current.x += (target.x - current.x) * halfLifeLerp;
     current.y += (target.y - current.y) * halfLifeLerp;
 
@@ -872,7 +944,8 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
         <div id="css" class="code-block-wrapper">
             <Code
                 lang="css"
-                code={`#egg {
+                code={`
+#egg {
     position: fixed;
     width: 5rem;
 }`}
@@ -880,11 +953,11 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
             <Code
                 lang="css"
                 ins={4}
-                code={`#egg {
+                code={`
+#egg {
     position: fixed;
     width: 5rem;
     z-index: 2;
-    /** biggest number I can think of */
 }`}
             />
             <Code
@@ -912,53 +985,54 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
             />
             <Code
                 lang="css"
-                ins={[9, 10, 11]}
-                code={`#egg {
+                ins={[2, 3, 4]}
+                code={`
+#egg {
+    translate:
+        calc(var(--x, 0) - 50%)
+        calc(var(--y, 0) - 50%);
+    
     width: 5rem;
     position: fixed;
     z-index: 2;
     
     pointer-events: none;
     user-select: none;
-
-    translate:
-        calc(var(--x, 0) - 50%)
-        calc(var(--y, 0) - 50%);
 }`}
             />
             <Code
                 lang="css"
-                collapse={["2-7"]}
-                code={`#egg {
+                code={`
+#egg {
+    translate:
+        calc(var(--x, 0) - 50%)
+        calc(var(--y, 0) - 50%);
+    
     width: 5rem;
     position: fixed;
     z-index: 2;
     
     pointer-events: none;
     user-select: none;
-
-    translate:
-        calc(var(--x, 0) - 50%)
-        calc(var(--y, 0) - 50%);
 }`}
             />
             <Code
                 lang="css"
-                collapse={["2-7"]}
                 ins={[14, 15, 16, 17, 18]}
-                code={`#egg {
+                code={`
+#egg {
+    translate:
+        calc(var(--x, 0) - 50%)
+        calc(var(--y, 0) - 50%);
+
     width: 5rem;
     position: fixed;
     z-index: 2;
     
     pointer-events: none;
     user-select: none;
-
-    translate:
-        calc(var(--x, 0) - 50%)
-        calc(var(--y, 0) - 50%);
 }
-    
+
 @media (prefers-reduced-motion: reduce) {
     #egg {
         display: none;
@@ -967,20 +1041,21 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
             />
             <Code
                 lang="css"
-                collapse={["2-7", "14-18"]}
-                code={`#egg {
+                collapse={["6-17"]}
+                code={`
+#egg {
+    translate:
+        calc(var(--x, 0) - 50%)
+        calc(var(--y, 0) - 50%);
+
     width: 5rem;
     position: fixed;
     z-index: 2;
     
     pointer-events: none;
     user-select: none;
-
-    translate:
-        calc(var(--x, 0) - 50%)
-        calc(var(--y, 0) - 50%);
 }
-    
+
 @media (prefers-reduced-motion: reduce) {
     #egg {
         display: none;
@@ -1013,8 +1088,6 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
         translate: var(--x, 0) var(--y, 0);
         &.center {
             translate: calc(var(--x, 0) - 50%) calc(var(--y, 0) - 50%);
-            /* transition: opacity 0.1s; */
-            /* opacity: calc(1 - var(--over-code, 0) * 0.2); */
         }
 
         &.no-pointer {
@@ -1068,9 +1141,41 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     #css :global(.code) {
         /* width: 45ch; */
     }
+
+    #fps-display {
+        display: flex;
+        gap: 1ch;
+        text-wrap: nowrap;
+        font-size: 2em;
+        color: white;
+        background-color: #a81207;
+        padding: 0.25ch 1ch;
+        border-radius: 0.25ch;
+        font-weight: bold;
+        border: 0.25ch groove #a81207;
+        border-style: outset;
+
+        figcaption {
+            opacity: 0.9;
+        }
+
+        output {
+            color: white;
+        }
+    }
+
+    :global(#fps-throttle) {
+        position: fixed;
+        bottom: 2ch;
+        right: 2ch;
+        z-index: 80;
+        &:not(.active) {
+            display: none;
+        }
+    }
 </style>
 <script>
-    import { addConstControl, addLiveCommentDisplay } from "../lib/codeBlockHooks";
+    import { addConstControl, addLiveDisplay } from "../lib/codeBlockHooks";
     import {
         registerClassTransition,
         registerRafTransition,
@@ -1107,6 +1212,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
             | "constant-speed"
             | "constant-speed-trig"
             | "basic-half"
+            | "half-no-clamp"
             | "half";
         log: "none" | "timestamp" | "delta";
     } = {
@@ -1158,9 +1264,10 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
         [0, 5, 20, 50, 100, 200, 500, 1000, 2000],
     );
 
-    const fpsDisplay = addLiveCommentDisplay<string>("FPS", "");
-    const timestampDisplay = addLiveCommentDisplay<string>("TIMESTAMP", "");
-    const deltaDisplay = addLiveCommentDisplay<string>("DELTA", "");
+    const liveGlitteringNow = addLiveDisplay("TIMESTAMP", "0.0");
+    const liveDelta = addLiveDisplay("DELTA", "00.0");
+    const liveFPS = addLiveDisplay("FPS", "00.0");
+    const liveHalfLifeLerp = addLiveDisplay("HALF_LIFE_LERP", "0.0");
 
     const { html, css, ts } = (() => {
         const langs = ["html", "css", "ts"] as const;
@@ -1290,42 +1397,40 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
         );
     })();
 
-    function isEggOverCode() {
-        const eggRect = egg.getBoundingClientRect();
-        const eggX = eggRect.left + eggRect.width / 2;
-        const eggY = eggRect.top + eggRect.height / 2;
-        function checkEggOverlap(el: HTMLElement | undefined) {
-            if (!el) return false;
+    let fpsThrottlePrevTime = 0;
+    const fpsThrottle = document.querySelector<HTMLInputElement>(
+        `input[name="fps-throttle"]`,
+    );
+    let maxFPS = Infinity;
+    const updateMaxFPS = () =>
+        (maxFPS = parseInt(
+            fpsThrottle?.getAttribute("aria-valuetext") ?? "Infinity",
+        ));
+    updateMaxFPS();
+    fpsThrottle?.addEventListener("input", updateMaxFPS);
 
-            const codeRect = el.getBoundingClientRect();
-            return !(
-                eggX < codeRect.left ||
-                eggX > codeRect.right ||
-                eggY < codeRect.top ||
-                eggY > codeRect.bottom
-            );
+    const raf = registerRafTransition({}, ({ timestamp }) => {
+        const throttledDelta = timestamp - fpsThrottlePrevTime;
+
+        const fps = 1000 / throttledDelta;
+        if (fps > maxFPS) {
+            return true;
         }
 
-        return (
-            checkEggOverlap(ts.currentElement()) ||
-            checkEggOverlap(css.currentElement()) ||
-            checkEggOverlap(html.currentElement())
-        );
-    }
+        liveDelta.set(throttledDelta.toFixed(1));
+        liveGlitteringNow.set(timestamp.toFixed(1));
+        liveFPS.set(fps.toFixed(1).padStart(5, ""));
 
-    const raf = registerRafTransition({}, ({ delta, timestamp }) => {
+        fpsThrottlePrevTime = timestamp;
+
         switch (animationOptions.log) {
             case "timestamp":
                 console.log(timestamp);
                 break;
             case "delta":
-                console.log(delta);
+                console.log(throttledDelta);
                 break;
         }
-
-        fpsDisplay.set((1000 / delta).toFixed(0));
-        timestampDisplay.set(timestamp.toString());
-        deltaDisplay.set(delta.toFixed(2));
 
         switch (animationOptions.lerpType) {
             case "instant":
@@ -1394,19 +1499,24 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
                 current.y +=
                     (target.y - current.y) * halfLifeBasicControl.get();
                 break;
-            case "half":
-                const lerpValue = Math.min(
-                    1,
-                    (0.5 * delta) / halfLifeControl.get(),
-                );
+            case "half-no-clamp":
+                const lerpValue = 0.5 * throttledDelta / halfLifeControl.get();
+                liveHalfLifeLerp.set(lerpValue.toFixed(3));
                 current.x += (target.x - current.x) * lerpValue;
                 current.y += (target.y - current.y) * lerpValue;
+                break;
+            case "half":
+                const lerpValueClamped = Math.min(
+                    1,
+                    (0.5 * throttledDelta) / halfLifeControl.get(),
+                );
+                liveHalfLifeLerp.set(lerpValueClamped.toFixed(3));
+                current.x += (target.x - current.x) * lerpValueClamped;
+                current.y += (target.y - current.y) * lerpValueClamped;
                 break;
         }
 
         updateEggPos(current);
-        // egg.style.setProperty("--over-code", isEggOverCode() ? "1" : "0");
-
         return true;
     });
 
@@ -1551,6 +1661,21 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     animationOptionTransition("lerpType", "constant-speed-positive-only");
     ts.next();
     withPrevious();
+    registerTransition(() => {
+        let prev = 1;
+        return {
+            begin() {
+                if (pxPerFrameControl.get() <= 0) {
+                    pxPerFrameControl.set(prev as ReturnType<typeof pxPerFrameControl["get"]>);
+                }
+            },
+            revert() {
+                prev = pxPerFrameControl.get();
+                pxPerFrameControl.set(0);
+            },
+        };
+    });
+    withPrevious();
 
     ts.next();
 
@@ -1570,6 +1695,8 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     // if we lerp proportionally it's a lot easier, we can do it per axis
 
     ts.next();
+    animationOptionTransition("lerpType", "none");
+    withPrevious();
 
     registerClassTransition("#zeno", "active");
     registerClassTransition("#dichotomy", "active");
@@ -1578,22 +1705,30 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     registerClassTransition("#dichotomy", "active", "remove");
     withPrevious();
 
+    // add lerp calculation
     ts.next();
     animationOptionTransition("lerpType", "basic-half");
     withPrevious();
-
+    
+    registerClassTransition("#lerp-with-apples", "active");
+    
+    // add lerp slider
+    registerClassTransition("#lerp-with-apples", "active", "remove");
     ts.next();
+    withPrevious();
 
     // now show FPS!!
-
-    // HERE FPS
-    // SHOW HOW IT BREAKS!!
+    registerClassTransition("#fps-figure", "active");
+    registerClassTransition("#fps-throttle", "active");
 
     // something I've been keeping from you
     // the callback has an argument. I'm convinced!
     // gives you the time of day
     // add timestamp arg
+    registerClassTransition("#w3c-raf", "active");
+    registerClassTransition("#w3c-raf", "active", "remove");
     ts.next();
+    withPrevious();
 
     ts.next();
     animationOptionTransition("log", "timestamp");
@@ -1608,32 +1743,30 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     ts.next();
     animationOptionTransition("log", "delta");
     withPrevious();
-    
+
     // ok no more logging
     ts.next();
     animationOptionTransition("log", "none");
     withPrevious();
 
+    // half life larp
+    registerClassTransition("#half-life-larp", "active");
+    
+    // add half life stuff
+    registerClassTransition("#half-life-larp", "active", "remove");
+    ts.next();
+    withPrevious();
+    animationOptionTransition("lerpType", "half-no-clamp");
+    withPrevious();
+    
     ts.next();
     animationOptionTransition("lerpType", "half");
     withPrevious();
-    
-    registerClassTransition("#half-life-larp", "active");
-    registerClassTransition("#half-life-larp", "active", "remove");
-
-
-    // should we track and values using trackNumberVariable?
-
-    // so we add fps counter
-    // show how animation speed changes
-
-    // how do we solve this problem?
-    // i've been keeping something from you
-    // unlike your neighbor, requestAnimationFrame gives you the time of day
-    // the callback has an argument. I'm convinced!
-    // calculate delta
-    // HALF_LIFE instead of some random number
-    // show FPS changes with new delta-based lerping
 
     // then ACT II comes in
+
+    // something's missing in my step...
+
+    // we’ve got a long winter ahead of us
+    // good thing it’s time for
 </script>

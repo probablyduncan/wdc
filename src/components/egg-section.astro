@@ -624,7 +624,7 @@ requestAnimationFrame(moveEgg);
 <script>
     import {
         addConstControl,
-        addLiveCommentDisplay,
+        addLiveDisplay,
     } from "../lib/codeBlockHooks";
     import {
         registerClassTransition,
@@ -638,7 +638,7 @@ requestAnimationFrame(moveEgg);
     const newHouse = document.getElementById("new-house")!;
     const neighbor = document.getElementById("neighbor")!;
 
-    const x = addLiveCommentDisplay<number>("xpos", 0);
+    const x = addLiveDisplay<number>("xpos", 0);
 
     function translateEgg(value: number | "unset") {
         registerTransition(() => {

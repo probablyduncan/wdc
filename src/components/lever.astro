@@ -1,0 +1,98 @@
+---
+interface Props {
+    startValue?: 0 | 1 | 2 | 3 | 4 | 5;
+    name: string;
+    values?:
+        | [string, string, string, string, string, string]
+        | [number, number, number, number, number, number];
+    class?: string;
+}
+
+const { name, values = [0, 1, 2, 3, 4, 5], startValue = 5 } = Astro.props;
+---
+
+<div
+    id={name}
+    class={"lever "}
+    style={`--frame: ${startValue};`}
+    data-values={JSON.stringify(values.map((value) => value.toString()))}
+>
+    <div class="lever-image" aria-hidden="true"></div>
+    <input
+        name={name}
+        class="lever-input"
+        type="range"
+        min="0"
+        max="5"
+        value={startValue}
+        aria-valuetext={values[startValue].toString()}
+        aria-orientation="vertical"
+    />
+</div>
+<style>
+    .lever {
+        margin: 0;
+        --frame: 0;
+        --scale: 2;
+
+        --frame-width: 220px;
+        --frame-height: 147px;
+
+        --scaled-width: calc(var(--frame-width) * var(--scale));
+        --scaled-height: calc(var(--frame-height) * var(--scale));
+
+        --accent-color: #432803;
+        --accent-color: #a81207;
+        --accent-color: #deb911;
+
+        position: relative;
+
+        width: var(--scaled-width);
+        height: var(--scaled-height);
+
+        &:focus-within {
+            outline-style: solid;
+            outline-color: var(--accent-color);
+            outline-width: calc(var(--scaled-width) / 50);
+            outline-offset: calc(var(--scaled-width) / 100);
+            border-radius: calc(var(--scaled-width) / 100);
+        }
+    }
+
+    .lever-image {
+        position: absolute;
+        inset: 0;
+        background-image: url("/images/lever.webp");
+        image-rendering: pixelated;
+        background-position-x: calc(-1 * var(--scaled-width) * var(--frame));
+        background-size: cover;
+        border-radius: calc(var(--scaled-width) / 60);
+    }
+
+    input.lever-input {
+        position: absolute;
+        left: 50%;
+        top: 6%;
+        height: 84%;
+        writing-mode: vertical-lr;
+        opacity: 0;
+        scale: 5 1;
+        cursor: grab;
+        &:active {
+            cursor: grabbing;
+        }
+    }
+</style>
+<script>
+    document.querySelectorAll<HTMLElement>(`.lever`).forEach((figure) => {
+        const values = JSON.parse(figure.dataset.values!) as string[];
+        console.log(values);
+        const input = figure.querySelector("input")!;
+        function update() {
+            figure.style.setProperty("--frame", input.value);
+            const value = values[parseInt(input.value)];
+            input.setAttribute("aria-valuetext", value);
+        }
+        input.addEventListener("input", update);
+    });
+</script>

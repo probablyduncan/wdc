@@ -92,11 +92,13 @@ export function addConstControl<TValue extends number | string>(constName: strin
     }
 }
 
-export function addLiveCommentDisplay<TValue extends string | number>(name: string, initialValue: TValue) {
+export function addLiveDisplay<TValue = string | number>(name: string, initialValue: TValue, debounce: number = 100) {
 
     const token = `{${name}}`;
     const elements: HTMLElement[] = [];
     let value: TValue = initialValue;
+
+    elements.push(...document.querySelectorAll<HTMLElement>(`[data-live-display="${name}"]`));
 
     for (let codeBlock of document.getElementsByClassName("expressive-code")) {
         for (let line of codeBlock.getElementsByClassName("code") as HTMLCollectionOf<HTMLElement>) {
@@ -123,7 +125,7 @@ export function addLiveCommentDisplay<TValue extends string | number>(name: stri
 
             // crate value span
             const display = document.createElement("span");
-            display.innerText = value.toString();
+            display.innerText = (value as number | string).toString();
             display.style.setProperty("--0", commentColor);
             elements.push(display);
 
@@ -131,7 +133,7 @@ export function addLiveCommentDisplay<TValue extends string | number>(name: stri
             const commentAfterTokenSpan = document.createElement("span");
             commentAfterTokenSpan.innerText = line.innerText.substring(tokenIndex + token.length);
             commentAfterTokenSpan.style.setProperty("--0", commentColor);
-            
+
             // remove all comment elements, we're gonna overwrite
             while (commentStartElement.nextSibling) {
                 commentStartElement.nextSibling.remove();
@@ -145,6 +147,12 @@ export function addLiveCommentDisplay<TValue extends string | number>(name: stri
         }
     }
 
+    function updateElements() {
+        elements.forEach(el => el.innerText = (value as number | string).toString());
+    }
+
+    let debounceTimeoutId: NodeJS.Timeout | undefined = undefined;
+
     return {
         get() {
             return value;
@@ -152,13 +160,19 @@ export function addLiveCommentDisplay<TValue extends string | number>(name: stri
         set(arg: TValue | ((prev: TValue) => TValue)) {
 
             if (typeof arg === "function") {
+                // @ts-ignore
                 value = arg(value);
             }
             else {
                 value = arg;
             }
 
-            elements.forEach(el => el.innerText = value.toString());
+            if (!debounceTimeoutId) {
+                debounceTimeoutId = setTimeout(() => {
+                    updateElements();
+                    debounceTimeoutId = undefined;
+                }, debounce);
+            }
         },
     }
 }

@@ -79,7 +79,7 @@ if (Astro.slots.has("default")) {
             <slot name="figure" />
         )
     }
-    <figcaption set:html={captionHtml} />
+    {captionHtml && <figcaption set:html={captionHtml} />}
 </figure>
 <style>
     figure {
@@ -87,7 +87,7 @@ if (Astro.slots.has("default")) {
 
         --start-x: 0.5;
         --start-y: 0.5;
-        --width: 80vw;
+        --width: auto;
         width: var(--width);
 
         left: calc(100vw * var(--start-x));
@@ -120,15 +120,15 @@ if (Astro.slots.has("default")) {
         image-rendering: pixelated;
         width: 100%;
         
-        padding-inline: 1.5ch;
+        /* padding-inline: 1.5ch; */
     }
 
     figcaption {
         margin-top: 0.5lh;
         font-family: math, serif;
-        /* text-indent: -1ch; */
+        text-indent: -1ch;
         /* margin-inline: 1ch; */
-        /* padding-inline: 1ch; */
+        padding-inline: 1ch;
         line-height: 1.4;
 
         :global(sup) {
@@ -172,6 +172,8 @@ if (Astro.slots.has("default")) {
             const query = window.matchMedia("(prefers-reduced-motion: reduce)");;
             return () => query.matches;
         })();
+
+        const noDragTags = ["input", "a"];
 
         const zIndexing = (() => {
             const baseZIndex = 100;
@@ -245,7 +247,7 @@ if (Astro.slots.has("default")) {
             const grabStartElPos = [0, 0];
 
             figure.addEventListener("mousedown", (e) => {
-                if (e.button !== 0 || (e.target as HTMLElement)?.closest("a")) {
+                if (e.button !== 0 || noDragTags.some(noDragTag => (e.target as HTMLElement)?.closest(noDragTag))) {
                     return;
                 }
 
