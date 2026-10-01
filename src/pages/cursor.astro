@@ -698,35 +698,7 @@ requestAnimationFrame(function moveEgg() {
             />
             <Code
                 lang="typescript"
-                ins={["theGlitteringNow"]}
-                code={`
-const egg = document.getElementById("egg")!;
-
-const target: { x: 0, y: 0 };
-const current: { x: 0, y: 0 };
-
-document.addEventListener("mousemove", (e) => {
-    target.x = e.clientX;
-    target.y = e.clientY;
-});
-
-const LERP_VALUE = 0.5;
-
-requestAnimationFrame(function moveEgg(theGlitteringNow) {
-    
-    current.x += (target.x - current.x) * LERP_VALUE;
-    current.y += (target.y - current.y) * LERP_VALUE;
-
-    egg.style.setProperty("--x", current.x + "px");
-    egg.style.setProperty("--y", current.y + "px");
-
-    requestAnimationFrame(moveEgg);
-});
-`}
-            />
-            <Code
-                lang="typescript"
-                ins={[14]}
+                ins={["theGlitteringNow", 14]}
                 code={`
 const egg = document.getElementById("egg")!;
 
@@ -742,7 +714,7 @@ const LERP_VALUE = 0.5;
 
 requestAnimationFrame(function moveEgg(theGlitteringNow) {
     console.log(theGlitteringNow);  // logs: {TIMESTAMP}ms
-
+    
     current.x += (target.x - current.x) * LERP_VALUE;
     current.y += (target.y - current.y) * LERP_VALUE;
 
@@ -755,37 +727,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
             />
             <Code
                 lang="typescript"
-                ins={[12, 14, 15]}
-                code={`
-const egg = document.getElementById("egg")!;
-
-const target: { x: 0, y: 0 };
-const current: { x: 0, y: 0 };
-
-document.addEventListener("mousemove", (e) => {
-    target.x = e.clientX;
-    target.y = e.clientY;
-});
-
-const LERP_VALUE = 0.5;
-let theTiredPast = 0;
-requestAnimationFrame(function moveEgg(theGlitteringNow) {
-    const theMarchOfProgress = theGlitteringNow - theTiredPast;
-    theTiredPast = theGlitteringNow;
-
-    current.x += (target.x - current.x) * LERP_VALUE;
-    current.y += (target.y - current.y) * LERP_VALUE;
-
-    egg.style.setProperty("--x", current.x + "px");
-    egg.style.setProperty("--y", current.y + "px");
-
-    requestAnimationFrame(moveEgg);
-});
-`}
-            />
-            <Code
-                lang="typescript"
-                ins={[16]}
+                ins={[12, 14, 15, 16]}
                 code={`
 const egg = document.getElementById("egg")!;
 
@@ -1732,18 +1674,13 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     registerClassTransition("#w3c-raf", "active", "remove");
     ts.next();
     withPrevious();
-
-    ts.next();
     animationOptionTransition("log", "timestamp");
     withPrevious();
 
-    // calculate delta
+    // calculate/log delta
     ts.next();
     animationOptionTransition("log", "none");
     withPrevious();
-
-    // log delta
-    ts.next();
     animationOptionTransition("log", "delta");
     withPrevious();
 
