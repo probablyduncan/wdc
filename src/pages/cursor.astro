@@ -892,7 +892,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
                 code={`
 #egg {
     position: fixed;
-    width: 5rem;
+    width: 15vmin;
 }`}
             />
             <Code
@@ -901,7 +901,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
                 code={`
 #egg {
     position: fixed;
-    width: 5rem;
+    width: 15vmin;
     z-index: 2;
 }`}
             />
@@ -909,7 +909,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
                 lang="css"
                 ins={[6, 7]}
                 code={`#egg {
-    width: 5rem;
+    width: 15vmin;
     position: fixed;
     z-index: 2;
     
@@ -920,7 +920,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
             <Code
                 lang="css"
                 code={`#egg {
-    width: 5rem;
+    width: 15vmin;
     position: fixed;
     z-index: 2;
     
@@ -937,7 +937,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
         calc(var(--x, 0) - 50%)
         calc(var(--y, 0) - 50%);
     
-    width: 5rem;
+    width: 15vmin;
     position: fixed;
     z-index: 2;
     
@@ -953,7 +953,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
         calc(var(--x, 0) - 50%)
         calc(var(--y, 0) - 50%);
     
-    width: 5rem;
+    width: 15vmin;
     position: fixed;
     z-index: 2;
     
@@ -970,7 +970,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
         calc(var(--x, 0) - 50%)
         calc(var(--y, 0) - 50%);
 
-    width: 5rem;
+    width: 15vmin;
     position: fixed;
     z-index: 2;
     
@@ -993,7 +993,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
         calc(var(--x, 0) - 50%)
         calc(var(--y, 0) - 50%);
 
-    width: 5rem;
+    width: 15vmin;
     position: fixed;
     z-index: 2;
     
@@ -1022,7 +1022,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
         }
 
         &.sized {
-            width: 5rem;
+            width: 15vmin;
         }
 
         z-index: 1;
@@ -1688,16 +1688,15 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     ts.next();
     animationOptionTransition("log", "none");
     withPrevious();
+    
+    // add half life stuff
+    ts.next();
+    animationOptionTransition("lerpType", "half-no-clamp");
+    withPrevious();
 
     // half life larp
     registerClassTransition("#half-life-larp", "active");
-    
-    // add half life stuff
     registerClassTransition("#half-life-larp", "active", "remove");
-    ts.next();
-    withPrevious();
-    animationOptionTransition("lerpType", "half-no-clamp");
-    withPrevious();
     
     ts.next();
     animationOptionTransition("lerpType", "half");
@@ -1711,4 +1710,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
 
     // we’ve got a long winter ahead of us
     // good thing it’s time for
+
+
+    // after this last transition, when the cursor is ready, I should look for when the target is close to the edge of the screen. and when it is, and i move rapidly away, ACT II comes in and knocks everything else away
 </script>
