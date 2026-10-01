@@ -877,7 +877,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
             />
             <Code
                 lang="typescript"
-                ins={["Math.min(1,", /HALF_LIFE(\))/g]}
+                ins={["Math.min(1,", /   (\))/g]}
                 code={`
 const egg = document.getElementById("egg")!;
 
@@ -896,7 +896,10 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     theTiredPast = theGlitteringNow;
 
     // value: {HALF_LIFE_LERP}
-    const halfLifeLerp = Math.min(1, 0.5 * theMarchOfProgress / HALF_LIFE); 
+    const halfLifeLerp = Math.min(1,
+        0.5 * theMarchOfProgress / HALF_LIFE
+    );
+
     current.x += (target.x - current.x) * halfLifeLerp;
     current.y += (target.y - current.y) * halfLifeLerp;
 
@@ -1762,6 +1765,8 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     ts.next();
     animationOptionTransition("lerpType", "half");
     withPrevious();
+
+
 
     // then ACT II comes in
 
