@@ -116,6 +116,7 @@ import Lever from "../components/lever.astro";
         name="fps-throttle"
         values={[Infinity, 34, 12, 6, 3, 1]}
     />
+
     <Figure
         id="half-life-larp"
         src="/images/half-life-larp.webp"
@@ -129,6 +130,18 @@ import Lever from "../components/lever.astro";
         completely interactive,” gushed the <i>LA Times</i>. “Players may turn
         on the hand dryers.”[17]
     </Figure>
+
+    <Figure
+        id="spring-garlic"
+        src="/images/spring-foreshadow-garlic.webp"
+        class="act-i"
+        x="0.4"
+        y="0.35"
+        width="35em"
+        figure={48}
+    >
+        Wild garlic in the spring-time. From <i>National Trust Images</i> and Andrew Butler (<a href="https://www.nationaltrust.org.uk/visit/countryside-woodland/places-to-forage-for-wild-garlic" target="_blank">link</a>).
+    </Figure>
     <Figure
         id="spring-tigger"
         src="/images/spring-foreshadow-tigger.webp"
@@ -136,48 +149,33 @@ import Lever from "../components/lever.astro";
         x="0.5"
         y="0.5"
         width="25em"
+        figure={49}
     >
         There's something missing in my step...
-    </Figure>
-    <Figure
-        id="spring-slinky"
-        src="/images/spring-foreshadow-slinky.jpg"
-        class="act-i"
-        x="0.5"
-        y="0.5"
-        width="20em"
-    >
-        https://content.time.com/time/specials/packages/article/0,28804,2049243_2048651_2049036,00.html
     </Figure>
     <Figure
         id="spring-dog"
         src="/images/spring-foreshadow-dog.jpeg"
         class="act-i"
-        x="0.5"
-        y="0.5"
-        width="40em"
+        x="0.7"
+        y="0.3"
+        width="48em"
+        figure={51}
     >
-        https://characters.disney.com/toy-story/slinky-dog
+        “Slinky’s laid-back outlook on life and flexible attitude make him one of the most sensible toys.” This is what the internet web-site <i><a href="https://characters.disney.com/toy-story/slinky-dog" target="_blank">characters.disney.com</a></i> says about <i>Slinky Dog</i>.
     </Figure>
-    <!-- <Figure
-        id="spring-forward"
-        src="/images/spring-foreshadow-forward.jpg"
-        class="act-i"
-        x="0.5"
-        y="0.5"
-        width="15em"
-    >
-        Forward? Forward to what?
-    </Figure> -->
     <Figure
-        id="spring-garlic"
-        src="/images/spring-foreshadow-garlic.webp"
+        id="spring-slinky"
+        src="/images/spring-foreshadow-slinky.jpg"
         class="act-i"
-        x="0.5"
-        y="0.5"
-        width="35em"
+        x="0.26"
+        y="0.62"
+        width="50em"
+        figure={50}
     >
-        https://www.nationaltrust.org.uk/visit/countryside-woodland/places-to-forage-for-wild-garlic
+        “A spring, a spring, a marvelous thing! Everyone knows it’s Slinky!”[41] Here is a slinky story: a naval engineer named <a href="https://en.wikipedia.org/wiki/Richard_T._James" target="_blank">Richard</a> invented it accidentally, in 1943, while trying to make something else. His wife <a href="https://en.wikipedia.org/wiki/Betty_James" target="_blank">Betty</a> came up with the name, and together they became slinky magnates.
+        <br/><br/>
+        In 1960, Richard left Betty and their six kids to join an evangelical Bible translation company in Bolivia. Betty ran the slinky business for the next 40 years, did a really good job, and was inducted into the <i>Toy Industry Hall of Fame</i> in 2001. Richard died in Bolivia in 1974. (Photo from <i><a href="https://content.time.com/time/specials/packages/article/0,28804,2049243_2048651_2049036,00.html" target="_blank">Time Magazine</a></i>.)
     </Figure>
 
     <!-- TYPESCRIPT -->
@@ -1098,10 +1096,13 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
         }
 
         &.away {
-            /* transition: translate 0s; */
             opacity: 0;
-            transition: opacity 0.2s;
-            /* translate: -100% calc(var(--egg-y, 0) * 2 - 50vh - 50%); */
+            translate: -15vmin calc(var(--egg-y, 0) * 2 - 50vh - 50%);
+            transition:
+                opacity 0.4s,
+                translate 0.4s;
+            transition-timing-function: ease-in;
+            transition-delay: 0.1s;
         }
     }
 
@@ -1243,6 +1244,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     } from "../lib/interpolationController";
     import {
         registerClassTransition,
+        registerOneTimeTransition,
         registerRafTransition,
         withPrevious,
     } from "../lib/slides";
@@ -1508,9 +1510,18 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
                     x.step(delta);
                     y.step(delta);
                     r.step(delta);
-                    el.style.setProperty("--act-x", x.current.toFixed(2) + "px");
-                    el.style.setProperty("--act-y", y.current.toFixed(2) + "px");
-                    el.style.setProperty("--act-r", r.current.toFixed(6) + "rad");
+                    el.style.setProperty(
+                        "--act-x",
+                        x.current.toFixed(2) + "px",
+                    );
+                    el.style.setProperty(
+                        "--act-y",
+                        y.current.toFixed(2) + "px",
+                    );
+                    el.style.setProperty(
+                        "--act-r",
+                        r.current.toFixed(6) + "rad",
+                    );
                 },
                 reset() {
                     x.current = x.target = 0;
@@ -1580,7 +1591,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
                 h1x.current = mouseToCenterVector.x * window.innerWidth;
                 h1y.current = mouseToCenterVector.y * window.innerHeight;
                 h1x.velocity = mouseDirectionVector.x * 5000;
-                h1y.velocity = (mouseDirectionVector.y * 5000) / 4;
+                h1y.velocity = (mouseDirectionVector.y * 5000) / 2;
                 h1r.velocity = mouseDeltaAngle;
                 setH1Props();
                 h1.classList.add("active");
@@ -1594,7 +1605,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
                     h2x.current = mouseToCenterVector.x * window.innerWidth;
                     h2y.current = mouseToCenterVector.y * window.innerHeight;
                     h2x.velocity = mouseDirectionVector.x * 5000;
-                    h2y.velocity = (mouseDirectionVector.y * 5000) / 2;
+                    h2y.velocity = (mouseDirectionVector.y * 5000) / 8;
                     h2r.velocity = mouseDeltaAngle * 2;
                     setH2Props();
                     h2.classList.add("active");
@@ -1637,9 +1648,16 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
 
     const actIIOptions = {
         triggerMargin: 100,
-        triggerMinPxPerMS: 0.5,
+        triggerMinPxPerMS: 0.8,
         animationSpeed: 0.5,
     };
+
+    function resetActIITransition() {
+        actI.forEach((el) => el.reset());
+        actII.reset();
+        prevTarget.x = prevTarget.y = 0;
+        egg.classList.remove("away");
+    }
 
     let fpsThrottlePrevTime = 0;
     const fpsThrottle = document.querySelector<HTMLInputElement>(
@@ -1784,6 +1802,15 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
                     actII.setup(target, targetDelta);
                     actI.forEach((el) => el.setup(target));
                     egg.classList.add("away");
+
+                    registerOneTimeTransition(
+                        "revert",
+                        () => {
+                            resetActIITransition();
+                            animationOptions.actII = "ready";
+                        },
+                        true,
+                    );
                 }
                 break;
             case "active":
@@ -1792,12 +1819,8 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
                 actI.forEach((el) => el.step(newDelta));
                 break;
             case "dormant":
-                // make sure we only do this cleanup stuff once
                 if (prevTarget.x !== 0) {
-                    actI.forEach((el) => el.reset());
-                    actII.reset();
-                    prevTarget.x = prevTarget.y = 0;
-                    egg.classList.remove("away");
+                    resetActIITransition();
                 }
                 break;
         }
@@ -2053,21 +2076,10 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     animationOptionTransition("lerpType", "half");
     withPrevious();
 
-    // after the first one of these figures appears, I can do ACTII
-    // and when I go back on any of them (or forward) it should reset ACTII
-    registerClassTransition("#spring-tigger", "active");
-    animationOptionTransition("actII", "ready");
-    withPrevious();
-    registerClassTransition("#spring-slinky", "active");
-    animationOptionTransition("actII", "ready");
-    withPrevious();
-    registerClassTransition("#spring-dog", "active");
-    animationOptionTransition("actII", "ready");
-    withPrevious();
-    // registerClassTransition("#spring-forward", "active");
-    // animationOptionTransition("actII", "ready");
-    // withPrevious();
-    registerClassTransition("#spring-garlic", "active");
+    registerClassTransition(`#spring-garlic`);
+    registerClassTransition(`#spring-tigger`);
+    registerClassTransition(`#spring-dog`);
+    registerClassTransition(`#spring-slinky`);
     animationOptionTransition("actII", "ready");
     withPrevious();
 

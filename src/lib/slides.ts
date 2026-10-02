@@ -8,6 +8,7 @@ type Transition = {
      */
     revert(): void;
 }
+type TransitionDirection = keyof Transition;
 
 type TransitionInit = () => Transition;
 type TransitionSetup = Transition | TransitionInit;
@@ -167,6 +168,19 @@ export function withPrevious() {
     })
 }
 
+/**
+ * the next time a transition is triggered (next/prev slide)
+ * if there are any blocking ones, the slide does not change and the blocking transition is called
+ * if there are no blocking ones, any non-blocking ones are executed
+ */
+export function registerOneTimeTransition<TDirection extends TransitionDirection>(
+    direction: TDirection,
+    transition: Transition[TDirection],
+    blockExistingTransitions: boolean,
+) {
+    _oneTimeTransitions[direction][blockExistingTransitions ? "blocking" : "nonBlocking"].push(transition);
+}
+
 // ------------------------
 
 /**
@@ -175,6 +189,20 @@ export function withPrevious() {
  * */
 let _transitionIndex = -1;
 const _transitions: Transition[] = [];
+
+const _oneTimeTransitions: Record<TransitionDirection, {
+    blocking: Transition[TransitionDirection][],
+    nonBlocking: Transition[TransitionDirection][],
+}> = {
+    "begin": {
+        blocking: [],
+        nonBlocking: [],
+    },
+    "revert": {
+        blocking: [],
+        nonBlocking: [],
+    },
+}
 
 const getCurrentTransition = () => _transitions[_transitionIndex];
 
@@ -222,7 +250,26 @@ function fastForwardToUrlIndex() {
     updateIndexInUrl();
 }
 
+function executeOneTimeTransitionsAndShouldBlock(direction: TransitionDirection) {
+    if (_oneTimeTransitions[direction].blocking.length) {
+        _oneTimeTransitions[direction].blocking.forEach(fn => fn());
+        _oneTimeTransitions[direction].blocking = [];
+        return true;
+    }
+
+    if (_oneTimeTransitions[direction].nonBlocking.length) {
+        _oneTimeTransitions[direction].nonBlocking.forEach(fn => fn());
+        _oneTimeTransitions[direction].nonBlocking = [];
+    }
+
+    return false;
+}
+
 export function nextTransition() {
+
+    if (executeOneTimeTransitionsAndShouldBlock("begin")) {
+        return;
+    }
 
     // if we're already done with the last transition, nothing to do
     if (_transitionIndex + 1 >= _transitions.length) {
@@ -236,6 +283,10 @@ export function nextTransition() {
 }
 
 export function prevTransition() {
+
+    if (executeOneTimeTransitionsAndShouldBlock("revert")) {
+        return;
+    }
 
     // if no transitions are active, do nothing
     if (_transitionIndex < 0) {
