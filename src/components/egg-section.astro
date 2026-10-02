@@ -622,10 +622,7 @@ requestAnimationFrame(moveEgg);
     }
 </style>
 <script>
-    import {
-        addConstControl,
-        addLiveDisplay,
-    } from "../lib/codeBlockHooks";
+    import { addConstControl, addLiveDisplay } from "../lib/codeBlockHelpers";
     import {
         registerClassTransition,
         registerRafTransition,
@@ -915,7 +912,7 @@ requestAnimationFrame(moveEgg);
     const pxPerFrame = addConstControl(
         "PIXELS_PER_FRAME",
         [-20, -10, -5, -1, 0, 1, 5, 10, 20],
-        true,
+        { startInlineInputsHidden: true },
     );
     let stopEggAtHouse: boolean = false;
     let stopLoopingAtHouse: boolean = false;

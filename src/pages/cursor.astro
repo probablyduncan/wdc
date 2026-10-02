@@ -140,7 +140,11 @@ import Lever from "../components/lever.astro";
         width="35em"
         figure={48}
     >
-        Wild garlic in the spring-time. From <i>National Trust Images</i> and Andrew Butler (<a href="https://www.nationaltrust.org.uk/visit/countryside-woodland/places-to-forage-for-wild-garlic" target="_blank">link</a>).
+        Wild garlic in the spring-time. From <i>National Trust Images</i> and Andrew
+        Butler (<a
+            href="https://www.nationaltrust.org.uk/visit/countryside-woodland/places-to-forage-for-wild-garlic"
+            target="_blank">link</a
+        >).
     </Figure>
     <Figure
         id="spring-tigger"
@@ -151,7 +155,7 @@ import Lever from "../components/lever.astro";
         width="25em"
         figure={49}
     >
-        There's something missing in my step...
+        There’s something missing in my step...
     </Figure>
     <Figure
         id="spring-dog"
@@ -160,22 +164,45 @@ import Lever from "../components/lever.astro";
         x="0.7"
         y="0.3"
         width="48em"
-        figure={51}
+        figure={50}
     >
-        “Slinky’s laid-back outlook on life and flexible attitude make him one of the most sensible toys.” This is what the internet web-site <i><a href="https://characters.disney.com/toy-story/slinky-dog" target="_blank">characters.disney.com</a></i> says about <i>Slinky Dog</i>.
+        “Slinky’s laid-back outlook on life and flexible attitude make him one
+        of the most sensible toys.” This is what the internet web-site <i
+            ><a
+                href="https://characters.disney.com/toy-story/slinky-dog"
+                target="_blank">characters.disney.com</a
+            ></i
+        > says about <i>Slinky Dog</i>.
     </Figure>
     <Figure
         id="spring-slinky"
-        src="/images/spring-foreshadow-slinky.jpg"
+        src="/images/spring-foreshadow-slinky.webp"
         class="act-i"
         x="0.26"
         y="0.62"
         width="50em"
-        figure={50}
+        figure={51}
     >
-        “A spring, a spring, a marvelous thing! Everyone knows it’s Slinky!”[41] Here is a slinky story: a naval engineer named <a href="https://en.wikipedia.org/wiki/Richard_T._James" target="_blank">Richard</a> invented it accidentally, in 1943, while trying to make something else. His wife <a href="https://en.wikipedia.org/wiki/Betty_James" target="_blank">Betty</a> came up with the name, and together they became slinky magnates.
-        <br/><br/>
-        In 1960, Richard left Betty and their six kids to join an evangelical Bible translation company in Bolivia. Betty ran the slinky business for the next 40 years, did a really good job, and was inducted into the <i>Toy Industry Hall of Fame</i> in 2001. Richard died in Bolivia in 1974. (Photo from <i><a href="https://content.time.com/time/specials/packages/article/0,28804,2049243_2048651_2049036,00.html" target="_blank">Time Magazine</a></i>.)
+        “A spring, a spring, a marvelous thing! Everyone knows it’s Slinky!”[41]
+        Heres a slinky story: a naval engineer named <a
+            href="https://en.wikipedia.org/wiki/Richard_T._James"
+            target="_blank">Richard</a
+        > invented it accidentally, in 1943, while trying to make something else.
+        His wife <a
+            href="https://en.wikipedia.org/wiki/Betty_James"
+            target="_blank">Betty</a
+        > came up with the name, and together they became slinky magnates.
+        <br /><br />
+        In 1960, Richard left Betty and their six kids to join an evangelical Bible
+        translation company in Bolivia. Betty ran the slinky business for the next
+        40 years, did a really good job, and was inducted into the <i
+            >Toy Industry Hall of Fame</i
+        > in 2001. Richard died in Bolivia in 1974. (Photo from <i
+            ><a
+                href="https://content.time.com/time/specials/packages/article/0,28804,2049243_2048651_2049036,00.html"
+                target="_blank">Time Magazine</a
+            ></i
+        >.)
     </Figure>
 
     <!-- TYPESCRIPT -->
@@ -975,8 +1002,8 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
                 code={`
 #egg {
     translate:
-        calc(var(--x, 0) - 50%)
-        calc(var(--y, 0) - 50%);
+        calc(var(--x, 0px) - 50%)
+        calc(var(--y, 0px) - 50%);
     
     width: 15vmin;
     position: fixed;
@@ -991,8 +1018,8 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
                 code={`
 #egg {
     translate:
-        calc(var(--x, 0) - 50%)
-        calc(var(--y, 0) - 50%);
+        calc(var(--x, 0px) - 50%)
+        calc(var(--y, 0px) - 50%);
     
     width: 15vmin;
     position: fixed;
@@ -1008,8 +1035,8 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
                 code={`
 #egg {
     translate:
-        calc(var(--x, 0) - 50%)
-        calc(var(--y, 0) - 50%);
+        calc(var(--x, 0px) - 50%)
+        calc(var(--y, 0px) - 50%);
 
     width: 15vmin;
     position: fixed;
@@ -1031,8 +1058,8 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
                 code={`
 #egg {
     translate:
-        calc(var(--x, 0) - 50%)
-        calc(var(--y, 0) - 50%);
+        calc(var(--x, 0px) - 50%)
+        calc(var(--y, 0px) - 50%);
 
     width: 15vmin;
     position: fixed;
@@ -1077,9 +1104,9 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
             z-index: 50;
         }
 
-        translate: var(--egg-x, 0) var(--egg-y, 0);
+        translate: var(--egg-x, 0px) var(--egg-y, 0px);
         &.center {
-            translate: calc(var(--egg-x, 0) - 50%) calc(var(--egg-y, 0) - 50%);
+            translate: calc(var(--egg-x, 0px) - 50%) calc(var(--egg-y, 0px) - 50%);
         }
 
         &.no-pointer {
@@ -1097,7 +1124,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
 
         &.away {
             opacity: 0;
-            translate: -15vmin calc(var(--egg-y, 0) * 2 - 50vh - 50%);
+            translate: -15vmin calc(var(--egg-y, 0px) * 2 - 50vh - 50%);
             transition:
                 opacity 0.4s,
                 translate 0.4s;
@@ -1126,22 +1153,10 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
         z-index: 3;
     }
 
-    #ts :global(.expressive-code) {
-        /* max-width: calc(50vw - 3ch); */
-    }
-
-    #css :global(.expressive-code) {
-        /* max-width: min(50ch, 50vw - 3ch); */
-    }
-
     :global(.expressive-code) {
         &:not(.active) {
             display: none;
         }
-    }
-
-    #css :global(.code) {
-        /* width: 45ch; */
     }
 
     #fps-display {
@@ -1179,8 +1194,8 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     :global(.act-i),
     #act-ii h1,
     #act-ii h2 {
-        translate: var(--act-x, 0) var(--act-y, 0);
-        rotate: var(--act-r, 0);
+        translate: var(--act-x, 0px) var(--act-y, 0px);
+        rotate: var(--act-r, 0px);
     }
 
     #act-ii-wrapper {
@@ -1237,7 +1252,11 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     }
 </style>
 <script>
-    import { addConstControl, addLiveDisplay } from "../lib/codeBlockHooks";
+    import {
+        addConstControl,
+        addLiveDisplay,
+        getCodeBlockTransitions,
+    } from "../lib/codeBlockHelpers";
     import {
         SpringController,
         type SpringOptions,
@@ -1321,7 +1340,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     const pxPerFrameControl = addConstControl(
         "PIXELS_PER_FRAME",
         [-20, -5, -2, -1, 0, 1, 2, 5, 20],
-        true,
+        { startInlineInputsHidden: true },
     );
 
     const halfLifeBasicControl = addConstControl(
@@ -1339,133 +1358,9 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     const liveFPS = addLiveDisplay("FPS", "00.0");
     const liveHalfLifeLerp = addLiveDisplay("HALF_LIFE_LERP", "0.0");
 
-    const { html, css, ts } = (() => {
-        const langs = ["html", "css", "ts"] as const;
-        type Lang = (typeof langs)[number];
-        type CodeBlockAction = "next" | "show" | "hide";
-        return langs.reduce(
-            (map, lang) => {
-                const wrapperEl = document.getElementById(lang);
-                if (!wrapperEl) return map;
-
-                const codeBlockEls = [
-                    ...wrapperEl.querySelectorAll<HTMLElement>(
-                        ".expressive-code",
-                    ),
-                ];
-
-                let index = codeBlockEls.findIndex((el) =>
-                    el.classList.contains("active"),
-                );
-
-                function getCurrent() {
-                    if (index > -1 && index < codeBlockEls.length) {
-                        return codeBlockEls[index];
-                    }
-                }
-
-                function toggleCurrent(type: "remove" | "add") {
-                    const currentEl = getCurrent();
-                    if (!currentEl) return;
-
-                    currentEl.classList[type]("active");
-
-                    // reset scroll and close collapsible sections
-                    if (type === "add") {
-                        currentEl
-                            .querySelector<HTMLPreElement>(`pre`)
-                            ?.scrollTo({ behavior: "instant", left: 0 });
-                        currentEl
-                            .querySelectorAll("details")
-                            .forEach((detail) => {
-                                detail.open = false;
-                            });
-                    }
-                }
-
-                function isHidden() {
-                    if (index > -1 && index < codeBlockEls.length) {
-                        return !codeBlockEls[index].classList.contains(
-                            "active",
-                        );
-                    }
-
-                    return false;
-                }
-
-                function registerNext() {
-                    let hiddenOnBegin = false;
-                    registerTransition({
-                        begin() {
-                            hiddenOnBegin = isHidden();
-                            const atEnd = index >= codeBlockEls.length - 1;
-
-                            if (!hiddenOnBegin && !atEnd) {
-                                toggleCurrent("remove");
-                            }
-
-                            index++;
-                            if (!atEnd) {
-                                toggleCurrent("add");
-                            }
-                        },
-                        revert() {
-                            toggleCurrent("remove");
-                            index--;
-                            if (!hiddenOnBegin) {
-                                toggleCurrent("add");
-                            }
-                        },
-                    });
-                }
-
-                function registerHide() {
-                    let hiddenOnBegin = false;
-                    registerTransition({
-                        begin() {
-                            hiddenOnBegin = isHidden();
-                            toggleCurrent("remove");
-                        },
-                        revert() {
-                            if (!hiddenOnBegin) {
-                                toggleCurrent("add");
-                            }
-                        },
-                    });
-                }
-
-                function registerShow() {
-                    let hiddenOnBegin = false;
-                    registerTransition({
-                        begin() {
-                            hiddenOnBegin = isHidden();
-                            toggleCurrent("add");
-                        },
-                        revert() {
-                            if (hiddenOnBegin) {
-                                toggleCurrent("remove");
-                            }
-                        },
-                    });
-                }
-
-                map[lang] = {
-                    hide: registerHide,
-                    show: registerShow,
-                    next: registerNext,
-                    currentElement: getCurrent,
-                };
-
-                return map;
-            },
-            {} as Record<
-                Lang,
-                Record<CodeBlockAction, () => void> & {
-                    currentElement: () => HTMLElement | undefined;
-                }
-            >,
-        );
-    })();
+    const html = getCodeBlockTransitions("html");
+    const css = getCodeBlockTransitions("css");
+    const ts = getCodeBlockTransitions("ts");
 
     function getCenter(rect: DOMRect) {
         return {
@@ -1473,11 +1368,6 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
             y: rect.y + rect.height / 2,
         };
     }
-
-    type Position = {
-        x: number;
-        y: number;
-    };
 
     const actI = [...document.querySelectorAll<HTMLElement>(".act-i")].map(
         (el) => {
@@ -1490,7 +1380,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
             const y = new SpringController(springOptions);
             const r = new SpringController(springOptions);
             return {
-                setup(mousePos: Position) {
+                setup(mousePos: { x: number; y: number }) {
                     const thisPos = getCenter(el.getBoundingClientRect());
                     const angleFromMouse = Math.atan2(
                         thisPos.y - mousePos.y,
@@ -1568,7 +1458,10 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
         let h2SetupTimeoutId: NodeJS.Timeout | undefined;
 
         return {
-            setup(mouse: Position, mouseDelta: Position) {
+            setup(
+                mouse: { x: number; y: number },
+                mouseDelta: { x: number; y: number },
+            ) {
                 const center = getCenter(
                     h1.parentElement!.getBoundingClientRect(),
                 );

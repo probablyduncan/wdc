@@ -1,4 +1,10 @@
-export function addConstControl<TValue extends number | string>(constName: string, values: TValue[], hidden: boolean = false): {
+import { registerTransition } from "./slides";
+
+const CONST_CONTROL_OPTION_DEFAULTS = {
+    startInlineInputsHidden: false,
+    additionalInputSelector: "",
+};
+export function addConstControl<TValue extends number | string>(constName: string, values: TValue[], options: Partial<typeof CONST_CONTROL_OPTION_DEFAULTS> = {}): {
     get: () => TValue;
     set: (value: TValue) => void;
     reset: () => void;
@@ -6,7 +12,10 @@ export function addConstControl<TValue extends number | string>(constName: strin
     hide: () => void;
     listen: (callback: (value: TValue) => void) => void;
 } {
-    const inputEls: HTMLInputElement[] = [];
+    const { startInlineInputsHidden, additionalInputSelector } = Object.assign({...CONST_CONTROL_OPTION_DEFAULTS}, options);
+
+    const inlineInputEls: HTMLInputElement[] = [];
+    const additionalInputEls = [...document.querySelectorAll<HTMLInputElement>(additionalInputSelector)];
     const valueEls: HTMLElement[] = [];
     let initialIndex = 0;
     let index = Math.floor(values.length / 2);
@@ -22,16 +31,17 @@ export function addConstControl<TValue extends number | string>(constName: strin
     function set(value: TValue) {
         index = values.indexOf(value);
         valueEls.forEach(el => el.innerText = value.toString());
-        inputEls.forEach(el => el.value = index.toString());
+        inlineInputEls.forEach(el => el.value = index.toString());
+        additionalInputEls.forEach(el => el.value = index.toString());
         listeners.forEach(callback => callback(value));
     }
 
-    function show() {
-        inputEls.forEach(el => el.hidden = false);
-    }
-
-    function hide() {
-        inputEls.forEach(el => el.hidden = true);
+    function setHidden(hidden: boolean) {
+        inlineInputEls.forEach(el => {
+            if (el.classList.contains("const-control")) {
+                el.hidden = hidden;
+            }
+        });
     }
 
     for (let codeBlock of document.getElementsByClassName("expressive-code")) {
@@ -66,9 +76,9 @@ export function addConstControl<TValue extends number | string>(constName: strin
             input.max = (values.length - 1).toString();
 
             input.classList.add("const-control");
-            input.hidden = hidden;
+            input.hidden = startInlineInputsHidden;
 
-            inputEls.push(input);
+            inlineInputEls.push(input);
             valueEls.push(valueEl);
             line.appendChild(input);
             input.addEventListener("input", () => {
@@ -86,8 +96,8 @@ export function addConstControl<TValue extends number | string>(constName: strin
         reset: () => {
             set(values[initialIndex]);
         },
-        show,
-        hide,
+        show: () => setHidden(false),
+        hide: () => setHidden(false),
         listen: addListener,
     }
 }
@@ -175,4 +185,108 @@ export function addLiveDisplay<TValue = string | number>(name: string, initialVa
             }
         },
     }
+}
+
+export function getCodeBlockTransitions(wrapperId: string) {
+    const wrapperEl = document.getElementById(wrapperId);
+    if (!wrapperEl) {
+        return {
+            next() { },
+            hide() { },
+            show() { },
+        }
+    }
+
+    const codeBlockEls = [
+        ...wrapperEl.querySelectorAll<HTMLElement>(".expressive-code"),
+    ];
+    let index = codeBlockEls.findIndex((el) =>
+        el.classList.contains("active"),
+    );
+    function getCurrent() {
+        if (index > -1 && index < codeBlockEls.length) {
+            return codeBlockEls[index];
+        }
+    }
+
+    function toggleCurrent(type: "remove" | "add") {
+        const currentEl = getCurrent();
+        if (!currentEl) return;
+
+        currentEl.classList[type]("active");
+
+        // reset scroll and close collapsible sections
+        if (type === "add") {
+            currentEl
+                .querySelector<HTMLPreElement>(`pre`)
+                ?.scrollTo({ behavior: "instant", left: 0 });
+            currentEl.querySelectorAll("details").forEach((detail) => {
+                detail.open = false;
+            });
+        }
+    }
+
+    function isHidden() {
+        if (index > -1 && index < codeBlockEls.length) {
+            return !codeBlockEls[index].classList.contains("active");
+        }
+
+        return false;
+    }
+
+    return {
+        next() {
+            let hiddenOnBegin = false;
+            registerTransition({
+                begin() {
+                    hiddenOnBegin = isHidden();
+                    const atEnd = index >= codeBlockEls.length - 1;
+
+                    if (!hiddenOnBegin && !atEnd) {
+                        toggleCurrent("remove");
+                    }
+
+                    index++;
+                    if (!atEnd) {
+                        toggleCurrent("add");
+                    }
+                },
+                revert() {
+                    toggleCurrent("remove");
+                    index--;
+                    if (!hiddenOnBegin) {
+                        toggleCurrent("add");
+                    }
+                },
+            });
+        },
+        hide() {
+            let hiddenOnBegin = false;
+            registerTransition({
+                begin() {
+                    hiddenOnBegin = isHidden();
+                    toggleCurrent("remove");
+                },
+                revert() {
+                    if (!hiddenOnBegin) {
+                        toggleCurrent("add");
+                    }
+                },
+            });
+        },
+        show() {
+            let hiddenOnBegin = false;
+            registerTransition({
+                begin() {
+                    hiddenOnBegin = isHidden();
+                    toggleCurrent("add");
+                },
+                revert() {
+                    if (hiddenOnBegin) {
+                        toggleCurrent("remove");
+                    }
+                },
+            });
+        },
+    };
 }

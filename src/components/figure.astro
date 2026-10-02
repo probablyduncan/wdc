@@ -26,9 +26,12 @@ if (!props.src && !Astro.slots.has("figure")) {
 }
 
 let classString = props.class ?? "";
+if (props.border || Astro.slots.has("default")) {
+    classString += " bordered";
+}
+
 let captionHtml = "";
 if (Astro.slots.has("default")) {
-    classString += " bordered";
 
     if (props.figure) {
         captionHtml += "<b>Figure " + props.figure + ":</b> &nbsp; &nbsp; ";

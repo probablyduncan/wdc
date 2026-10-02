@@ -1,0 +1,86 @@
+@font-face {
+    font-family: 'Recursive';
+    src: url("/Recursive_VF_1.085.woff2");
+    font-style: oblique 0deg 15deg;
+    font-weight: 300 1000;
+    font-display: swap;
+}
+
+:root {
+    font-optical-sizing: auto;
+}
+
+body {
+    margin: 0;
+    background-color: black;
+    overflow: clip;
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+div {
+    position: fixed;
+    --width: 300px;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--width);
+    top: calc(var(--top, 0) * (100% - var(--width)));
+    left: calc(var(--left, 0) * (100% - var(--width)));
+    background-color: var(--color);
+}
+
+main {
+    position: relative;
+    overflow: clip;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+}
+
+section {
+    display: flex;
+    flex-flow: column;
+    align-items: flex-end;
+}
+
+h1, h2, div {
+    translate: var(--x, 0) var(--y, 0);
+    rotate: var(--r, 0);
+    scale: var(--s, 1);
+}
+
+h1,
+h2 {
+
+    margin: unset;
+    font-family: "Recursive";
+    font-weight: 1000;
+    line-height: 0.7;
+
+    &:not(.active) {
+        opacity: 0;
+        user-select: none;
+        pointer-events: none;
+    }
+}
+
+h1 {
+    font-size: 25vw;
+    text-align: center;
+    font-variation-settings: "slnt" -5, "CASL" 0, "CRSV" 0, "MONO" 0;
+    text-shadow: 4px 4px 2px #00000088;
+}
+
+h2 {
+    font-size: 3.9625vw;
+    margin: 0.25ch 0.665ch;
+    text-align: right;
+    font-variation-settings: "slnt" -5, "CASL" 1, "CRSV" 0, "MONO" 0;
+    text-shadow: 4px 4px 2px #00000066;
+}

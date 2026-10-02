@@ -1,9 +1,55 @@
 ---
+import { Code } from "astro-expressive-code/components";
 import Slide from "../components/slide.astro";
+import Figure from "../components/figure.astro";
+
+// this is all it is!
+
+// F(s) = K*x
+// F(d) = D*v
+
+// F = M*a
+// m*a = F(s) - f(d)
+// a = (F(s) - F(d)) / m
+
+// v = x/s, a = v/s
+// x = v * s, v = a * s
+
+// so, v = s * (F(s) - F(d)) / m
+// and x = s * v
+
+const mass = 2;
+const damping = 20;
+const stiffness = 100;
+
+let current = 0;
+let target = 0;
+let velocity = 0;
+
+function step(seconds: number) {
+    const springForce = stiffness * (target - current);
+    const dampingForce = damping * velocity;
+    const acceleration = (springForce - dampingForce) / mass;
+    velocity += acceleration * seconds;
+    current += velocity * seconds;
+}
+
+// const editFile = `vscode://file${Astro.self.moduleId}`;
+function getEditFileLink() {
+    return import.meta.env.MODE.startsWith("dev")
+        ? `vscode://file${Astro.self.moduleId}`
+        : `https://github.com/probablyduncan/wdc/tree/main/${Astro.self.moduleId}`;
+}
+
+console.log(import.meta.dirname); // in build this will be in /dist
+console.log(import.meta.filename); // in build this will be in /dist
+console.log(import.meta.hot); // this is set when hot reload is on, otherwise not
+console.log(import.meta.url); // this is the file url!
+
+// basically, if we're hot we want to
 ---
 
 <Slide prev="cursor">
-    SPRING CHICKEN!
     <!--
         who do you think laid our egg??
         a spring chicken, of course
@@ -23,4 +69,257 @@ import Slide from "../components/slide.astro";
         and eventually we can go to editing files in vscode and hot reloading?
         maybe that's what I can do for the spider?
     -->
+    <section id="code-classes">
+        <Code
+            lang="ts"
+            code={`
+class Lerper {
+    
+}
+`}
+        />
+        <Code
+            lang="ts"
+            ins={[2, 3, 4]}
+            code={`
+class Lerper {
+    HALF_LIFE = 100;
+    current = 0;
+    target = 0;
+}
+`}
+        />
+        <Code
+            lang="ts"
+            ins={[6, 7, 8, 9]}
+            code={`
+class Lerper {
+    HALF_LIFE = 100;
+    current = 0;
+    target = 0;
+
+    step(delta) {
+        const lerp = Math.min(1, 0.5 * delta / HALF_LIFE);
+        current += (target - current) * lerp;
+    }
+}
+`}
+        />
+        <Code
+            lang="ts"
+            code={`
+class Spring {
+    current = 0;
+    target = 0;
+}
+`}
+        />
+        <Code
+            lang="ts"
+            ins={[5, 6, 7]}
+            code={`
+class Spring {
+    current = 0;
+    target = 0;
+
+    step(delta: number) {
+        
+    }
+}
+`}
+        />
+        <Code
+            lang="ts"
+            ins={[]}
+            code={`
+class Spring {
+    current = 0;
+    target = 0;
+
+    stiffness = 100;
+    mass = 2;
+
+    step(delta: number) {
+        const force = k * (target - current);
+        const acceleration = force / mass;
+        const velocity = acceleration * delta;
+        current += velocity * delta;
+    }
+}
+`}
+        />
+    </section>
+    <Figure x="0.5" y="0.5" class="active">
+        <section id="code-uses" slot="figure">
+            <Code
+                lang="ts"
+                ins={{ range: "1" }}
+                code={`
+const x = new Lerper();
+`}
+            />
+            <Code
+                lang="ts"
+                ins={{ range: "3-5" }}
+                code={`
+const x = new Lerper();
+
+window.addEventListener("click", ({ clientX }) => {
+    x.target = clientX;
+});
+`}
+            />
+            <Code
+                lang="ts"
+                ins={{ range: "7-13" }}
+                code={`
+const x = new Lerper();
+
+window.addEventListener("click", ({ clientX }) => {
+    x.target = clientX;
+});
+
+let prev = 0;
+requestAnimationFrame(function update(time) {
+    const delta = time - prev;
+    prev = time;
+
+    requestAnimationFrame(update);
+});
+`}
+            />
+            <Code
+                lang="ts"
+                ins={{ range: "12-13" }}
+                code={`
+const x = new Lerper();
+
+window.addEventListener("click", ({ clientX }) => {
+    x.target = clientX;
+});
+
+let prev = 0;
+requestAnimationFrame(function update(time) {
+    const delta = time - prev;
+    prev = time;
+
+    x.step(delta);
+    el.style.setProperty("--x", x.current);
+
+    requestAnimationFrame(update);
+});
+`}
+            />
+        </section>
+    </Figure>
+    <Figure id="math-fs" x="0.5" y="0.5" class="active" border={true}>
+        <math slot="figure">
+            <msub>
+                <mi>F</mi>
+                <mi>S</mi>
+            </msub>
+            <mo>=</mo>
+            <mn>-</mn>
+            <mi>k</mi>
+            <mi>x</mi>
+        </math>
+        Pictured: the spring force, as a product of the spring<br />
+        coefficient <b><i>k&nbsp;</i></b> and the distance from equilibrium <b
+            ><i>x&nbsp;</i></b
+        >.
+    </Figure>
+    <Figure id="math-ma" x="0.5" y="0.5" class="active" border={true}>
+        <math slot="figure">
+            <mi>F</mi>
+            <mo>=</mo>
+            <mi>m</mi>
+            <mi>a</mi>
+        </math>
+        A force is an object’s mass multiplied by its acceleration
+    </Figure>
+    <Figure id="math-ma" x="0.5" y="0.5" class="active" border={true}>
+        <math slot="figure">
+            <mi>a</mi>
+            <mo>=</mo>
+            <mi>k</mi>
+            <mi>x</mi>
+            <mo>/</mo>
+            <mi>m</mi>
+        </math>
+        The acceleration of the thing at the end of the spring
+    </Figure>
+    <Figure id="math-fd" x="0.5" y="0.5" class="active" border={true}>
+        <math slot="figure">
+            <msub>
+                <mi>F</mi>
+                <mi>D</mi>
+            </msub>
+            <mo>=</mo>
+            <mi>d</mi>
+            <mi>v</mi>
+        </math>
+        The damping force is related to an object’s velocity
+    </Figure>
+
+    <img id="chicken" src="spring-chicken.webp" />
 </Slide>
+<style>
+    #code-classes {
+        position: fixed;
+        top: 2ch;
+        left: 2ch;
+    }
+
+    :global(.expressive-code) {
+        &:not(.active) {
+            display: none;
+        }
+    }
+
+    math {
+        font-size: 2em;
+    }
+
+    #chicken {
+        aspect-ratio: 1;
+        --width: 15vmin;
+        width: var(--width);
+        background-color: tomato;
+        position: fixed;
+        top: 0;
+        left: 0;
+        --x: 15vmin;
+        --y: 50vh;
+        translate: calc(var(--x, 0px) - 50%) calc(var(--y, 0px) - 50%);
+        z-index: 50;
+    }
+</style>
+<script>
+    import AnimationFrameController from "../lib/animationFrameController";
+    import { getCodeBlockTransitions } from "../lib/codeBlockHelpers";
+    import { registerTransition, withPrevious } from "../lib/slides";
+
+    const codeClasses = getCodeBlockTransitions("code-classes");
+    const codeUses = getCodeBlockTransitions("code-uses");
+
+    // create a lerp class
+    codeClasses.next();
+    codeClasses.next();
+    codeClasses.next();
+
+    // how do we use this?
+    codeUses.next();
+    codeUses.next();
+    codeUses.next();
+    codeUses.next();
+    codeUses.hide();
+
+    // ok now spring class
+    codeClasses.next();
+    withPrevious();
+
+    codeClasses.next();
+    codeClasses.next();
+    codeClasses.next();
+    codeClasses.next();
+</script>
