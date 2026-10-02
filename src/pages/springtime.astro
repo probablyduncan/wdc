@@ -10,10 +10,10 @@ function getEditFileLink() {
         : `https://github.com/probablyduncan/wdc/tree/main/${Astro.self.moduleId}`;
 }
 
-console.log(import.meta.dirname); // in build this will be in /dist
-console.log(import.meta.filename); // in build this will be in /dist
-console.log(import.meta.hot); // this is set when hot reload is on, otherwise not
-console.log(import.meta.url); // this is the file url!
+// console.log(import.meta.dirname); // in build this will be in /dist
+// console.log(import.meta.filename); // in build this will be in /dist
+// console.log(import.meta.hot); // this is set when hot reload is on, otherwise not
+// console.log(import.meta.url); // this is the file url!
 
 // basically, if we're hot we want to
 ---
@@ -570,6 +570,8 @@ class Spring {
         position: fixed;
         top: 0;
         left: 0;
+        user-select: none;
+        pointer-events: none;
         --d: 1;
         --x: calc(50vw - var(--width) / 2);
         --y: calc(100vh - var(--width) / 2);
@@ -680,14 +682,23 @@ class Spring {
         });
     }
 
-    window.addEventListener("click", ({ clientX, target }) => {
-        if (
-            (target as HTMLElement).tagName === "MAIN" ||
-            (target as HTMLElement).id === chicken.id
-        ) {
+    {
+        let mouseDown = false;
+        window.addEventListener("mousedown", ({ target, clientX }) => {
+            if ((target as HTMLElement).tagName === "MAIN") {
+                mouseDown = true;
             xController().target = clientX;
         }
     });
+        window.addEventListener("mouseup", () => {
+            mouseDown = false;
+        });
+        window.addEventListener("mousemove", ({ clientX }) => {
+            if (mouseDown) {
+                xController().target = clientX;
+            }
+        });
+    }
 
     const chickenFrames = {
         current: {
@@ -731,12 +742,12 @@ class Spring {
 
     {
         // preload frames
-        chickenFrames.move.forEach(m => {
-            m.frames.forEach(frame => {
+        chickenFrames.move.forEach((m) => {
+            m.frames.forEach((frame) => {
                 const preload = new Image();
                 preload.src = chickenFrames.getSrc(frame);
-            })
-        })
+            });
+        });
         const preloadLook = new Image();
         preloadLook.src = chickenFrames.getSrc("look");
     }
@@ -768,7 +779,9 @@ class Spring {
                 chickenFrames.current.id = newId;
                 chickenFrames.current.index =
                     (chickenFrames.current.index + 1) % frames.length;
-                chicken.src =  chickenFrames.getSrc(frames[chickenFrames.current.index]);
+                chicken.src = chickenFrames.getSrc(
+                    frames[chickenFrames.current.index],
+                );
 
                 if (newId === "idle") {
                     x.fastForward();
