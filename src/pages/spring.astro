@@ -10,7 +10,11 @@ import Control from "../components/control.astro";
         <div id="fps"></div>
         <div id="box"></div>
         <Controls>
-            <Control name="damping" type="values" values={[5, 10, 15, 20, 50, 65, 200]} />
+            <Control
+                name="damping"
+                type="values"
+                values={[5, 10, 15, 20, 50, 65, 200]}
+            />
             <Control name="stiff" type="checkbox" />
         </Controls>
     </body>
@@ -73,7 +77,7 @@ import Control from "../components/control.astro";
         return max * angleFactor * velocityFactor;
     }
 
-    const animationController = new AnimationFrameController((deltaMS) => {
+    const animationController = new AnimationFrameController(({ deltaMS }) => {
         box.style.setProperty("--x", x.step(deltaMS) + "px");
         box.style.setProperty("--y", y.step(deltaMS) + "px");
         box.style.setProperty("--r", getRotation() + "rad");
@@ -98,7 +102,7 @@ import Control from "../components/control.astro";
         x.options.damping = value;
         y.options.damping = value;
     });
-    
+
     addControlListener<boolean>("stiff", (value) => {
         x.options.stiffness = value ? 20 : 120;
         y.options.stiffness = value ? 20 : 120;

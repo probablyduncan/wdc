@@ -1255,7 +1255,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     import {
         addConstControl,
         addLiveDisplay,
-        getCodeBlockTransitions,
+        getChildTransitions,
     } from "../lib/codeBlockHelpers";
     import {
         SpringController,
@@ -1358,9 +1358,9 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     const liveFPS = addLiveDisplay("FPS", "00.0");
     const liveHalfLifeLerp = addLiveDisplay("HALF_LIFE_LERP", "0.0");
 
-    const html = getCodeBlockTransitions("html");
-    const css = getCodeBlockTransitions("css");
-    const ts = getCodeBlockTransitions("ts");
+    const html = getChildTransitions("html", ".expressive-code");
+    const css = getChildTransitions("css", ".expressive-code");
+    const ts = getChildTransitions("ts", ".expressive-code");
 
     function getCenter(rect: DOMRect) {
         return {

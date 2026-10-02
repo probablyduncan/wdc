@@ -183,7 +183,7 @@ import "../css.css";
                     v.current = x.current + Math.random() * 40 - 20;
                     v.target = 0;
 
-                    const a = new AnimationFrameController((deltaMS) => {
+                    const a = new AnimationFrameController(({ deltaMS }) => {
                         x.step(deltaMS);
                         v.step(deltaMS);
 

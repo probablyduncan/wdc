@@ -3,37 +3,6 @@ import { Code } from "astro-expressive-code/components";
 import Slide from "../components/slide.astro";
 import Figure from "../components/figure.astro";
 
-// this is all it is!
-
-// F(s) = K*x
-// F(d) = D*v
-
-// F = M*a
-// m*a = F(s) - f(d)
-// a = (F(s) - F(d)) / m
-
-// v = x/s, a = v/s
-// x = v * s, v = a * s
-
-// so, v = s * (F(s) - F(d)) / m
-// and x = s * v
-
-const mass = 2;
-const damping = 20;
-const stiffness = 100;
-
-let current = 0;
-let target = 0;
-let velocity = 0;
-
-function step(seconds: number) {
-    const springForce = stiffness * (target - current);
-    const dampingForce = damping * velocity;
-    const acceleration = (springForce - dampingForce) / mass;
-    velocity += acceleration * seconds;
-    current += velocity * seconds;
-}
-
 // const editFile = `vscode://file${Astro.self.moduleId}`;
 function getEditFileLink() {
     return import.meta.env.MODE.startsWith("dev")
@@ -69,87 +38,7 @@ console.log(import.meta.url); // this is the file url!
         and eventually we can go to editing files in vscode and hot reloading?
         maybe that's what I can do for the spider?
     -->
-    <section id="code-classes">
-        <Code
-            lang="ts"
-            code={`
-class Lerper {
-    
-}
-`}
-        />
-        <Code
-            lang="ts"
-            ins={[2, 3, 4]}
-            code={`
-class Lerper {
-    HALF_LIFE = 100;
-    current = 0;
-    target = 0;
-}
-`}
-        />
-        <Code
-            lang="ts"
-            ins={[6, 7, 8, 9]}
-            code={`
-class Lerper {
-    HALF_LIFE = 100;
-    current = 0;
-    target = 0;
-
-    step(delta) {
-        const lerp = Math.min(1, 0.5 * delta / HALF_LIFE);
-        current += (target - current) * lerp;
-    }
-}
-`}
-        />
-        <Code
-            lang="ts"
-            code={`
-class Spring {
-    current = 0;
-    target = 0;
-}
-`}
-        />
-        <Code
-            lang="ts"
-            ins={[5, 6, 7]}
-            code={`
-class Spring {
-    current = 0;
-    target = 0;
-
-    step(delta: number) {
-        
-    }
-}
-`}
-        />
-        <Code
-            lang="ts"
-            ins={[]}
-            code={`
-class Spring {
-    current = 0;
-    target = 0;
-
-    stiffness = 100;
-    mass = 2;
-
-    step(delta: number) {
-        const force = k * (target - current);
-        const acceleration = force / mass;
-        const velocity = acceleration * delta;
-        current += velocity * delta;
-    }
-}
-`}
-        />
-    </section>
-    <Figure x="0.5" y="0.5" class="active">
+    <Figure x="0.75" y="0.6" class="active">
         <section id="code-uses" slot="figure">
             <Code
                 lang="ts"
@@ -212,43 +101,376 @@ requestAnimationFrame(function update(time) {
             />
         </section>
     </Figure>
-    <Figure id="math-fs" x="0.5" y="0.5" class="active" border={true}>
+    <section id="code-classes">
+        <Code
+            lang="ts"
+            code={`
+class Lerper {
+    
+}
+`}
+        />
+        <Code
+            lang="ts"
+            ins={[2, 3, 4]}
+            code={`
+class Lerper {
+    HALF_LIFE = 100;
+    current = 0;
+    target = 0;
+}
+`}
+        />
+        <Code
+            lang="ts"
+            ins={[6, 7, 8, 9]}
+            code={`
+class Lerper {
+    HALF_LIFE = 100;
+    current = 0;
+    target = 0;
+
+    step(delta: number) {
+        const lerp = Math.min(1, 0.5 * delta / HALF_LIFE);
+        current += (target - current) * lerp;
+    }
+}
+`}
+        />
+        <Code
+            lang="ts"
+            code={`
+class Spring {
+    current = 0;
+    target = 0;
+
+    step(delta: number) {
+        
+    }
+}
+`}
+        />
+        <Code
+            lang="ts"
+            ins={[5, 8]}
+            code={`
+class Spring {
+    current = 0;
+    target = 0;
+
+    stiffness = 1;
+
+    step(delta: number) {
+        const springForce = this.stiffness * (target - current);
+    }
+}
+`}
+        />
+        <Code
+            lang="ts"
+            code={`
+class Spring {
+    current = 0;
+    target = 0;
+
+    stiffness = 1;
+
+    step(delta: number) {
+        const springForce = this.stiffness * (target - current);
+    }
+}
+`}
+        />
+        <Code
+            lang="ts"
+            ins={[6, 10]}
+            code={`
+class Spring {
+    current = 0;
+    target = 0;
+
+    stiffness = 1;
+    mass = 1;
+
+    step(delta: number) {
+        const springForce = this.stiffness * (target - current);
+        const acceleration = springForce / this.mass;
+    }
+}
+`}
+        />
+        <Code
+            lang="ts"
+            code={`
+class Spring {
+    current = 0;
+    target = 0;
+
+    stiffness = 1;
+    mass = 1;
+
+    step(delta: number) {
+        const springForce = this.stiffness * (target - current);
+        const acceleration = springForce / this.mass;
+    }
+}
+`}
+        />
+        <Code
+            lang="ts"
+            ins={[4, 12]}
+            code={`
+class Spring {
+    current = 0;
+    target = 0;
+    velocity = 0;
+
+    stiffness = 1;
+    mass = 1;
+
+    step(delta: number) {
+        const springForce = this.stiffness * (target - current);
+        const acceleration = springForce / this.mass;
+        this.velocity += acceleration * delta;
+    }
+}
+`}
+        />
+        <Code
+            lang="ts"
+            code={`
+class Spring {
+    current = 0;
+    target = 0;
+    velocity = 0;
+
+    stiffness = 1;
+    mass = 1;
+
+    step(delta: number) {
+        const springForce = this.stiffness * (target - current);
+        const acceleration = springForce / this.mass;
+        this.velocity += acceleration * delta;
+    }
+}
+`}
+        />
+        <Code
+            lang="ts"
+            ins={[13]}
+            code={`
+class Spring {
+    current = 0;
+    target = 0;
+    velocity = 0;
+
+    stiffness = 1;
+    mass = 1;
+
+    step(delta: number) {
+        const springForce = this.stiffness * (target - current);
+        const acceleration = springForce / this.mass;
+        this.velocity += acceleration * delta;
+        this.current += velocity * delta;
+    }
+}
+`}
+        />
+        <Code
+            lang="ts"
+            code={`
+class Spring {
+    current = 0;
+    target = 0;
+    velocity = 0;
+
+    stiffness = 1;
+    mass = 1;
+
+    step(delta: number) {
+        const springForce = this.stiffness * (target - current);
+        const acceleration = springForce / this.mass;
+        this.velocity += acceleration * delta;
+        this.current += velocity * delta;
+    }
+}
+`}
+        />
+        <Code
+            lang="ts"
+            ins={[8, 12]}
+            code={`
+class Spring {
+    current = 0;
+    target = 0;
+    velocity = 0;
+
+    stiffness = 1;
+    mass = 1;
+    damping = 1;
+
+    step(delta: number) {
+        const springForce = this.stiffness * (target - current);
+        const dampingForce = this.damping * this.velocity;
+        const acceleration = springForce / this.mass;
+        this.velocity += acceleration * delta;
+        this.current += velocity * delta;
+    }
+}
+`}
+        />
+        <Code
+            lang="ts"
+            ins={"(springForce - dampingForce)"}
+            code={`
+class Spring {
+    current = 0;
+    target = 0;
+    velocity = 0;
+
+    stiffness = 1;
+    mass = 1;
+    damping = 1;
+
+    step(delta: number) {
+        const springForce = this.stiffness * (target - current);
+        const dampingForce = this.damping * this.velocity;
+        const acceleration = (springForce - dampingForce) / this.mass;
+        this.velocity += acceleration * delta;
+        this.current += velocity * delta;
+    }
+}
+`}
+        />
+        <Code
+            lang="ts"
+            code={`
+class Spring {
+    current = 0;
+    target = 0;
+    velocity = 0;
+
+    stiffness = 1;
+    mass = 1;
+    damping = 1;
+
+    step(delta: number) {
+        const springForce = this.stiffness * (target - current);
+        const dampingForce = this.damping * this.velocity;
+        const acceleration = (springForce - dampingForce) / this.mass;
+        this.velocity += acceleration * delta;
+        this.current += velocity * delta;
+    }
+}
+`}
+        />
+        <Code
+            lang="ts"
+            ins={[
+                /= (100)/g,
+                "2",
+                "20",
+                "const seconds = delta / 1000;",
+                /\* (seconds)/g,
+            ]}
+            code={`
+class Spring {
+    current = 0;
+    target = 0;
+    velocity = 0;
+
+    stiffness = 100;
+    mass = 2;
+    damping = 20;
+
+    step(delta: number) {
+        const springForce = this.stiffness * (target - current);
+        const dampingForce = this.damping * this.velocity;
+        const acceleration = (springForce - dampingForce) / this.mass;
+        const seconds = delta / 1000;
+        this.velocity += acceleration * seconds;
+        this.current += velocity * seconds;
+    }
+}
+`}
+        />
+    </section>
+    <Figure
+        id="gcse-physics"
+        x={0.65}
+        y={1 - 0.618}
+        src="/images/gcse-physics.webp"
+        width="50em"
+        pixelate={false}
+    />
+    <Figure id="math-fs" x="0.618" y="0.25" figure={4}>
         <math slot="figure">
             <msub>
                 <mi>F</mi>
                 <mi>S</mi>
             </msub>
             <mo>=</mo>
-            <mn>-</mn>
             <mi>k</mi>
             <mi>x</mi>
         </math>
-        Pictured: the spring force, as a product of the spring<br />
-        coefficient <b><i>k&nbsp;</i></b> and the distance from equilibrium <b
-            ><i>x&nbsp;</i></b
-        >.
+        The spring force, as a product of the spring<br />
+        coefficient <em>k</em> and the distance from equilibrium <em>x</em>.
     </Figure>
-    <Figure id="math-ma" x="0.5" y="0.5" class="active" border={true}>
+    <Figure id="math-fma" x="0.72" y="0.42" figure={5}>
+        <div class="math-steps" slot="figure">
+            <math class="active">
+                <mi>F</mi>
+                <mo>=</mo>
+                <mi>m</mi>
+                <mi>a</mi>
+            </math>
+            <math>
+                <mi>a</mi>
+                <mo>=</mo>
+                <mi>F</mi>
+                <mo>/</mo>
+                <mi>m</mi>
+            </math>
+        </div>
+        Any force is just an object’s mass<br />multiplied by its acceleration.
+    </Figure>
+    <Figure id="math-vat" x="0.65" y="0.65" figure={7}>
         <math slot="figure">
-            <mi>F</mi>
+            <mi>v</mi>
             <mo>=</mo>
-            <mi>m</mi>
             <mi>a</mi>
+            <mi>t</mi>
         </math>
-        A force is an object’s mass multiplied by its acceleration
+        Velocity is acceleration times time!
     </Figure>
-    <Figure id="math-ma" x="0.5" y="0.5" class="active" border={true}>
+    <Figure id="math-xvt" x="0.75" y="0.58" figure={8}>
         <math slot="figure">
-            <mi>a</mi>
+            <mi>x</mi>
+            <mo>=</mo>
+            <mi>v</mi>
+            <mi>t</mi>
+        </math>
+        Distance is velocity times time!
+    </Figure>
+    <Figure id="math-x-no-d" x="0.5" y="0.45" figure={9}>
+        <math slot="figure">
+            <msub>
+                <mi>x</mi>
+                <mn>Δ</mn>
+            </msub>
             <mo>=</mo>
             <mi>k</mi>
             <mi>x</mi>
+            <msup>
+                <mi>t</mi>
+                <mn>2</mn>
+            </msup>
             <mo>/</mo>
             <mi>m</mi>
         </math>
-        The acceleration of the thing at the end of the spring
+        To get the change
     </Figure>
-    <Figure id="math-fd" x="0.5" y="0.5" class="active" border={true}>
+    <Figure id="math-fd" x="0.12" y="0.68" figure={10}>
         <math slot="figure">
             <msub>
                 <mi>F</mi>
@@ -258,16 +480,60 @@ requestAnimationFrame(function update(time) {
             <mi>d</mi>
             <mi>v</mi>
         </math>
-        The damping force is related to an object’s velocity
+        The damping force!
     </Figure>
-
-    <img id="chicken" src="spring-chicken.webp" />
+    <Figure id="math-fd-fs" x="0.6" y="0.84" figure={11}>
+        <div slot="figure" class="math-steps">
+            <math class="active">
+                <msub>
+                    <mi>F</mi>
+                    <mi>S</mi>
+                </msub>
+                <mo>-</mo>
+                <msub>
+                    <mi>F</mi>
+                    <mi>D</mi>
+                </msub>
+                <mo>=</mo>
+                <mi>m</mi>
+                <mi>a</mi>
+            </math>
+            <math>
+                <mi>a</mi>
+                <mo>=</mo>
+                <mo>(</mo>
+                <msub>
+                    <mi>F</mi>
+                    <mi>S</mi>
+                </msub>
+                <mo>-</mo>
+                <msub>
+                    <mi>F</mi>
+                    <mi>D</mi>
+                </msub>
+                <mo>)</mo>
+                <mo>/</mo>
+                <mi>m</mi>
+            </math>
+        </div>
+        The whole is never greater<br />than the sum of its parts.
+    </Figure>
+    <img id="chicken" src="/images/chicken-stand.webp" />
 </Slide>
+
 <style>
+    :global(body) {
+        background-image: url("/images/chicken-bg.png");
+        image-rendering: pixelated;
+        background-size: cover;
+        background-color: white;
+    }
+
     #code-classes {
         position: fixed;
         top: 2ch;
         left: 2ch;
+        z-index: 20;
     }
 
     :global(.expressive-code) {
@@ -276,31 +542,234 @@ requestAnimationFrame(function update(time) {
         }
     }
 
+    #code-uses :global(code) {
+        width: 60ch;
+    }
+
     math {
         font-size: 2em;
     }
 
+    math ~ :global(*) em {
+        font-weight: bold;
+        font-style: italic;
+        margin-inline-end: 0.5ch;
+    }
+
+    .math-steps > math:not(.active) {
+        width: 0;
+        visibility: hidden;
+    }
+
     #chicken {
+        image-rendering: pixelated;
         aspect-ratio: 1;
-        --width: 15vmin;
+        --width: 25vw;
         width: var(--width);
-        background-color: tomato;
         position: fixed;
         top: 0;
         left: 0;
-        --x: 15vmin;
-        --y: 50vh;
+        --d: 1;
+        --x: calc(50vw - var(--width) / 2);
+        --y: calc(100vh - var(--width) / 2);
         translate: calc(var(--x, 0px) - 50%) calc(var(--y, 0px) - 50%);
-        z-index: 50;
+        scale: var(--d) 1;
+        z-index: 10;
     }
 </style>
 <script>
     import AnimationFrameController from "../lib/animationFrameController";
-    import { getCodeBlockTransitions } from "../lib/codeBlockHelpers";
-    import { registerTransition, withPrevious } from "../lib/slides";
+    import { getChildTransitions } from "../lib/codeBlockHelpers";
+    import {
+        LerpController,
+        SpringController,
+        type InterpolationController,
+        type SpringOptions,
+    } from "../lib/interpolationController";
+    import {
+        registerClassTransition,
+        registerTransition,
+        withPrevious,
+    } from "../lib/slides";
 
-    const codeClasses = getCodeBlockTransitions("code-classes");
-    const codeUses = getCodeBlockTransitions("code-uses");
+    const codeClasses = getChildTransitions("code-classes", ".expressive-code");
+    const codeUses = getChildTransitions("code-uses", ".expressive-code");
+
+    const chicken = document.getElementById("chicken") as HTMLImageElement;
+
+    class EmptyInterpolationController implements InterpolationController {
+        current = 0;
+        target = 0;
+        step() {
+            return this.current;
+        }
+        isAtRest() {
+            return true;
+        }
+        reset(current: number = 0) {
+            this.current = this.target = current;
+        }
+        fastForward() {}
+    }
+
+    const xControllers = {
+        empty: new EmptyInterpolationController(),
+        spring: new SpringController(),
+        lerp: new LerpController(),
+    };
+
+    let currentType: keyof typeof xControllers;
+    // @ts-ignore
+    const startX =
+        chicken.getBoundingClientRect().left + chicken.clientWidth / 2;
+    // @ts-ignore
+    const startD = chicken.computedStyleMap().get("--d")[0];
+
+    function xController() {
+        return xControllers[currentType];
+    }
+
+    function use(type: keyof typeof xControllers, shouldReset: boolean) {
+        if (shouldReset) {
+            reset();
+        } else {
+            xControllers[type].current =
+                xControllers[type].target =
+                xControllers[currentType].current =
+                    xControllers[currentType].target;
+        }
+        currentType = type;
+    }
+
+    function reset() {
+        Object.values(xControllers).forEach((i) => {
+            i.reset(startX);
+        });
+        chicken.style.setProperty("--x", startX.toFixed(2) + "px");
+        chicken.style.setProperty("--d", startD.toString());
+    }
+
+    function useInterpolator(
+        type: keyof typeof xControllers,
+        shouldReset: "both" | "none" | "revert" | "begin",
+    ) {
+        let prev: keyof typeof xControllers;
+        registerTransition({
+            begin() {
+                prev = currentType;
+                use(type, shouldReset === "both" || shouldReset === "begin");
+            },
+            revert() {
+                use(prev, shouldReset === "both" || shouldReset === "revert");
+            },
+        });
+    }
+
+    function springSettingTransition(options: Partial<SpringOptions>) {
+        const springControllerOptionsObject = xControllers["spring"].options;
+        let prev: SpringOptions;
+        registerTransition({
+            begin() {
+                prev = { ...springControllerOptionsObject };
+                Object.assign(springControllerOptionsObject, options);
+            },
+            revert() {
+                Object.assign(springControllerOptionsObject, prev);
+            },
+        });
+    }
+
+    window.addEventListener("click", ({ clientX, target }) => {
+        if (
+            (target as HTMLElement).tagName === "MAIN" ||
+            (target as HTMLElement).id === chicken.id
+        ) {
+            xController().target = clientX;
+        }
+    });
+
+    const chickenFrames = {
+        current: {
+            id: "idle",
+            index: -1,
+            timestampMS: 0,
+        },
+        idle: "stand",
+        msPerFrame: 166.6666666667,
+        move: [
+            {
+                id: "dash",
+                min: 1,
+                frames: ["dash-1", "dash-2", "dash-3", "dash-4"],
+            },
+            {
+                id: "run",
+                min: 0.5,
+                frames: ["run-1", "run-2", "run-3", "run-4"],
+            },
+            {
+                id: "walk",
+                min: 0.1,
+                frames: ["walk-1", "walk-2", "walk-3", "walk-4"],
+            },
+            {
+                id: "shuffle",
+                min: 0.005,
+                frames: ["walk-2", "walk-4", "walk-2", "walk-4"],
+            },
+            {
+                id: "almost-stand",
+                min: 0.00001,
+                frames: ["walk-2"],
+            },
+        ],
+    };
+
+    const animationController = new AnimationFrameController(
+        ({ deltaMS, timestampMS }) => {
+            const x = xController();
+            const prevX = x.current;
+            const newX = x.step(deltaMS);
+            const deltaX = newX - prevX;
+            const v = Math.abs(deltaX / deltaMS);
+
+            let frames = [chickenFrames.idle];
+            let newId = "idle";
+            for (const moveConfig of chickenFrames.move) {
+                if (v > moveConfig.min) {
+                    frames = moveConfig.frames;
+                    newId = moveConfig.id;
+                    break;
+                }
+            }
+
+            if (
+                newId !== chickenFrames.current.id ||
+                timestampMS - chickenFrames.current.timestampMS >
+                    chickenFrames.msPerFrame
+            ) {
+                chickenFrames.current.timestampMS = timestampMS;
+                chickenFrames.current.id = newId;
+                chickenFrames.current.index =
+                    (chickenFrames.current.index + 1) % frames.length;
+                chicken.src = `/images/chicken-${frames[chickenFrames.current.index]}.webp`;
+
+                if (newId === "idle") {
+                    x.fastForward();
+                }
+            }
+
+            if (deltaX !== 0) {
+                chicken.style.setProperty("--d", Math.sign(deltaX).toString());
+            }
+
+            chicken.style.setProperty("--x", newX.toFixed(2) + "px");
+            return true;
+        },
+    );
+
+    use("empty", true);
+    animationController.playIfPaused();
 
     // create a lerp class
     codeClasses.next();
@@ -311,15 +780,113 @@ requestAnimationFrame(function update(time) {
     codeUses.next();
     codeUses.next();
     codeUses.next();
+
     codeUses.next();
-    codeUses.hide();
+    useInterpolator("lerp", "both");
+    withPrevious();
 
     // ok now spring class
+    codeUses.hide();
+    codeClasses.next();
+    withPrevious();
+    useInterpolator("empty", "both");
+    withPrevious();
+
+    // ok math time
+
+    registerClassTransition("#gcse-physics", "active", "add");
+    registerTransition({
+        begin() {
+            chickenFrames.idle = "look";
+        },
+        revert() {
+            chickenFrames.idle = "stand";
+        },
+    });
+    withPrevious();
+
+    registerClassTransition("#math-fs", "active", "add");
+    codeClasses.next();
+
+    // calculate
+    const fmaTransitions = getChildTransitions("math-fma", "math");
+    registerClassTransition("#math-fma", "active", "add");
     codeClasses.next();
     withPrevious();
 
+    // calculate acceleration
+    fmaTransitions.next();
     codeClasses.next();
+    withPrevious();
+
+    // calculate v and a
     codeClasses.next();
+    registerClassTransition("#math-vat", "active", "add");
+    withPrevious();
     codeClasses.next();
+
     codeClasses.next();
+    registerClassTransition("#math-xvt", "active", "add");
+    withPrevious();
+
+    // ok, it's wired up now
+    // naive first version, no damping, not tracking velocity
+    codeClasses.next();
+    useInterpolator("spring", "both");
+    withPrevious();
+    springSettingTransition({
+        damping: 0,
+        stiffness: 1,
+        mass: 1,
+    });
+    withPrevious();
+
+    registerClassTransition("#math-x-no-d", "active", "add");
+
+    codeClasses.next();
+    registerClassTransition("#math-fd", "active", "add");
+    withPrevious();
+    useInterpolator("empty", "both");
+    withPrevious();
+
+    codeClasses.next();
+    registerClassTransition("#math-fd-fs", "active", "add");
+    const fdfsTransitions = getChildTransitions("math-fd-fs", "math");
+    fdfsTransitions.next();
+    codeClasses.next();
+    withPrevious();
+
+    // clear everything and activate spring!
+    codeClasses.next();
+    registerClassTransition(
+        "#gcse-physics, #math-fs, #math-fma, #math-vat, #math-xvt, #math-fd, #math-fdm, #math-fd-fs, #math-x-no-d",
+        "active",
+        "remove",
+    );
+    withPrevious();
+    springSettingTransition({
+        damping: 1,
+        stiffness: 1,
+        mass: 1,
+    });
+    withPrevious();
+    useInterpolator("spring", "both");
+    withPrevious();
+    registerTransition({
+        begin() {
+            chickenFrames.idle = "stand";
+        },
+        revert() {
+            chickenFrames.idle = "look";
+        },
+    });
+    withPrevious();
+
+    codeClasses.next();
+    springSettingTransition({
+        damping: 20,
+        stiffness: 100,
+        mass: 2,
+    });
+    withPrevious();
 </script>

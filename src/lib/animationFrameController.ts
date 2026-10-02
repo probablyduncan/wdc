@@ -1,4 +1,4 @@
-type AnimationFrameCallback = (deltaMS: DOMHighResTimeStamp) => boolean;
+type AnimationFrameCallback = (state: { deltaMS: DOMHighResTimeStamp, timestampMS: DOMHighResTimeStamp }) => boolean;
 
 export default class AnimationFrameController {
     
@@ -48,51 +48,10 @@ export default class AnimationFrameController {
         const deltaMS = this._prevTimestampMS ? timestampMS - this._prevTimestampMS : 0;
         this._prevTimestampMS = timestampMS;
 
-        if (deltaMS <= 0 || this._animationCallback(deltaMS)) {
+        if (deltaMS <= 0 || this._animationCallback({ deltaMS, timestampMS })) {
             this._queueFrame();
         } else {
             this._cleanup();
         }
-    }
-}
-
-
-
-
-
-function forTrainingPurposes(callback: (delta: DOMHighResTimeStamp) => boolean) {
-
-    let isRunning = false;
-    let prevTimestamp: DOMHighResTimeStamp | undefined = undefined;
-
-    function queueFrame() {
-        isRunning = true;
-        requestAnimationFrame(animate);
-    }
-
-    function cleanup() {
-        isRunning = false;
-        prevTimestamp = undefined;
-    }
-
-    function animate(timestamp: DOMHighResTimeStamp) {
-        if (!isRunning) return;
-        
-        const delta = prevTimestamp ? (timestamp - prevTimestamp) : 0;
-        prevTimestamp = timestamp;
-        
-        if (delta <= 0 || callback(delta)) {
-            queueFrame()
-        }
-        else {
-            cleanup();
-        }
-    }
-
-    return {
-        play: () => !isRunning && queueFrame(),
-        pause: () => cleanup(),
-        toggle: () => isRunning ? cleanup() : queueFrame(),
-        isPlaying: () => isRunning,
     }
 }

@@ -3,6 +3,7 @@ import { registerTransition } from "./slides";
 const CONST_CONTROL_OPTION_DEFAULTS = {
     startInlineInputsHidden: false,
     additionalInputSelector: "",
+    searchPrefix: "const ",
 };
 export function addConstControl<TValue extends number | string>(constName: string, values: TValue[], options: Partial<typeof CONST_CONTROL_OPTION_DEFAULTS> = {}): {
     get: () => TValue;
@@ -12,10 +13,11 @@ export function addConstControl<TValue extends number | string>(constName: strin
     hide: () => void;
     listen: (callback: (value: TValue) => void) => void;
 } {
-    const { startInlineInputsHidden, additionalInputSelector } = Object.assign({...CONST_CONTROL_OPTION_DEFAULTS}, options);
+    const { startInlineInputsHidden, additionalInputSelector, searchPrefix } = Object.assign({ ...CONST_CONTROL_OPTION_DEFAULTS }, options);
 
     const inlineInputEls: HTMLInputElement[] = [];
-    const additionalInputEls = [...document.querySelectorAll<HTMLInputElement>(additionalInputSelector)];
+    const additionalInputEls = additionalInputSelector ? [...document.querySelectorAll<HTMLInputElement>(additionalInputSelector)] : [];
+
     const valueEls: HTMLElement[] = [];
     let initialIndex = 0;
     let index = Math.floor(values.length / 2);
@@ -38,9 +40,7 @@ export function addConstControl<TValue extends number | string>(constName: strin
 
     function setHidden(hidden: boolean) {
         inlineInputEls.forEach(el => {
-            if (el.classList.contains("const-control")) {
-                el.hidden = hidden;
-            }
+            el.hidden = hidden;
         });
     }
 
@@ -48,7 +48,7 @@ export function addConstControl<TValue extends number | string>(constName: strin
 
         for (let line of codeBlock.getElementsByClassName("code") as HTMLCollectionOf<HTMLElement>) {
 
-            if (!line.innerText.startsWith("const " + constName)) {
+            if (!line.innerText.startsWith(searchPrefix + constName)) {
                 continue;
             }
 
@@ -62,7 +62,7 @@ export function addConstControl<TValue extends number | string>(constName: strin
             const input = document.createElement("input");
             input.type = "range";
 
-            // set value
+            // set value based on the one in the code block
             const foundValueIndex = values.findIndex(value => valueEl.innerText.trim() === value.toString());
             if (foundValueIndex !== -1) {
                 index = foundValueIndex;
@@ -84,11 +84,22 @@ export function addConstControl<TValue extends number | string>(constName: strin
             input.addEventListener("input", () => {
                 set(values[parseInt(input.value)]);
             });
+
+            break;
         }
 
         initialIndex = index;
         set(values[index]);
     }
+
+    additionalInputEls.forEach(input => {
+        input.value = index.toString();
+        input.min = "0";
+        input.max = (values.length - 1).toString();
+        input.addEventListener("input", () => {
+            set(values[parseInt(input.value)]);
+        });
+    });
 
     return {
         get: () => values[index],
@@ -97,7 +108,7 @@ export function addConstControl<TValue extends number | string>(constName: strin
             set(values[initialIndex]);
         },
         show: () => setHidden(false),
-        hide: () => setHidden(false),
+        hide: () => setHidden(true),
         listen: addListener,
     }
 }
@@ -187,9 +198,9 @@ export function addLiveDisplay<TValue = string | number>(name: string, initialVa
     }
 }
 
-export function getCodeBlockTransitions(wrapperId: string) {
-    const wrapperEl = document.getElementById(wrapperId);
-    if (!wrapperEl) {
+export function getChildTransitions(parentId: string, childSelector: string) {
+    const parent = document.getElementById(parentId);
+    if (!parent) {
         return {
             next() { },
             hide() { },
@@ -197,15 +208,15 @@ export function getCodeBlockTransitions(wrapperId: string) {
         }
     }
 
-    const codeBlockEls = [
-        ...wrapperEl.querySelectorAll<HTMLElement>(".expressive-code"),
+    const children = [
+        ...parent.querySelectorAll<HTMLElement>(childSelector),
     ];
-    let index = codeBlockEls.findIndex((el) =>
+    let index = children.findIndex((el) =>
         el.classList.contains("active"),
     );
     function getCurrent() {
-        if (index > -1 && index < codeBlockEls.length) {
-            return codeBlockEls[index];
+        if (index > -1 && index < children.length) {
+            return children[index];
         }
     }
 
@@ -227,8 +238,8 @@ export function getCodeBlockTransitions(wrapperId: string) {
     }
 
     function isHidden() {
-        if (index > -1 && index < codeBlockEls.length) {
-            return !codeBlockEls[index].classList.contains("active");
+        if (index > -1 && index < children.length) {
+            return !children[index].classList.contains("active");
         }
 
         return false;
@@ -240,7 +251,7 @@ export function getCodeBlockTransitions(wrapperId: string) {
             registerTransition({
                 begin() {
                     hiddenOnBegin = isHidden();
-                    const atEnd = index >= codeBlockEls.length - 1;
+                    const atEnd = index >= children.length - 1;
 
                     if (!hiddenOnBegin && !atEnd) {
                         toggleCurrent("remove");

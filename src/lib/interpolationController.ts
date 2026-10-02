@@ -1,8 +1,10 @@
-interface InterpolationController {
+export interface InterpolationController {
     current: number;
     target: number;
     step(deltaMS: DOMHighResTimeStamp): number;
     isAtRest(): boolean;
+    reset(current?: number): void;
+    fastForward(): void;
 }
 
 export interface SpringOptions {
@@ -41,6 +43,16 @@ export class SpringController implements InterpolationController {
         const tolerance = 0.5;
         return Math.abs(this.velocity) < tolerance && Math.abs(this.target - this.current) < tolerance;
     }
+
+    reset(current: number = 0): void {
+        this.velocity = 0;
+        this.current = this.target = current;
+    }
+
+    fastForward() {
+        this.velocity = 0;
+        this.current = this.target;
+    }
 }
 
 export class LerpController implements InterpolationController {
@@ -75,6 +87,14 @@ export class LerpController implements InterpolationController {
         const tolerance = 0.1;
         return Math.abs(this.target - this.current) < tolerance;
     }
+
+    reset(current: number = 0): void {
+        this.current = this.target = current;
+    }
+
+    fastForward() {
+        this.current = this.target;
+    }
 }
 
 export class AccelerationController implements InterpolationController {
@@ -91,7 +111,7 @@ export class AccelerationController implements InterpolationController {
     }
 
     step(deltaMS: DOMHighResTimeStamp): number {
-        
+
         const deltaS = deltaMS / 1000;
         const right = this.target > this.current;
         this.velocity += this.acceleration * deltaS * (right ? 1 : -1);
@@ -113,4 +133,13 @@ export class AccelerationController implements InterpolationController {
         return Math.abs(this.target - this.current) < tolerance;
     }
 
+    reset(current: number = 0): void {
+        this.velocity = 0;
+        this.current = this.target = current;
+    }
+
+    fastForward() {
+        this.velocity = 0;
+        this.current = this.target;
+    }
 }

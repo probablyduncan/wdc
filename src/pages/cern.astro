@@ -255,7 +255,7 @@ export const transitions = ["center", "inter", "gradient", "heading", "subway"];
 
             el.addEventListener("mousedown", onMouseDown);
 
-            const animation = new AnimationFrameController((deltaMS) => {
+            const animation = new AnimationFrameController(({ deltaMS }) => {
                 x.step(deltaMS);
                 y.step(deltaMS);
                 el.style.setProperty("--x", x.current + "px");

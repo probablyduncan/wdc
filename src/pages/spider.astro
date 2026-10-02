@@ -81,7 +81,7 @@ import Control from "../components/control.astro";
     const labelY = new LerpController();
     const labelAngle = label.clientHeight > label.clientWidth ? -1 : 1;
 
-    const animation = new AnimationFrameController((deltaMS) => {
+    const animation = new AnimationFrameController(({ deltaMS }) => {
         spider.step(deltaMS);
 
         clearCanvas(canvas, context);
@@ -91,12 +91,14 @@ import Control from "../components/control.astro";
         labelY.step(deltaMS);
 
         // label angle
-        const pullAngle = labelAngle * Math.abs(
-            Math.atan2(
-                labelY.current - labelY.target,
-                labelX.target - labelY.current,
-            ),
-        );
+        const pullAngle =
+            labelAngle *
+            Math.abs(
+                Math.atan2(
+                    labelY.current - labelY.target,
+                    labelX.target - labelY.current,
+                ),
+            );
 
         label.style.setProperty("--x", labelX.current + "px");
         label.style.setProperty("--y", labelY.current + "px");

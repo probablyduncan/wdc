@@ -8,6 +8,7 @@ interface Props {
     figure?: number | string;
     width?: number | string;
     border?: boolean;
+    pixelate?: boolean;
 }
 
 const props = Astro.props;
@@ -29,10 +30,12 @@ let classString = props.class ?? "";
 if (props.border || Astro.slots.has("default")) {
     classString += " bordered";
 }
+if (props.src && props.pixelate) {
+    classString += " pixelate";
+}
 
 let captionHtml = "";
 if (Astro.slots.has("default")) {
-
     if (props.figure) {
         captionHtml += "<b>Figure " + props.figure + ":</b> &nbsp; &nbsp; ";
     }
@@ -104,7 +107,10 @@ if (Astro.slots.has("default")) {
         --drag-x: 0px;
         --drag-y: 0px;
         --s: 1;
-        transform: translate(calc(var(--drag-x) - 50%), calc(var(--drag-y) - 50%))
+        transform: translate(
+                calc(var(--drag-x) - 50%),
+                calc(var(--drag-y) - 50%)
+            )
             scale(var(--s));
     }
 
@@ -119,16 +125,17 @@ if (Astro.slots.has("default")) {
         display: none;
     }
 
-    img {
-        image-rendering: pixelated;
+    figure img {
         width: 100%;
-        
-        /* padding-inline: 1.5ch; */
+    }
+
+    figure.pixelate img {
+        image-rendering: pixelated;
     }
 
     figcaption {
         margin-top: 0.5lh;
-        font-family: math, serif;
+        font-family: 'Times New Roman', Times, serif;
         text-indent: -1ch;
         /* margin-inline: 1ch; */
         padding-inline: 1ch;
@@ -161,155 +168,6 @@ if (Astro.slots.has("default")) {
     }
 </style>
 <script>
-    import AnimationFrameController from "../lib/animationFrameController";
-    import { LerpController } from "../lib/interpolationController";
-
-    function initFigures() {
-        const figures = [
-            ...document.querySelectorAll<HTMLElement>(
-                "[data-grabbable-figure]",
-            ),
-        ];
-
-        const prefersReducedMotion = (() => {
-            const query = window.matchMedia("(prefers-reduced-motion: reduce)");;
-            return () => query.matches;
-        })();
-
-        const noDragTags = ["input", "a"];
-
-        const zIndexing = (() => {
-            const baseZIndex = 100;
-            const baseInvisibleZIndex = 1000;
-            return {
-                setup() {
-                    figures.forEach((figure, i) => {
-                        let zIndex = baseZIndex + i;
-                        if (!figure.checkVisibility()) {
-                            zIndex += baseInvisibleZIndex;
-                        }
-                        figure.style.zIndex = zIndex.toString();
-                    });
-                },
-                reorder(newTopIndex: number) {
-                    const zIndexOfNewTop = parseInt(
-                        figures[newTopIndex].style.zIndex,
-                    );
-                    figures.forEach((figure) => {
-                        let zIndex = parseInt(figure.style.zIndex);
-                        if (zIndex >= zIndexOfNewTop) {
-                            zIndex--;
-                        }
-                        if (
-                            zIndex > baseInvisibleZIndex &&
-                            figure.checkVisibility()
-                        ) {
-                            zIndex -= baseInvisibleZIndex;
-                        } else if (
-                            zIndex < baseInvisibleZIndex &&
-                            !figure.checkVisibility()
-                        ) {
-                            zIndex += baseInvisibleZIndex;
-                        }
-                        figure.style.zIndex = zIndex.toString();
-                    });
-                    figures[newTopIndex].style.zIndex = (
-                        baseZIndex +
-                        figures.length -
-                        1
-                    ).toString();
-                },
-            };
-        })();
-
-        zIndexing.setup();
-
-        figures.forEach((figure, i) => {
-            let grabbing = false;
-            figure.style.cursor = "grab";
-
-            const x = new LerpController();
-            const y = new LerpController();
-            const a = new AnimationFrameController((delta) => {
-                if (!grabbing && x.isAtRest() && y.isAtRest()) {
-                    return false;
-                }
-
-                figure.style.setProperty(
-                    "--drag-x",
-                    x.step(delta).toFixed(2) + "px",
-                );
-                figure.style.setProperty(
-                    "--drag-y",
-                    y.step(delta).toFixed(2) + "px",
-                );
-                return true;
-            });
-
-            const grabStartClientPos = [0, 0];
-            const grabStartElPos = [0, 0];
-
-            figure.addEventListener("mousedown", (e) => {
-                if (e.button !== 0 || noDragTags.some(noDragTag => (e.target as HTMLElement)?.closest(noDragTag))) {
-                    return;
-                }
-
-                grabbing = true;
-                figure.style.cursor = "grabbing";
-                zIndexing.reorder(i);
-
-                grabStartClientPos[0] = e.clientX;
-                grabStartClientPos[1] = e.clientY;
-
-                grabStartElPos[0] = x.target = x.current;
-                grabStartElPos[1] = y.target = y.current;
-
-                if (!prefersReducedMotion()) {
-                    // convoluted scaling based on size idk
-                    const scale =
-                        1 +
-                        figure.clientWidth / 1000000 +
-                        10 / Math.sqrt(figure.clientWidth * figure.clientHeight);
-    
-                    figure.style.setProperty("--s", scale.toString());
-                }
-
-                const abortController = new AbortController();
-
-                window.addEventListener(
-                    "mousemove",
-                    (e) => {
-                        x.target =
-                            grabStartElPos[0] +
-                            e.clientX -
-                            grabStartClientPos[0];
-                        y.target =
-                            grabStartElPos[1] +
-                            e.clientY -
-                            grabStartClientPos[1];
-
-                            if (prefersReducedMotion()) {
-                                x.current = x.target;
-                                y.current = y.target;
-                            }
-                    },
-                    { signal: abortController.signal },
-                );
-
-                window.addEventListener(
-                    "mouseup",
-                    () => {
-                        grabbing = false;
-                        figure.style.cursor = "grab";
-                        figure.style.removeProperty("--s");
-                        abortController.abort();
-                    },
-                    { once: true },
-                );
-
-                a.playIfPaused();
-            });
-        });
-    }
+    import { initFigures } from "../lib/figures";
     document.addEventListener("DOMContentLoaded", initFigures);
 </script>
