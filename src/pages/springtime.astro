@@ -723,7 +723,22 @@ class Spring {
                 frames: ["walk-2"],
             },
         ],
+        getSrc(frame: string) {
+            return `/images/chicken-${frame}.webp`;
+        },
     };
+
+    {
+        // preload frames
+        chickenFrames.move.forEach(m => {
+            m.frames.forEach(frame => {
+                const preload = new Image();
+                preload.src = chickenFrames.getSrc(frame);
+            })
+        })
+        const preloadLook = new Image();
+        preloadLook.src = chickenFrames.getSrc("look");
+    }
 
     const animationController = new AnimationFrameController(
         ({ deltaMS, timestampMS }) => {
@@ -752,7 +767,7 @@ class Spring {
                 chickenFrames.current.id = newId;
                 chickenFrames.current.index =
                     (chickenFrames.current.index + 1) % frames.length;
-                chicken.src = `/images/chicken-${frames[chickenFrames.current.index]}.webp`;
+                chicken.src =  chickenFrames.getSrc(frames[chickenFrames.current.index]);
 
                 if (newId === "idle") {
                     x.fastForward();
