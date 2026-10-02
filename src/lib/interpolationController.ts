@@ -5,7 +5,7 @@ interface InterpolationController {
     isAtRest(): boolean;
 }
 
-interface SpringOptions {
+export interface SpringOptions {
     damping: number;
     stiffness: number;
     mass: number;

@@ -8,12 +8,12 @@ interface Props {
     class?: string;
 }
 
-const { name, values = [0, 1, 2, 3, 4, 5], startValue = 5 } = Astro.props;
+const { name, values = [0, 1, 2, 3, 4, 5], startValue = 5, class: className = "" } = Astro.props;
 ---
 
 <div
     id={name}
-    class={"lever "}
+    class={"lever " + className}
     style={`--frame: ${startValue};`}
     data-values={JSON.stringify(values.map((value) => value.toString()))}
 >
@@ -86,7 +86,6 @@ const { name, values = [0, 1, 2, 3, 4, 5], startValue = 5 } = Astro.props;
 <script>
     document.querySelectorAll<HTMLElement>(`.lever`).forEach((figure) => {
         const values = JSON.parse(figure.dataset.values!) as string[];
-        console.log(values);
         const input = figure.querySelector("input")!;
         function update() {
             figure.style.setProperty("--frame", input.value);

@@ -106,7 +106,7 @@ export function registerRafTransition<TState extends {}>(
             state = { ...defaultState };
             return;
         }
-        
+
         isAnimating = true;
         requestAnimationFrame((time) => {
             prev = time;
@@ -287,8 +287,10 @@ function onReady() {
                 }
                 break;
             case "KeyF":
-                if (!metaKey && !ctrlKey) {
-                    document.body.requestFullscreen();
+                if (document.fullscreenEnabled && !metaKey && !ctrlKey) {
+                    document.fullscreenElement
+                        ? document.exitFullscreen()
+                        : document.body.requestFullscreen();
                 }
                 break;
             case "KeyR":

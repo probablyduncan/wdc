@@ -3,19 +3,6 @@ import { Code } from "astro-expressive-code/components";
 import Slide from "../components/slide.astro";
 import Figure from "../components/figure.astro";
 import Lever from "../components/lever.astro";
-
-/**
- *
- * steps I need:
- *
- * oops, mousemove isn't great, use requestAnimationFrame
- * oops, make it centered on cursor
- * oops, make it not draggable, remove pointer-events, etc
- *
- *
- *
- *
- */
 ---
 
 <Slide prev="index" next="springtime">
@@ -101,24 +88,30 @@ import Lever from "../components/lever.astro";
         width={"38em"}
         figure={23}
     >
-        A nice picture explaining <i>Linear Interpolation</i>[4] that I found on Google Images. Created by Engineering Hack for youtube.com (<a href="https://www.youtube.com/watch?v=QXpilXhDsNA" title="Youtube: Engineering Hack" target="_blank">link</a>).
+        A nice picture explaining <i>Linear Interpolation</i>[4] that I found on
+        Google Images. Created by Engineering Hack for youtube.com (<a
+            href="https://www.youtube.com/watch?v=QXpilXhDsNA"
+            title="Youtube: Engineering Hack"
+            target="_blank">link</a
+        >).
     </Figure>
-    <Figure id="fps-figure" x={0.618} y={0.618}>
+    <Figure id="fps-figure" x={0.618} y={0.618} class="act-i">
         <div id="fps-display" slot="figure">
             <figcaption>FPS:</figcaption>
             <output name="fps" data-live-display="FPS">00.0</output>
         </div>
     </Figure>
-    <Figure
-        id="w3c-raf"
-        src="/images/w3c-raf.webp"
-        x={0.5}
-        y={0.5}
-        figure={24}
-    >
-        From <i>Timing control for script-based animations (W3C Working Group Note 22 September 2015)</i>. From <a href="https://www.w3.org/TR/animation-timing/" target="_blank">https://www.w3.org/TR/animation-timing/</a>.
+    <Figure id="w3c-raf" src="/images/w3c-raf.webp" x={0.5} y={0.5} figure={24}>
+        From <i
+            >Timing control for script-based animations (W3C Working Group Note
+            22 September 2015)</i
+        >. From <a
+            href="https://www.w3.org/TR/animation-timing/"
+            target="_blank">https://www.w3.org/TR/animation-timing/</a
+        >.
     </Figure>
     <Lever
+        class="act-i"
         startValue={0}
         name="fps-throttle"
         values={[Infinity, 34, 12, 6, 3, 1]}
@@ -136,11 +129,61 @@ import Lever from "../components/lever.astro";
         completely interactive,” gushed the <i>LA Times</i>. “Players may turn
         on the hand dryers.”[17]
     </Figure>
+    <Figure
+        id="spring-tigger"
+        src="/images/spring-foreshadow-tigger.webp"
+        class="act-i"
+        x="0.5"
+        y="0.5"
+        width="25em"
+    >
+        There's something missing in my step...
+    </Figure>
+    <Figure
+        id="spring-slinky"
+        src="/images/spring-foreshadow-slinky.jpg"
+        class="act-i"
+        x="0.5"
+        y="0.5"
+        width="20em"
+    >
+        https://content.time.com/time/specials/packages/article/0,28804,2049243_2048651_2049036,00.html
+    </Figure>
+    <Figure
+        id="spring-dog"
+        src="/images/spring-foreshadow-dog.jpeg"
+        class="act-i"
+        x="0.5"
+        y="0.5"
+        width="40em"
+    >
+        https://characters.disney.com/toy-story/slinky-dog
+    </Figure>
+    <!-- <Figure
+        id="spring-forward"
+        src="/images/spring-foreshadow-forward.jpg"
+        class="act-i"
+        x="0.5"
+        y="0.5"
+        width="15em"
+    >
+        Forward? Forward to what?
+    </Figure> -->
+    <Figure
+        id="spring-garlic"
+        src="/images/spring-foreshadow-garlic.webp"
+        class="act-i"
+        x="0.5"
+        y="0.5"
+        width="35em"
+    >
+        https://www.nationaltrust.org.uk/visit/countryside-woodland/places-to-forage-for-wild-garlic
+    </Figure>
 
     <!-- TYPESCRIPT -->
 
     <div id="left">
-        <div id="ts" class="code-block-wrapper">
+        <div id="ts" class="code-block-wrapper act-i">
             <Code
                 lang="typescript"
                 code={`
@@ -858,7 +901,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     <div id="right">
         <!-- HTML -->
 
-        <div id="html" class="code-block-wrapper">
+        <div id="html" class="code-block-wrapper act-i">
             <Code
                 lang="html"
                 code={`<img src="egg.webp" alt="my best egg" />`}
@@ -886,7 +929,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
         </div>
         <!-- CSS -->
 
-        <div id="css" class="code-block-wrapper">
+        <div id="css" class="code-block-wrapper act-i">
             <Code
                 lang="css"
                 code={`
@@ -986,7 +1029,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
             />
             <Code
                 lang="css"
-                collapse={["6-17"]}
+                collapse={["5-17"]}
                 code={`
 #egg {
     translate:
@@ -1011,6 +1054,12 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     </div>
 
     <img id="egg" src="/images/egg.webp" alt="my best egg" />
+    <div id="act-ii-wrapper">
+        <div id="act-ii">
+            <h1>ACT II</h1>
+            <h2>SPRINGTIME</h2>
+        </div>
+    </div>
 </Slide>
 <style>
     #egg {
@@ -1030,9 +1079,9 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
             z-index: 50;
         }
 
-        translate: var(--x, 0) var(--y, 0);
+        translate: var(--egg-x, 0) var(--egg-y, 0);
         &.center {
-            translate: calc(var(--x, 0) - 50%) calc(var(--y, 0) - 50%);
+            translate: calc(var(--egg-x, 0) - 50%) calc(var(--egg-y, 0) - 50%);
         }
 
         &.no-pointer {
@@ -1046,6 +1095,13 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
             @media (prefers-reduced-motion: reduce) {
                 display: none;
             }
+        }
+
+        &.away {
+            /* transition: translate 0s; */
+            opacity: 0;
+            transition: opacity 0.2s;
+            /* translate: -100% calc(var(--egg-y, 0) * 2 - 50vh - 50%); */
         }
     }
 
@@ -1118,9 +1174,73 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
             display: none;
         }
     }
+
+    :global(.act-i),
+    #act-ii h1,
+    #act-ii h2 {
+        translate: var(--act-x, 0) var(--act-y, 0);
+        rotate: var(--act-r, 0);
+    }
+
+    #act-ii-wrapper {
+        width: 100%;
+        height: 100%;
+        overflow: clip;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #act-ii {
+        display: flex;
+        flex-flow: column;
+        align-items: flex-end;
+    }
+
+    #act-ii h1,
+    #act-ii h2 {
+        margin: unset;
+        font-weight: 1000;
+        line-height: 0.7;
+
+        &:not(.active) {
+            opacity: 0;
+            user-select: none;
+            pointer-events: none;
+        }
+    }
+
+    #act-ii h1 {
+        font-size: 25vw;
+        text-align: center;
+        color: #000000;
+        text-shadow: 4px 4px 2px #00000088;
+        font-variation-settings:
+            "slnt" -5,
+            "CASL" 0,
+            "CRSV" 0,
+            "MONO" 0;
+    }
+
+    #act-ii h2 {
+        font-size: 3.9625vw;
+        margin: 0.3ch 0.665ch;
+        text-align: right;
+        color: #060606;
+        text-shadow: 4px 4px 2px #00000066;
+        font-variation-settings:
+            "slnt" -5,
+            "CASL" 1,
+            "CRSV" 0,
+            "MONO" 0;
+    }
 </style>
 <script>
     import { addConstControl, addLiveDisplay } from "../lib/codeBlockHooks";
+    import {
+        SpringController,
+        type SpringOptions,
+    } from "../lib/interpolationController";
     import {
         registerClassTransition,
         registerRafTransition,
@@ -1132,19 +1252,20 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
 
     const current = { x: 0, y: 0 };
     const target = { x: 0, y: 0 };
+    const prevTarget = { x: 0, y: 0 };
     window.addEventListener("mousemove", (e) => {
         target.x = e.clientX;
         target.y = e.clientY;
     });
 
     function updateEggPos(pos: { x: number; y: number }) {
-        egg.style.setProperty("--x", pos.x + "px");
-        egg.style.setProperty("--y", pos.y + "px");
+        egg.style.setProperty("--egg-x", pos.x.toFixed(2) + "px");
+        egg.style.setProperty("--egg-y", pos.y.toFixed(2) + "px");
     }
 
     function resetEggPos() {
-        egg.style.removeProperty("--x");
-        egg.style.removeProperty("--y");
+        egg.style.removeProperty("--egg-x");
+        egg.style.removeProperty("--egg-y");
     }
 
     const animationOptions: {
@@ -1160,9 +1281,11 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
             | "half-no-clamp"
             | "half";
         log: "none" | "timestamp" | "delta";
+        actII: "dormant" | "ready" | "active";
     } = {
         lerpType: "instant",
         log: "none",
+        actII: "dormant",
     };
 
     function animationOptionTransition<
@@ -1342,6 +1465,182 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
         );
     })();
 
+    function getCenter(rect: DOMRect) {
+        return {
+            x: rect.x + rect.width / 2,
+            y: rect.y + rect.height / 2,
+        };
+    }
+
+    type Position = {
+        x: number;
+        y: number;
+    };
+
+    const actI = [...document.querySelectorAll<HTMLElement>(".act-i")].map(
+        (el) => {
+            const springOptions: SpringOptions = {
+                mass: 2,
+                damping: 10,
+                stiffness: 50,
+            };
+            const x = new SpringController(springOptions);
+            const y = new SpringController(springOptions);
+            const r = new SpringController(springOptions);
+            return {
+                setup(mousePos: Position) {
+                    const thisPos = getCenter(el.getBoundingClientRect());
+                    const angleFromMouse = Math.atan2(
+                        thisPos.y - mousePos.y,
+                        thisPos.x - mousePos.x,
+                    );
+                    x.target =
+                        Math.cos(angleFromMouse) *
+                        window.innerWidth *
+                        Math.SQRT2;
+                    y.target =
+                        Math.sin(angleFromMouse) *
+                        window.innerHeight *
+                        Math.SQRT2;
+                    r.velocity = Math.random() * 4 - 2;
+                },
+                step(delta: number) {
+                    x.step(delta);
+                    y.step(delta);
+                    r.step(delta);
+                    el.style.setProperty("--act-x", x.current.toFixed(2) + "px");
+                    el.style.setProperty("--act-y", y.current.toFixed(2) + "px");
+                    el.style.setProperty("--act-r", r.current.toFixed(6) + "rad");
+                },
+                reset() {
+                    x.current = x.target = 0;
+                    y.current = y.target = 0;
+                    r.current = r.target = 0;
+                    el.style.removeProperty("--act-x");
+                    el.style.removeProperty("--act-y");
+                    el.style.removeProperty("--act-r");
+                },
+            };
+        },
+    );
+
+    const actII = (() => {
+        const h1 = document.querySelector<HTMLHeadingElement>("#act-ii h1")!;
+        const h1SpringOptions: Partial<SpringOptions> = {
+            mass: 4,
+            damping: 10,
+        };
+        const h1x = new SpringController(h1SpringOptions);
+        const h1y = new SpringController(h1SpringOptions);
+        const h1r = new SpringController();
+        function setH1Props() {
+            h1.style.setProperty("--act-x", h1x.current.toFixed(2) + "px");
+            h1.style.setProperty("--act-y", h1y.current.toFixed(2) + "px");
+            h1.style.setProperty("--act-r", h1r.current.toFixed(6) + "rad");
+        }
+
+        const h2 = document.querySelector<HTMLHeadingElement>("#act-ii h2")!;
+        const h2SpringOptions: SpringOptions = {
+            mass: 2,
+            damping: 6,
+            stiffness: 80,
+        };
+        const h2x = new SpringController(h2SpringOptions);
+        const h2y = new SpringController(h2SpringOptions);
+        const h2r = new SpringController();
+        function setH2Props() {
+            h2.style.setProperty("--act-x", h2x.current.toFixed(2) + "px");
+            h2.style.setProperty("--act-y", h2y.current.toFixed(2) + "px");
+            h2.style.setProperty("--act-r", h2r.current.toFixed(6) + "rad");
+        }
+
+        let h2SetupTimeoutId: NodeJS.Timeout | undefined;
+
+        return {
+            setup(mouse: Position, mouseDelta: Position) {
+                const center = getCenter(
+                    h1.parentElement!.getBoundingClientRect(),
+                );
+                const mouseToCenterAngle = Math.atan2(
+                    mouse.y - center.y,
+                    mouse.x - center.x,
+                );
+                const mouseDeltaAngle = Math.atan2(mouseDelta.y, mouseDelta.x);
+
+                const mouseDirectionVector = {
+                    x: Math.cos(mouseDeltaAngle),
+                    y: Math.sin(mouseDeltaAngle),
+                };
+
+                const mouseToCenterVector = {
+                    x: Math.cos(mouseToCenterAngle),
+                    y: Math.sin(mouseToCenterAngle),
+                };
+
+                h1x.current = mouseToCenterVector.x * window.innerWidth;
+                h1y.current = mouseToCenterVector.y * window.innerHeight;
+                h1x.velocity = mouseDirectionVector.x * 5000;
+                h1y.velocity = (mouseDirectionVector.y * 5000) / 4;
+                h1r.velocity = mouseDeltaAngle;
+                setH1Props();
+                h1.classList.add("active");
+
+                if (h2SetupTimeoutId) {
+                    clearTimeout(h2SetupTimeoutId);
+                }
+
+                h2SetupTimeoutId = setTimeout(() => {
+                    h2SetupTimeoutId = undefined;
+                    h2x.current = mouseToCenterVector.x * window.innerWidth;
+                    h2y.current = mouseToCenterVector.y * window.innerHeight;
+                    h2x.velocity = mouseDirectionVector.x * 5000;
+                    h2y.velocity = (mouseDirectionVector.y * 5000) / 2;
+                    h2r.velocity = mouseDeltaAngle * 2;
+                    setH2Props();
+                    h2.classList.add("active");
+                }, 2000);
+            },
+            step(delta: number) {
+                h1x.step(delta);
+                h1y.step(delta);
+                h1r.step(delta);
+
+                h2x.step(delta);
+                h2y.step(delta);
+                h2r.step(delta);
+
+                setH1Props();
+                setH2Props();
+            },
+            reset() {
+                h1.classList.remove("active");
+                h1x.current = h1x.target = 0;
+                h1y.current = h1y.target = 0;
+                h1r.current = h1r.target = 0;
+                h1.style.removeProperty("--act-x");
+                h1.style.removeProperty("--act-y");
+                h1.style.removeProperty("--act-r");
+                h2.classList.remove("active");
+                h2x.current = h2x.target = 0;
+                h2y.current = h2y.target = 0;
+                h2r.current = h2r.target = 0;
+                h2.style.removeProperty("--act-x");
+                h2.style.removeProperty("--act-y");
+                h2.style.removeProperty("--act-r");
+
+                if (h2SetupTimeoutId) {
+                    clearTimeout(h2SetupTimeoutId);
+                }
+            },
+        };
+    })();
+
+    const actIIOptions = {
+        triggerMargin: 100,
+        triggerMinPxPerMS: 0.5,
+        animationSpeed: 0.5,
+    };
+
     let fpsThrottlePrevTime = 0;
     const fpsThrottle = document.querySelector<HTMLInputElement>(
         `input[name="fps-throttle"]`,
@@ -1354,7 +1653,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     updateMaxFPS();
     fpsThrottle?.addEventListener("input", updateMaxFPS);
 
-    const raf = registerRafTransition({}, ({ timestamp }) => {
+    const raf = registerRafTransition({}, ({ timestamp, delta }) => {
         const throttledDelta = timestamp - fpsThrottlePrevTime;
 
         const fps = 1000 / throttledDelta;
@@ -1445,7 +1744,8 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
                     (target.y - current.y) * halfLifeBasicControl.get();
                 break;
             case "half-no-clamp":
-                const lerpValue = 0.5 * throttledDelta / halfLifeControl.get();
+                const lerpValue =
+                    (0.5 * throttledDelta) / halfLifeControl.get();
                 liveHalfLifeLerp.set(lerpValue.toFixed(3));
                 current.x += (target.x - current.x) * lerpValue;
                 current.y += (target.y - current.y) * lerpValue;
@@ -1462,6 +1762,46 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
         }
 
         updateEggPos(current);
+
+        switch (animationOptions.actII) {
+            case "ready":
+                const targetDelta = {
+                    x: target.x - prevTarget.x,
+                    y: target.y - prevTarget.y,
+                };
+                prevTarget.x = target.x;
+                prevTarget.y = target.y;
+
+                // begin if mouse is within the margin from the right side of the screen,
+                // is traveling faster than the min speed, and is going to the left
+                if (
+                    targetDelta.x < 0 &&
+                    target.x > window.innerWidth - actIIOptions.triggerMargin &&
+                    Math.abs(targetDelta.x / delta) >
+                        actIIOptions.triggerMinPxPerMS
+                ) {
+                    animationOptions.actII = "active";
+                    actII.setup(target, targetDelta);
+                    actI.forEach((el) => el.setup(target));
+                    egg.classList.add("away");
+                }
+                break;
+            case "active":
+                const newDelta = delta * actIIOptions.animationSpeed;
+                actII.step(newDelta);
+                actI.forEach((el) => el.step(newDelta));
+                break;
+            case "dormant":
+                // make sure we only do this cleanup stuff once
+                if (prevTarget.x !== 0) {
+                    actI.forEach((el) => el.reset());
+                    actII.reset();
+                    prevTarget.x = prevTarget.y = 0;
+                    egg.classList.remove("away");
+                }
+                break;
+        }
+
         return true;
     });
 
@@ -1611,7 +1951,9 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
         return {
             begin() {
                 if (pxPerFrameControl.get() <= 0) {
-                    pxPerFrameControl.set(prev as ReturnType<typeof pxPerFrameControl["get"]>);
+                    pxPerFrameControl.set(
+                        prev as ReturnType<(typeof pxPerFrameControl)["get"]>,
+                    );
                 }
             },
             revert() {
@@ -1654,9 +1996,9 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     ts.next();
     animationOptionTransition("lerpType", "basic-half");
     withPrevious();
-    
+
     registerClassTransition("#lerp-with-apples", "active");
-    
+
     // add lerp slider
     registerClassTransition("#lerp-with-apples", "active", "remove");
     ts.next();
@@ -1664,7 +2006,16 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
 
     // now show FPS!!
     registerClassTransition("#fps-figure", "active");
+
+    // show throttle!
     registerClassTransition("#fps-throttle", "active");
+    registerTransition({
+        begin() {},
+        revert() {
+            maxFPS = Infinity;
+        },
+    });
+    withPrevious();
 
     // something I've been keeping from you
     // the callback has an argument. I'm convinced!
@@ -1688,7 +2039,7 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     ts.next();
     animationOptionTransition("log", "none");
     withPrevious();
-    
+
     // add half life stuff
     ts.next();
     animationOptionTransition("lerpType", "half-no-clamp");
@@ -1697,20 +2048,31 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     // half life larp
     registerClassTransition("#half-life-larp", "active");
     registerClassTransition("#half-life-larp", "active", "remove");
-    
+
     ts.next();
     animationOptionTransition("lerpType", "half");
     withPrevious();
 
-
-
-    // then ACT II comes in
+    // after the first one of these figures appears, I can do ACTII
+    // and when I go back on any of them (or forward) it should reset ACTII
+    registerClassTransition("#spring-tigger", "active");
+    animationOptionTransition("actII", "ready");
+    withPrevious();
+    registerClassTransition("#spring-slinky", "active");
+    animationOptionTransition("actII", "ready");
+    withPrevious();
+    registerClassTransition("#spring-dog", "active");
+    animationOptionTransition("actII", "ready");
+    withPrevious();
+    // registerClassTransition("#spring-forward", "active");
+    // animationOptionTransition("actII", "ready");
+    // withPrevious();
+    registerClassTransition("#spring-garlic", "active");
+    animationOptionTransition("actII", "ready");
+    withPrevious();
 
     // something's missing in my step...
 
     // we’ve got a long winter ahead of us
     // good thing it’s time for
-
-
-    // after this last transition, when the cursor is ready, I should look for when the target is close to the edge of the screen. and when it is, and i move rapidly away, ACT II comes in and knocks everything else away
 </script>

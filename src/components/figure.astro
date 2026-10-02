@@ -98,10 +98,10 @@ if (Astro.slots.has("default")) {
         user-select: none;
         touch-action: manipulation;
 
-        --x: 0px;
-        --y: 0px;
+        --drag-x: 0px;
+        --drag-y: 0px;
         --s: 1;
-        transform: translate(calc(var(--x) - 50%), calc(var(--y) - 50%))
+        transform: translate(calc(var(--drag-x) - 50%), calc(var(--drag-y) - 50%))
             scale(var(--s));
     }
 
@@ -233,11 +233,11 @@ if (Astro.slots.has("default")) {
                 }
 
                 figure.style.setProperty(
-                    "--x",
+                    "--drag-x",
                     x.step(delta).toFixed(2) + "px",
                 );
                 figure.style.setProperty(
-                    "--y",
+                    "--drag-y",
                     y.step(delta).toFixed(2) + "px",
                 );
                 return true;
