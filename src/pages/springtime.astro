@@ -366,22 +366,39 @@ class Spring {
         />
         <Code
             lang="ts"
-            ins={[
-                /= (100)/g,
-                "2",
-                "20",
-                "const seconds = delta / 1000;",
-                /\* (seconds)/g,
-            ]}
+            ins={["const seconds = delta / 1000;", /\* (seconds)/g]}
             code={`
 class Spring {
     current = 0;
     target = 0;
     velocity = 0;
 
-    stiffness = 100;
-    mass = 2;
-    damping = 20;
+    stiffness = 1;
+    mass = 1;
+    damping = 1;
+
+    step(delta: number) {
+        const springForce = this.stiffness * (target - current);
+        const dampingForce = this.damping * this.velocity;
+        const acceleration = (springForce - dampingForce) / this.mass;
+        const seconds = delta / 1000;
+        this.velocity += acceleration * seconds;
+        this.current += velocity * seconds;
+    }
+}
+`}
+        />
+        <Code
+            lang="ts"
+            code={`
+class Spring {
+    current = 0;
+    target = 0;
+    velocity = 0;
+
+    stiffness = 1;
+    mass = 1;
+    damping = 1;
 
     step(delta: number) {
         const springForce = this.stiffness * (target - current);
@@ -518,15 +535,38 @@ class Spring {
         </div>
         The whole is never greater<br />than the sum of its parts.
     </Figure>
-    <img id="chicken" src="/images/chicken-stand.webp" />
+    <div id="spring-sliders">
+        <div>
+            <label for="stiffness">stiffness</label>
+            <output for="stiffness">100</output>
+            <input name="stiffness" type="range" />
+        </div>
+        <div>
+            <label for="mass">mass (kg)</label>
+            <output for="mass">&nbsp; 2</output>
+            <input name="mass" type="range" />
+        </div>
+        <div>
+            <label for="damping">damping</label>
+            <output for="damping">&nbsp;20</output>
+            <input name="damping" type="range" />
+        </div>
+    </div>
+    <img
+        id="chicken"
+        src="/images/chicken-stand.webp"
+        alt="a spring chicken!"
+        draggable="false"
+    />
 </Slide>
 
 <style>
     :global(body) {
         background-image: url("/images/chicken-bg.png");
         image-rendering: pixelated;
-        background-size: cover;
+        background-size: 100%;
         background-position: bottom center;
+        background-repeat: no-repeat;
         background-color: white;
     }
 
@@ -579,9 +619,42 @@ class Spring {
         scale: var(--d) 1;
         z-index: 10;
     }
+
+    #spring-sliders {
+        position: fixed;
+        top: 2ch;
+        left: 50%;
+        translate: -50%;
+        padding: 1ch;
+        border-radius: 1ch;
+
+        div {
+            display: grid;
+            column-gap: 1ch;
+            align-items: center;
+            font-size: 0.75em;
+            width: clamp(20vw, 350px, 95vw);
+            margin-bottom: 0.5ch;
+
+            transform: translateX(var(--x, 0));
+
+            &:not(.active) {
+                opacity: 0;
+            }
+
+            input {
+                grid-column: 1 / 3;
+            }
+
+            output {
+                text-align: right;
+            }
+        }
+    }
 </style>
 <script>
     import AnimationFrameController from "../lib/animationFrameController";
+    import { addConstControl } from "../lib/codeBlockHelpers";
     import { getChildTransitions } from "../lib/codeBlockHelpers";
     import {
         LerpController,
@@ -621,7 +694,7 @@ class Spring {
         lerp: new LerpController(),
     };
 
-    let currentType: keyof typeof xControllers;
+    let currentType: keyof typeof xControllers = "empty";
     // @ts-ignore
     const startX =
         chicken.getBoundingClientRect().left + chicken.clientWidth / 2;
@@ -632,9 +705,12 @@ class Spring {
         return xControllers[currentType];
     }
 
-    function use(type: keyof typeof xControllers, shouldReset: boolean) {
+    function useController(
+        type: keyof typeof xControllers,
+        shouldReset: boolean,
+    ) {
         if (shouldReset) {
-            reset();
+            resetChicken();
         } else {
             xControllers[type].current =
                 xControllers[type].target =
@@ -644,7 +720,7 @@ class Spring {
         currentType = type;
     }
 
-    function reset() {
+    function resetChicken() {
         Object.values(xControllers).forEach((i) => {
             i.reset(startX);
         });
@@ -660,10 +736,16 @@ class Spring {
         registerTransition({
             begin() {
                 prev = currentType;
-                use(type, shouldReset === "both" || shouldReset === "begin");
+                useController(
+                    type,
+                    shouldReset === "both" || shouldReset === "begin",
+                );
             },
             revert() {
-                use(prev, shouldReset === "both" || shouldReset === "revert");
+                useController(
+                    prev,
+                    shouldReset === "both" || shouldReset === "revert",
+                );
             },
         });
     }
@@ -687,9 +769,9 @@ class Spring {
         window.addEventListener("mousedown", ({ target, clientX }) => {
             if ((target as HTMLElement).tagName === "MAIN") {
                 mouseDown = true;
-            xController().target = clientX;
-        }
-    });
+                xController().target = clientX;
+            }
+        });
         window.addEventListener("mouseup", () => {
             mouseDown = false;
         });
@@ -699,6 +781,155 @@ class Spring {
             }
         });
     }
+
+    function setupSpringSlider(name: string, values: number[]) {
+        const nameSelector = `[name="${name}"]`;
+        const codeBlockControl = addConstControl(name + " =", values, {
+            additionalInputSelector: "input" + nameSelector,
+            startInlineInputsHidden: true,
+        });
+
+        const input = document.querySelector<HTMLInputElement>(
+            "input" + nameSelector,
+        )!;
+        const wrapper = input.parentElement!;
+        const output = wrapper.querySelector<HTMLOutputElement>("output");
+
+        function strAndNum(str: string) {
+            return { str, num: parseInt(str) };
+        }
+
+        // store these for after animation is complete
+        let value = strAndNum(input.value);
+        const min = strAndNum(input.min);
+        const max = strAndNum(input.max);
+
+        const rangeX = new SpringController();
+        const thumbX = new SpringController({
+            damping: 24,
+            mass: 3,
+            stiffness: 120,
+        });
+
+        function getInputValueDuringAnimation() {
+            // diff between input and value currents gets distance from center
+            // we need to add the offset from the initial value, i.e. where value should end up
+            return (
+                ((value.num - min.num) / (max.num - min.num)) *
+                    input.clientWidth -
+                input.clientWidth / 2 +
+                thumbX.current -
+                rangeX.current
+            ).toFixed();
+        }
+
+        function setupForAnimation(startPosition: "left" | "right" | "middle") {
+            let x;
+            switch (startPosition) {
+                case "left":
+                    x = (window.innerWidth + wrapper.clientWidth) / -2;
+                    break;
+                case "right":
+                    x = (window.innerWidth + wrapper.clientWidth) / 2;
+                    break;
+                case "middle":
+                    x = 0;
+                    break;
+            }
+            rangeX.current = thumbX.current = x;
+            rangeX.target =
+                thumbX.target =
+                rangeX.velocity =
+                thumbX.velocity =
+                    0;
+
+            // set range as width in pixels
+            input.min = (input.clientWidth / -2).toString();
+            input.max = (input.clientWidth / 2).toString();
+            input.value = getInputValueDuringAnimation();
+            wrapper.style.setProperty("--x", rangeX.current + "px");
+        }
+
+        function onAnimationComplete() {
+            input.min = min.str;
+            input.max = max.str;
+            input.value = value.str;
+            codeBlockControl.set(values[value.num]);
+        }
+
+        const animation = new AnimationFrameController(({ deltaMS }) => {
+            rangeX.step(deltaMS);
+            thumbX.step(deltaMS);
+
+            wrapper.style.setProperty("--x", rangeX.current + "px");
+            input.value = getInputValueDuringAnimation();
+
+            if (thumbX.isAtRest()) {
+                onAnimationComplete();
+                return false;
+            }
+            return true;
+        });
+
+        codeBlockControl.listen((v) => {
+            if (output) {
+                output.innerText = v.toString();
+            }
+            value = {
+                num: values.indexOf(v),
+                str: values.indexOf(v).toString(),
+            };
+        });
+
+        return {
+            ...codeBlockControl,
+            registerStart(startPosition: "left" | "right") {
+                registerTransition({
+                    begin() {
+                        setupForAnimation(startPosition);
+                        wrapper.classList.add("active");
+                        animation.playIfPaused();
+                    },
+                    revert() {
+                        wrapper.classList.remove("active");
+                        animation.pause();
+                        wrapper.style.removeProperty("--x");
+                    },
+                });
+            },
+            registerHide() {
+                registerTransition({
+                    begin() {
+                        wrapper.classList.remove("active");
+                        animation.pause();
+                        wrapper.style.removeProperty("--x");
+                    },
+                    revert() {
+                        onAnimationComplete();
+                        wrapper.style.removeProperty("--x");
+                        wrapper.classList.add("active");
+                    },
+                });
+            },
+        };
+    }
+
+    const stiffness = setupSpringSlider(
+        "stiffness",
+        [0, 0.5, 1, 2, 10, 50, 100, 200, 500, 1000],
+    );
+    stiffness.listen(
+        (value) => (xControllers.spring.options.stiffness = value),
+    );
+
+    const mass = setupSpringSlider("mass", [0, 0.25, 0.5, 1, 2, 5, 10, 15]);
+    mass.listen((value) => (xControllers.spring.options.mass = value));
+
+    const damping = setupSpringSlider(
+        "damping",
+        [0, 1, 2, 4, 8, 16, 20, 36, 60, 100],
+    );
+    damping.listen((value) => (xControllers.spring.options.damping = value));
 
     const chickenFrames = {
         current: {
@@ -731,7 +962,7 @@ class Spring {
             },
             {
                 id: "almost-stand",
-                min: 0.00001,
+                min: 0,
                 frames: ["walk-2"],
             },
         ],
@@ -762,11 +993,16 @@ class Spring {
 
             let frames = [chickenFrames.idle];
             let newId = "idle";
-            for (const moveConfig of chickenFrames.move) {
-                if (v > moveConfig.min) {
-                    frames = moveConfig.frames;
-                    newId = moveConfig.id;
-                    break;
+
+            if (x.isAtRest()) {
+                x.fastForward();
+            } else {
+                for (const moveConfig of chickenFrames.move) {
+                    if (v > moveConfig.min) {
+                        frames = moveConfig.frames;
+                        newId = moveConfig.id;
+                        break;
+                    }
                 }
             }
 
@@ -782,10 +1018,6 @@ class Spring {
                 chicken.src = chickenFrames.getSrc(
                     frames[chickenFrames.current.index],
                 );
-
-                if (newId === "idle") {
-                    x.fastForward();
-                }
             }
 
             if (deltaX !== 0) {
@@ -797,7 +1029,7 @@ class Spring {
         },
     );
 
-    use("empty", true);
+    resetChicken();
     animationController.playIfPaused();
 
     // create a lerp class
@@ -918,4 +1150,11 @@ class Spring {
         mass: 2,
     });
     withPrevious();
+
+    codeClasses.next();
+    codeClasses.hide();
+
+    stiffness.registerStart("left");
+    mass.registerStart("left");
+    damping.registerStart("left");
 </script>

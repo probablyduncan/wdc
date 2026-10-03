@@ -3,9 +3,8 @@ import { registerTransition } from "./slides";
 const CONST_CONTROL_OPTION_DEFAULTS = {
     startInlineInputsHidden: false,
     additionalInputSelector: "",
-    searchPrefix: "const ",
 };
-export function addConstControl<TValue extends number | string>(constName: string, values: TValue[], options: Partial<typeof CONST_CONTROL_OPTION_DEFAULTS> = {}): {
+export function addConstControl<TValue extends number | string>(lineStart: string, values: TValue[], options: Partial<typeof CONST_CONTROL_OPTION_DEFAULTS> = {}): {
     get: () => TValue;
     set: (value: TValue) => void;
     reset: () => void;
@@ -13,7 +12,7 @@ export function addConstControl<TValue extends number | string>(constName: strin
     hide: () => void;
     listen: (callback: (value: TValue) => void) => void;
 } {
-    const { startInlineInputsHidden, additionalInputSelector, searchPrefix } = Object.assign({ ...CONST_CONTROL_OPTION_DEFAULTS }, options);
+    const { startInlineInputsHidden, additionalInputSelector } = Object.assign({ ...CONST_CONTROL_OPTION_DEFAULTS }, options);
 
     const inlineInputEls: HTMLInputElement[] = [];
     const additionalInputEls = additionalInputSelector ? [...document.querySelectorAll<HTMLInputElement>(additionalInputSelector)] : [];
@@ -48,7 +47,7 @@ export function addConstControl<TValue extends number | string>(constName: strin
 
         for (let line of codeBlock.getElementsByClassName("code") as HTMLCollectionOf<HTMLElement>) {
 
-            if (!line.innerText.startsWith(searchPrefix + constName)) {
+            if (!line.innerText.trim().startsWith(lineStart)) {
                 continue;
             }
 

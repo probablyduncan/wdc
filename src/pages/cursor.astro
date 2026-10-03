@@ -1338,18 +1338,18 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     }
 
     const pxPerFrameControl = addConstControl(
-        "PIXELS_PER_FRAME",
+        "const PIXELS_PER_FRAME =",
         [-20, -5, -2, -1, 0, 1, 2, 5, 20],
         { startInlineInputsHidden: true },
     );
 
     const halfLifeBasicControl = addConstControl(
-        "LERP_VALUE",
+        "const LERP_VALUE =",
         [0, 0.005, 0.05, 0.5],
     );
 
     const halfLifeControl = addConstControl(
-        "HALF_LIFE",
+        "const HALF_LIFE =",
         [0, 5, 20, 50, 100, 200, 500, 1000, 2000],
     );
 
