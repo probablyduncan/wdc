@@ -18,7 +18,7 @@ function getEditFileLink() {
 // basically, if we're hot we want to
 ---
 
-<Slide prev="cursor">
+<Slide prev="cursor" next="">
     <!--
         who do you think laid our egg??
         a spring chicken, of course
@@ -41,14 +41,14 @@ function getEditFileLink() {
     <Figure x="0.75" y="0.6" class="active">
         <section id="code-uses" slot="figure">
             <Code
-                lang="ts"
+                lang="typescript"
                 ins={{ range: "1" }}
                 code={`
 const x = new Lerper();
 `}
             />
             <Code
-                lang="ts"
+                lang="typescript"
                 ins={{ range: "3-5" }}
                 code={`
 const x = new Lerper();
@@ -59,7 +59,7 @@ window.addEventListener("click", ({ clientX }) => {
 `}
             />
             <Code
-                lang="ts"
+                lang="typescript"
                 ins={{ range: "7-13" }}
                 code={`
 const x = new Lerper();
@@ -78,7 +78,7 @@ requestAnimationFrame(function update(time) {
 `}
             />
             <Code
-                lang="ts"
+                lang="typescript"
                 ins={{ range: "12-13" }}
                 code={`
 const x = new Lerper();
@@ -103,7 +103,7 @@ requestAnimationFrame(function update(time) {
     </Figure>
     <section id="code-classes">
         <Code
-            lang="ts"
+            lang="typescript"
             code={`
 class Lerper {
     
@@ -111,7 +111,7 @@ class Lerper {
 `}
         />
         <Code
-            lang="ts"
+            lang="typescript"
             ins={[2, 3, 4]}
             code={`
 class Lerper {
@@ -122,7 +122,7 @@ class Lerper {
 `}
         />
         <Code
-            lang="ts"
+            lang="typescript"
             ins={[6, 7, 8, 9]}
             code={`
 class Lerper {
@@ -138,7 +138,7 @@ class Lerper {
 `}
         />
         <Code
-            lang="ts"
+            lang="typescript"
             code={`
 class Spring {
     current = 0;
@@ -151,7 +151,7 @@ class Spring {
 `}
         />
         <Code
-            lang="ts"
+            lang="typescript"
             ins={[5, 8]}
             code={`
 class Spring {
@@ -167,7 +167,7 @@ class Spring {
 `}
         />
         <Code
-            lang="ts"
+            lang="typescript"
             code={`
 class Spring {
     current = 0;
@@ -182,7 +182,7 @@ class Spring {
 `}
         />
         <Code
-            lang="ts"
+            lang="typescript"
             ins={[6, 10]}
             code={`
 class Spring {
@@ -200,7 +200,7 @@ class Spring {
 `}
         />
         <Code
-            lang="ts"
+            lang="typescript"
             code={`
 class Spring {
     current = 0;
@@ -217,7 +217,7 @@ class Spring {
 `}
         />
         <Code
-            lang="ts"
+            lang="typescript"
             ins={[4, 12]}
             code={`
 class Spring {
@@ -237,7 +237,7 @@ class Spring {
 `}
         />
         <Code
-            lang="ts"
+            lang="typescript"
             code={`
 class Spring {
     current = 0;
@@ -256,7 +256,7 @@ class Spring {
 `}
         />
         <Code
-            lang="ts"
+            lang="typescript"
             ins={[13]}
             code={`
 class Spring {
@@ -277,7 +277,7 @@ class Spring {
 `}
         />
         <Code
-            lang="ts"
+            lang="typescript"
             code={`
 class Spring {
     current = 0;
@@ -297,7 +297,7 @@ class Spring {
 `}
         />
         <Code
-            lang="ts"
+            lang="typescript"
             ins={[8, 12]}
             code={`
 class Spring {
@@ -320,7 +320,7 @@ class Spring {
 `}
         />
         <Code
-            lang="ts"
+            lang="typescript"
             ins={"(springForce - dampingForce)"}
             code={`
 class Spring {
@@ -343,7 +343,7 @@ class Spring {
 `}
         />
         <Code
-            lang="ts"
+            lang="typescript"
             code={`
 class Spring {
     current = 0;
@@ -365,17 +365,23 @@ class Spring {
 `}
         />
         <Code
-            lang="ts"
-            ins={["const seconds = delta / 1000;", /\* (seconds)/g]}
+            lang="typescript"
+            ins={[
+                "const seconds = delta / 1000;",
+                /\* (seconds)/g,
+                / = (100)/g,
+                "2",
+                "20",
+            ]}
             code={`
 class Spring {
     current = 0;
     target = 0;
     velocity = 0;
 
-    stiffness = 1;
-    mass = 1;
-    damping = 1;
+    stiffness = 100;
+    mass = 2;
+    damping = 20;
 
     step(delta: number) {
         const springForce = this.stiffness * (target - current);
@@ -389,16 +395,16 @@ class Spring {
 `}
         />
         <Code
-            lang="ts"
+            lang="typescript"
             code={`
 class Spring {
     current = 0;
     target = 0;
     velocity = 0;
 
-    stiffness = 1;
-    mass = 1;
-    damping = 1;
+    stiffness = 100;
+    mass = 2;
+    damping = 20;
 
     step(delta: number) {
         const springForce = this.stiffness * (target - current);
@@ -410,6 +416,63 @@ class Spring {
     }
 }
 `}
+        />
+        <Code
+            lang="typescript"
+            code={`
+const inputPosition = createSpring();
+const thumbPosition = createSpring();
+
+thumbPosition.stiffness *= 1.2;
+thumbPosition.mass *= 1.5;
+thumbPosition.damping *= 1.2;
+
+// go 300px to the right:
+inputPosition.target = 300;
+thumbPosition.target = 300;
+        `}
+        />
+        <Code
+            lang="typescript"
+            code={`
+const chicken = {
+    el: getElementById("chicken"),
+    x: createSpring(),
+    y: createSpring(),
+};
+
+// called in requestAnimationFrame
+function step(deltaMS) {
+    chicken.x.step(deltaMS);
+    chicken.y.step(deltaMS);
+    chicken.el.style.setProperty("--x", x.current + "px");
+    chicken.el.style.setProperty("--y", y.current + "px");
+}
+        `}
+        />
+        <Code
+            lang="typescript"
+            ins={[14, 15, 16, 17]}
+            code={`
+const chicken = {
+    el: getElementById("chicken"),
+    x: createSpring(),
+    y: createSpring(),
+};
+
+// called in requestAnimationFrame
+function step(deltaMS) {
+    chicken.x.step(deltaMS);
+    chicken.y.step(deltaMS);
+    chicken.el.style.setProperty("--x", x.current + "px");
+    chicken.el.style.setProperty("--y", y.current + "px");
+
+    const pxFromTopToHorizon = window.innerHeight * 0.35;
+    const scale = (yController.current - pxFromTopToHorizon)
+        / (window.innerHeight - pxFromTopToHorizon);
+    chicken.el.style.setProperty("--s", Math.max(scale, 0) + "px");
+}
+        `}
         />
     </section>
     <Figure
@@ -543,14 +606,15 @@ class Spring {
         </div>
         <div>
             <label for="mass">mass (kg)</label>
-            <output for="mass">&nbsp; 2</output>
+            <output for="mass">2</output>
             <input name="mass" type="range" />
         </div>
         <div>
             <label for="damping">damping</label>
-            <output for="damping">&nbsp;20</output>
+            <output for="damping">20</output>
             <input name="damping" type="range" />
         </div>
+        <button id="lay-egg" title="or just press e!">lay egg</button>
     </div>
     <img
         id="chicken"
@@ -574,7 +638,7 @@ class Spring {
         position: fixed;
         top: 2ch;
         left: 2ch;
-        z-index: 20;
+        z-index: 90;
     }
 
     :global(.expressive-code) {
@@ -616,8 +680,8 @@ class Spring {
         --x: calc(50vw - var(--width) / 2);
         --y: calc(100vh - var(--width) / 2);
         translate: calc(var(--x, 0px) - 50%) calc(var(--y, 0px) - 50%);
-        scale: var(--d) 1;
-        z-index: 10;
+        scale: calc(var(--d) * var(--s, 1)) var(--s, 1);
+        z-index: 85;
     }
 
     #spring-sliders {
@@ -627,16 +691,16 @@ class Spring {
         translate: -50%;
         padding: 1ch;
         border-radius: 1ch;
+        font-size: 0.75em;
 
         div {
             display: grid;
-            column-gap: 1ch;
             align-items: center;
-            font-size: 0.75em;
             width: clamp(20vw, 350px, 95vw);
-            margin-bottom: 0.5ch;
+            margin-bottom: 2ch;
 
             transform: translateX(var(--x, 0));
+            transition: opacity 0.5s;
 
             &:not(.active) {
                 opacity: 0;
@@ -646,9 +710,53 @@ class Spring {
                 grid-column: 1 / 3;
             }
 
-            output {
-                text-align: right;
+            label {
+                justify-self: start;
             }
+
+            output {
+                justify-self: end;
+            }
+        }
+
+        label,
+        output,
+        button {
+            padding: 0.25em 0.5em;
+            margin-inline: 0.25em;
+            background-color: white;
+            border-radius: 0.25em;
+            box-shadow: 0 0 0.125em #00000044;
+        }
+
+        button {
+            width: 100%;
+            /* padding-block: 0,5; */
+            /* border: 0.125em outset #00000055; */
+            cursor: pointer;
+            &:not(.active) {
+                display: none;
+            }
+
+            transition: font-variation-settings 0.2s, font-weight 0.2s;
+            font-variation-settings:
+                "MONO" 1,
+                "CASL" 0,
+                "slnt" 0,
+                "CRSV" 1;
+        }
+
+        button:hover {
+            font-weight: 500;
+            font-variation-settings:
+                "MONO" 1,
+                "CASL" 1,
+                "slnt" -15,
+                "CRSV" 1;
+        }
+
+        button:active {
+            font-weight: 700;
         }
     }
 </style>
@@ -695,14 +803,32 @@ class Spring {
     };
 
     let currentType: keyof typeof xControllers = "empty";
-    // @ts-ignore
     const startX =
         chicken.getBoundingClientRect().left + chicken.clientWidth / 2;
+    const startY = window.innerHeight - chicken.clientWidth / 2;
     // @ts-ignore
     const startD = chicken.computedStyleMap().get("--d")[0];
 
     function xController() {
         return xControllers[currentType];
+    }
+
+    let translateY = false;
+    const yController = new SpringController();
+    yController.current = yController.target = startY;
+
+    let scaleY = false;
+    function getScale() {
+        const topToHorizon = ((window.innerWidth * 9) / 16) * 0.35;
+        if (yController.current < topToHorizon) {
+            return 0;
+        }
+
+        const lerp =
+            (yController.current - topToHorizon) / (startY - topToHorizon);
+        const scaleAtHorizon = 0.2;
+        const scale = lerp * (1 - scaleAtHorizon) + scaleAtHorizon;
+        return scale;
     }
 
     function useController(
@@ -726,6 +852,7 @@ class Spring {
         });
         chicken.style.setProperty("--x", startX.toFixed(2) + "px");
         chicken.style.setProperty("--d", startD.toString());
+        chicken.style.setProperty("--y", startY.toString());
     }
 
     function useInterpolator(
@@ -750,50 +877,41 @@ class Spring {
         });
     }
 
-    function springSettingTransition(options: Partial<SpringOptions>) {
-        const springControllerOptionsObject = xControllers["spring"].options;
-        let prev: SpringOptions;
-        registerTransition({
-            begin() {
-                prev = { ...springControllerOptionsObject };
-                Object.assign(springControllerOptionsObject, options);
-            },
-            revert() {
-                Object.assign(springControllerOptionsObject, prev);
-            },
-        });
-    }
-
     {
         let mouseDown = false;
-        window.addEventListener("mousedown", ({ target, clientX }) => {
+        window.addEventListener("mousedown", ({ target, clientX, clientY }) => {
             if ((target as HTMLElement).tagName === "MAIN") {
                 mouseDown = true;
                 xController().target = clientX;
+                if (translateY) {
+                    yController.target = clientY;
+                }
             }
         });
         window.addEventListener("mouseup", () => {
             mouseDown = false;
         });
-        window.addEventListener("mousemove", ({ clientX }) => {
+        window.addEventListener("mousemove", ({ clientX, clientY }) => {
             if (mouseDown) {
                 xController().target = clientX;
+                if (translateY) {
+                    yController.target = clientY;
+                }
             }
         });
     }
 
-    function setupSpringSlider(name: string, values: number[]) {
-        const nameSelector = `[name="${name}"]`;
-        const codeBlockControl = addConstControl(name + " =", values, {
-            additionalInputSelector: "input" + nameSelector,
+    function setupSpringSlider(inputSelector: string, values: number[]) {
+        const input = document.querySelector<HTMLInputElement>(inputSelector)!;
+        const codeBlockControl = addConstControl(input.name + " =", values, {
+            additionalInputSelector: inputSelector,
             startInlineInputsHidden: true,
         });
 
-        const input = document.querySelector<HTMLInputElement>(
-            "input" + nameSelector,
-        )!;
-        const wrapper = input.parentElement!;
-        const output = wrapper.querySelector<HTMLOutputElement>("output");
+        const translatableParent = input.parentElement!;
+        const outputs = document.querySelectorAll<HTMLOutputElement>(
+            `output[for="${input.name}"]`,
+        );
 
         function strAndNum(str: string) {
             return { str, num: parseInt(str) };
@@ -823,31 +941,56 @@ class Spring {
             ).toFixed();
         }
 
-        function setupForAnimation(startPosition: "left" | "right" | "middle") {
-            let x;
-            switch (startPosition) {
-                case "left":
-                    x = (window.innerWidth + wrapper.clientWidth) / -2;
-                    break;
-                case "right":
-                    x = (window.innerWidth + wrapper.clientWidth) / 2;
-                    break;
+        function getCodeMargin() {
+            const top = document
+                .getElementById("code-classes")!
+                .computedStyleMap()
+                .get("top");
+            // @ts-ignore
+            return top.value;
+        }
+
+        type SliderPosition =
+            "middle" | "left" | "right" | "farLeft" | "farRight";
+        function getSliderPosition(position: SliderPosition) {
+            switch (position) {
                 case "middle":
-                    x = 0;
-                    break;
+                    return 0;
+                case "farLeft":
+                    return (
+                        (window.innerWidth + translatableParent.clientWidth) /
+                        -2
+                    );
+                case "farRight":
+                    return (
+                        (window.innerWidth + translatableParent.clientWidth) / 2
+                    );
+                case "left":
+                    return (
+                        translatableParent.clientWidth / 2 -
+                        window.innerWidth / 2 +
+                        getCodeMargin()
+                    );
+                case "right":
+                    return (
+                        window.innerWidth / 2 -
+                        translatableParent.clientWidth / 2 -
+                        getCodeMargin()
+                    );
             }
-            rangeX.current = thumbX.current = x;
-            rangeX.target =
-                thumbX.target =
-                rangeX.velocity =
-                thumbX.velocity =
-                    0;
+        }
+
+        function setupForAnimation(from: SliderPosition, to: SliderPosition) {
+            rangeX.current = thumbX.current = getSliderPosition(from);
+            rangeX.target = thumbX.target = getSliderPosition(to);
+            rangeX.velocity = thumbX.velocity = 0;
+
+            translatableParent.style.setProperty("--x", rangeX.current + "px");
 
             // set range as width in pixels
             input.min = (input.clientWidth / -2).toString();
             input.max = (input.clientWidth / 2).toString();
             input.value = getInputValueDuringAnimation();
-            wrapper.style.setProperty("--x", rangeX.current + "px");
         }
 
         function onAnimationComplete() {
@@ -861,7 +1004,7 @@ class Spring {
             rangeX.step(deltaMS);
             thumbX.step(deltaMS);
 
-            wrapper.style.setProperty("--x", rangeX.current + "px");
+            translatableParent.style.setProperty("--x", rangeX.current + "px");
             input.value = getInputValueDuringAnimation();
 
             if (thumbX.isAtRest()) {
@@ -872,64 +1015,127 @@ class Spring {
         });
 
         codeBlockControl.listen((v) => {
-            if (output) {
-                output.innerText = v.toString();
-            }
+            outputs.forEach((output) => (output.innerText = v.toString()));
             value = {
                 num: values.indexOf(v),
                 str: values.indexOf(v).toString(),
             };
         });
 
+        function animate(
+            from: SliderPosition,
+            to: SliderPosition,
+            delay: number = 10,
+        ) {
+            setTimeout(() => {
+                setupForAnimation(from, to);
+                translatableParent.classList.add("active");
+                animation.playIfPaused();
+            }, delay);
+        }
+
+        // function jump(to: SliderPosition) {
+        //     animation.pause();
+        //     setupForAnimation(to, to);
+        //     translatableParent.classList.add("active");
+        //     onAnimationComplete();
+        // }
+
+        // function hide() {
+        //     translatableParent.classList.remove("active");
+        //     animation.pause();
+        //     translatableParent.style.removeProperty("--x");
+        // }
+
+        // function show() {
+        //     onAnimationComplete();
+        //     translatableParent.style.removeProperty("--x");
+        //     translatableParent.classList.add("active");
+        // }
+
         return {
-            ...codeBlockControl,
-            registerStart(startPosition: "left" | "right") {
+            getValue: codeBlockControl.get,
+            setValue: codeBlockControl.set,
+            listenForValueChange: codeBlockControl.listen,
+            registerAnimate(
+                from: SliderPosition,
+                to: SliderPosition,
+                delay: number = 10,
+            ) {
                 registerTransition({
                     begin() {
-                        setupForAnimation(startPosition);
-                        wrapper.classList.add("active");
-                        animation.playIfPaused();
+                        animate(from, to, delay);
                     },
                     revert() {
-                        wrapper.classList.remove("active");
-                        animation.pause();
-                        wrapper.style.removeProperty("--x");
+                        animate(to, from, delay);
                     },
                 });
             },
-            registerHide() {
-                registerTransition({
-                    begin() {
-                        wrapper.classList.remove("active");
-                        animation.pause();
-                        wrapper.style.removeProperty("--x");
-                    },
-                    revert() {
-                        onAnimationComplete();
-                        wrapper.style.removeProperty("--x");
-                        wrapper.classList.add("active");
-                    },
-                });
-            },
+            // registerJump(
+            //     from: SliderPosition,
+            //     to: SliderPosition,
+            // ) {
+            //     registerTransition({
+            //         begin() {
+            //             jump(to);
+            //         },
+            //         revert() {
+            //             jump(from);
+            //         },
+            //     })
+            // },
         };
     }
 
     const stiffness = setupSpringSlider(
-        "stiffness",
+        `input[name="stiffness"]`,
         [0, 0.5, 1, 2, 10, 50, 100, 200, 500, 1000],
     );
-    stiffness.listen(
+    stiffness.listenForValueChange(
         (value) => (xControllers.spring.options.stiffness = value),
     );
 
-    const mass = setupSpringSlider("mass", [0, 0.25, 0.5, 1, 2, 5, 10, 15]);
-    mass.listen((value) => (xControllers.spring.options.mass = value));
+    const mass = setupSpringSlider(
+        `input[name="mass"]`,
+        [0, 0.25, 0.5, 1, 2, 5, 10, 15],
+    );
+    mass.listenForValueChange(
+        (value) => (xControllers.spring.options.mass = value),
+    );
 
     const damping = setupSpringSlider(
-        "damping",
+        `input[name="damping"]`,
         [0, 1, 2, 4, 8, 16, 20, 36, 60, 100],
     );
-    damping.listen((value) => (xControllers.spring.options.damping = value));
+
+    damping.listenForValueChange(
+        (value) => (xControllers.spring.options.damping = value),
+    );
+
+    function springSettingTransition(options: Partial<SpringOptions>) {
+        const springControllerOptionsObject = xControllers["spring"].options;
+        let prev: SpringOptions;
+        registerTransition({
+            begin() {
+                prev = { ...springControllerOptionsObject };
+
+                Object.assign(springControllerOptionsObject, options);
+                Object.assign(yController.options, options);
+
+                stiffness.setValue(springControllerOptionsObject.stiffness);
+                mass.setValue(springControllerOptionsObject.mass);
+                damping.setValue(springControllerOptionsObject.damping);
+            },
+            revert() {
+                Object.assign(springControllerOptionsObject, prev);
+                Object.assign(yController.options, prev);
+
+                stiffness.setValue(springControllerOptionsObject.stiffness);
+                mass.setValue(springControllerOptionsObject.mass);
+                damping.setValue(springControllerOptionsObject.damping);
+            },
+        });
+    }
 
     const chickenFrames = {
         current: {
@@ -1025,9 +1231,82 @@ class Spring {
             }
 
             chicken.style.setProperty("--x", newX.toFixed(2) + "px");
+            chicken.style.setProperty(
+                "--y",
+                yController.step(deltaMS).toFixed(2) + "px",
+            );
+            if (scaleY) {
+                const scale = getScale();
+                chicken.style.setProperty("--s", scale.toFixed(2));
+            }
             return true;
         },
     );
+
+    function registerEggTransition() {
+        let abortController: AbortController | undefined;
+
+        function layEgg() {
+            const scale = getScale();
+
+            const img = document.createElement("img");
+            img.src = "/images/egg.webp";
+            img.classList.add("laid-egg");
+
+            const sizeInRelationToChicken = 1 / 4;
+            img.style.width =
+                scale * chicken.clientWidth * sizeInRelationToChicken + "px";
+            img.style.position = "fixed";
+            img.style.left =
+                (100 * xController().current) / window.innerWidth + "%";
+            img.style.top =
+                yController.current + (chicken.clientHeight * scale) / 5 + "px";
+            img.style.pointerEvents = "none";
+            img.style.userSelect = "none";
+            img.style.translate = `-50%`;
+            img.alt = "an egg laid by a spring chicken";
+            img.style.zIndex = (scale * 70).toFixed();
+            chicken.parentElement!.insertBefore(img, chicken);
+        }
+
+        registerTransition({
+            begin() {
+                const button = document.getElementById("lay-egg");
+                if (!button) {
+                    return;
+                }
+
+                abortController = new AbortController();
+                button.addEventListener("click", layEgg, {
+                    signal: abortController.signal,
+                });
+                window.addEventListener(
+                    "keypress",
+                    (e) => {
+                        if (e.key === "e") {
+                            layEgg();
+                        }
+                    },
+                    {
+                        signal: abortController.signal,
+                    },
+                );
+                button.classList.add("active");
+            },
+            revert() {
+                if (abortController) {
+                    document
+                        .getElementById("lay-egg")
+                        ?.classList.remove("active");
+                    abortController.abort();
+                    abortController = undefined;
+                    document
+                        .querySelectorAll(".laid-egg")
+                        .forEach((e) => e.remove());
+                }
+            },
+        });
+    }
 
     resetChicken();
     animationController.playIfPaused();
@@ -1109,6 +1388,12 @@ class Spring {
     withPrevious();
     useInterpolator("empty", "both");
     withPrevious();
+    springSettingTransition({
+        damping: 1,
+        stiffness: 1,
+        mass: 1,
+    });
+    withPrevious();
 
     codeClasses.next();
     registerClassTransition("#math-fd-fs", "active", "add");
@@ -1124,12 +1409,6 @@ class Spring {
         "active",
         "remove",
     );
-    withPrevious();
-    springSettingTransition({
-        damping: 1,
-        stiffness: 1,
-        mass: 1,
-    });
     withPrevious();
     useInterpolator("spring", "both");
     withPrevious();
@@ -1154,7 +1433,48 @@ class Spring {
     codeClasses.next();
     codeClasses.hide();
 
-    stiffness.registerStart("left");
-    mass.registerStart("left");
-    damping.registerStart("left");
+    stiffness.registerAnimate("farLeft", "middle");
+    mass.registerAnimate("farLeft", "middle");
+    damping.registerAnimate("farLeft", "middle");
+
+    stiffness.registerAnimate("middle", "right", 100);
+    mass.registerAnimate("middle", "right", 200);
+    withPrevious();
+    damping.registerAnimate("middle", "right", 300);
+    withPrevious();
+
+    codeClasses.next();
+
+    codeClasses.next();
+    registerTransition({
+        begin() {
+            translateY = true;
+        },
+        revert() {
+            translateY = false;
+        },
+    });
+    withPrevious();
+
+    codeClasses.next();
+    registerTransition({
+        begin() {
+            scaleY = true;
+        },
+        revert() {
+            scaleY = false;
+            chicken.style.removeProperty("--s");
+        },
+    });
+    withPrevious();
+
+    codeClasses.hide();
+    stiffness.registerAnimate("right", "middle", 100);
+    withPrevious();
+    mass.registerAnimate("right", "middle", 200);
+    withPrevious();
+    damping.registerAnimate("right", "middle", 300);
+    withPrevious();
+
+    registerEggTransition();
 </script>
