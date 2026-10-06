@@ -1,20 +1,16 @@
 ---
 import AlternativesSection from "../components/alternatives-section.astro";
-import CernSection from "../components/cern-section.astro";
 import EggSection from "../components/egg-section.astro";
-import IntroSection from "../components/intro-section.astro";
 import Slide from "../components/slide.astro";
+import TitleSequence from "../components/title-sequence.astro";
 
 // vs code open file link = `vscode://file${Astro.self.moduleId}`;
 ---
 
 <Slide next="cursor">
 
-    <!-- this has brief intro about websites, animation, etc -->
-    <IntroSection />
-
-    <!-- websites are boring! -->
-    <CernSection />
+    <!-- intro, cern, etc -->
+    <TitleSequence />
 
     <!-- why we're using raf -->
     <AlternativesSection />

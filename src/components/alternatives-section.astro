@@ -1,5 +1,5 @@
 ---
-
+import Figure from "./figure.astro";
 ---
 
 <section id="alternatives">
@@ -116,6 +116,50 @@
             </g>
         </svg>
     </div>
+    <Figure id="what-if" x="0.5" y="0.5" width={"min(60ch, 80vw)"}>
+        <div slot="figure">
+            But what if...
+            <ul>
+                <li id="what-if-1">you want to throw all that away?</li>
+                <li id="what-if-2">
+                    you’re an innovator, a disruptor, a 10x engineer?
+                </li>
+                <li id="what-if-3">you’re not like other girls?</li>
+                <li id="what-if-4">you want to do things the hard way?</li>
+            </ul>
+        </div>
+    </Figure>
+    <img id="baby-slam" src="/images/baby-1.webp" alt="a baby who writes css" />
+    <img
+        id="baby-keyframes"
+        src="/images/baby-2.webp"
+        alt="a baby at a computer who writes css keyframes"
+    />
+    <img
+        id="baby-waapi"
+        src="/images/baby-3.webp"
+        alt="a baby pointing at a screen, about to write some performant animations"
+    />
+    <img
+        id="baby-motion"
+        src="/images/baby-4.webp"
+        alt="a baby looking at the motion website"
+    />
+    <img
+        id="baby-gsap"
+        src="/images/baby-5.webp"
+        alt="a baby looking at the gsap website"
+    />
+    <img
+        id="baby-anime"
+        src="/images/baby-6.webp"
+        alt="a baby at the animejs website"
+    />
+    <div id="no-friends">Where do you turn when<br/>&nbsp;you're all out of friends?</div>
+    <div id="nothing-left">What do you do when<br/>&nbsp;you've got nothing left?</div>
+    <Figure id="the-gift" x={0.5} y={0.5} src="/images/the-gift.webp">
+        <i>The Creation of requestAnimationFrame</i>, also known as <i>The Creation of Man</i>, is a fresco painting by Italian artist Michelangelo, which forms part of the Sistine Chapel's ceiling, painted 1508-1512.[12]
+    </Figure>
 </section>
 <style>
     section {
@@ -159,11 +203,11 @@
         .green {
             color: #adc5a1;
         }
-        &:not(.show) {
+        &:not(.active) {
             opacity: 0;
             pointer-events: none;
         }
-        &.show {
+        &.active {
             transition: opacity 1s;
         }
     }
@@ -177,14 +221,14 @@
 
         transform: rotate3d(0, 1, 0.5, 3.142rad);
 
-        &.show {
+        &.active {
             transition:
                 transform 0.5s,
                 opacity 0.2s;
             transform: rotate3d(0, 0, 0, 0);
         }
 
-        &:not(.show) {
+        &:not(.active) {
             opacity: 0;
             pointer-events: none;
         }
@@ -214,7 +258,7 @@
     }
 
     #waapi {
-        &:not(.show) {
+        &:not(.active) {
             opacity: 0;
             pointer-events: none;
         }
@@ -293,44 +337,125 @@
     #motion,
     #gsap,
     #anime {
-        &:not(.show) {
+        &:not(.active) {
             opacity: 0;
             pointer-events: none;
+            user-select: none;
         }
-        &.show {
+        &.active {
             transition: opacity 0.2s;
         }
     }
 
-    .wrong::after {
-        content: "X";
+    :global(#what-if) {
+        background-color: #fafaff;
+        border-radius: 1ch;
+        box-shadow: 2px 2px 20px rgba(0, 0, 0, 0.113);
+        padding: 2ch;
+        font-size: 2em;
+        line-height: 1.5;
+        li:not(.active) {
+            opacity: 0;
+        }
+    }
+
+    img:not(.active) {
+        opacity: 0;
+        pointer-events: none;
+        user-select: none;
+    }
+
+    #baby-slam {
         position: absolute;
-        line-height: 0;
-        inset: 50% 0;
-        font-size: var(--xs);
+        top: 0%;
+        right: 16%;
+        translate: 5% 5%;
+        opacity: 0;
+        scale: 10;
+        font-size: 2.5vw;
+        rotate: -10deg;
+        width: 10ch;
+    }
+
+    #baby-keyframes {
+        position: absolute;
+        top: 5%;
+        left: 16%;
+        font-size: 2.5vw;
+        rotate: 8deg;
+        width: 14ch;
+    }
+
+    #baby-waapi {
+        position: absolute;
+        top: 35%;
+        right: 20%;
+        font-size: 2.5vw;
+        rotate: 8deg;
+        width: 20ch;
+    }
+
+    #baby-motion {
+        position: absolute;
+        top: 10%;
+        left: 10%;
+        font-size: 2.5vw;
+        rotate: -6deg;
+        width: 30ch;
+    }
+
+    #baby-gsap {
+        position: absolute;
+        bottom: 5%;
+        right: 5%;
+        font-size: 2.5vw;
+        rotate: 4deg;
+        width: 30ch;
+    }
+
+    #baby-anime {
+        position: absolute;
+        bottom: 0%;
+        left: 0%;
+        font-size: 2.5vw;
+        rotate: 8deg;
+        width: 30ch;
+    }
+
+    #no-friends, #nothing-left {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         text-align: center;
-        color: red;
-        font-family: var(--recursive-family);
-        font-variation-settings:
-            "MONO" 1,
-            "CASL" 1,
-            "slnt" 0,
-            "CRSV" 1;
+        line-height: 1.5;
+        font-size: 3vw;
+        background-color: #111;
+        color: #fafaff;
+        &:not(.active) {
+            display: none;
+        }
     }
 </style>
 <script>
-    import { registerClassTransition, registerTransition } from "../lib/slides";
+    import {
+        registerClassTransition,
+        registerTransition,
+        withPrevious,
+    } from "../lib/slides";
 
     registerClassTransition("#alternatives");
-    registerClassTransition("#css", "show");
-    registerClassTransition("#keyframes", "show");
+    withPrevious();
+    registerClassTransition("#css");
+    registerClassTransition("#keyframes");
 
     registerTransition(() => {
         const el = document.getElementById("waapi")!;
         let animation: Animation | undefined = undefined;
         return {
             begin() {
-                el.classList.add("show");
+                el.classList.add("active");
 
                 const distanceToOffScreen = el.offsetLeft + el.clientWidth;
                 const duration = distanceToOffScreen * 2;
@@ -350,7 +475,7 @@
                 });
             },
             revert() {
-                el.classList.remove("show");
+                el.classList.remove("active");
                 if (animation) {
                     animation.cancel();
                 }
@@ -358,14 +483,92 @@
         };
     });
 
-    registerClassTransition("#motion", "show");
-    registerClassTransition("#gsap", "show");
-    registerClassTransition("#anime", "show");
+    registerClassTransition("#motion");
+    registerClassTransition("#gsap");
+    registerClassTransition("#anime");
 
-    registerClassTransition("#css", "wrong");
-    registerClassTransition("#keyframes", "wrong");
-    registerClassTransition("#waapi", "wrong");
-    registerClassTransition("#motion", "wrong");
-    registerClassTransition("#gsap", "wrong");
-    registerClassTransition("#anime", "wrong");
+    registerClassTransition("#what-if");
+    registerClassTransition("#what-if-1");
+    registerClassTransition("#what-if-2");
+    registerClassTransition("#what-if-3");
+    registerClassTransition("#what-if-4");
+
+    registerClassTransition("#what-if", "active", "remove");
+    registerTransition(() => {
+        const baby = document.getElementById("baby-slam")!;
+        const css = document.getElementById("css")!;
+        let animations: Animation[] = [];
+        return {
+            begin() {
+                baby.classList.add("active");
+                animations.push(baby.animate(
+                    [
+                        {
+                            opacity: 0,
+                            translate: "5% 5%",
+                            scale: 5,
+                            rotate: "0deg",
+                        },
+                        {
+                            opacity: 1,
+                            translate: "unset",
+                            scale: 1,
+                            rotate: "2deg",
+                        },
+                    ],
+                    {
+                        duration: 500,
+                        fill: "both",
+                        easing :
+                    "linear(0, 0.029 1.3%, 0.119 2.8%, 0.659 8.7%, 0.871 11.6%, 1.009 14.6%, 1.052 16.2%, 1.078 17.9%, 1.088 19.7%, 1.085 21.7%, 1.014 31.4%, 0.993 38%, 1.001 57.6%, 1)",
+                    },
+                ));
+                animations.push(css.animate([
+                    {
+                        translate: "0 0",
+                        scale: 1,
+                        rotate: "3deg",
+                        opacity: 1,
+                    },
+                    {
+                        translate: "-2% -2%",
+                        rotate: "-2deg",
+                        scale: 0.8,
+                        opacity: 0.8,
+                    },
+                    {
+                        translate: "0 0",
+                        rotate: "6deg",
+                        scale: 1,
+                        opacity: 0.6,
+                    },
+                ], {
+                    duration: 500,
+                    fill: "both",
+                    easing :
+                    "linear(0, 0.029 1.3%, 0.119 2.8%, 0.659 8.7%, 0.871 11.6%, 1.009 14.6%, 1.052 16.2%, 1.078 17.9%, 1.088 19.7%, 1.085 21.7%, 1.014 31.4%, 0.993 38%, 1.001 57.6%, 1)",
+                    delay: 100,
+                }))
+            },
+            revert() {
+                baby.classList.remove("active");
+                animations.forEach(a => a.cancel());
+                animations.length = 0;
+            },
+        };
+    });
+    withPrevious();
+
+    registerClassTransition("#baby-keyframes");
+    registerClassTransition("#baby-waapi");
+    registerClassTransition("#baby-motion");
+    registerClassTransition("#baby-gsap");
+    registerClassTransition("#baby-anime");
+
+    // where do you turn when you're all out of friends?
+    registerClassTransition("#no-friends");
+    // where do you go when you've got nothing left?
+    registerClassTransition("#nothing-left");
+    // the answer, of course, is request animation frame    
+    registerClassTransition("#the-gift");
 </script>

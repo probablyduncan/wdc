@@ -305,10 +305,13 @@ requestAnimationFrame(moveEgg);
     <img class="money" src="/images/money.png" style="--i: 3;" />
     <img class="money" src="/images/money.png" style="--i: 4;" />
     <div id="set-interval-figures">
-        <Figure src="/images/interval-bad.png" x="0.2" y="0.3">
-            The defunct and forsaken browser function `setInterval`.
+        <Figure src="/images/irish-1.png" x="0.2" y="0.3" width={"60vmin"}>
+            Paul Irish on the most important news of the century. From <a href="https://www.paulirish.com/2011/requestanimationframe-for-smart-animating/" target="_blank">paulirish.com</a>.
         </Figure>
-        <Figure x={0.5} y={0.5} figure={4} src="/images/mdn-raf.png">
+        <Figure src="/images/irish-2.png" x="0.4" y="0.4" width={"60vmin"}>
+            Toats McGoats. From <a href="https://www.paulirish.com/2011/requestanimationframe-for-smart-animating/" target="_blank">paulirish.com</a>.
+        </Figure>
+        <Figure x={0.5} y={0.5} figure={4} src="/images/mdn-raf.png" width={"80vmin"}>
             The much-adored JavaScript™ function `window.requestAnimationFrame`
             became Baseline in mid 2015.[39] From MDN and the Mozilla
             Corporation. Available at <a
@@ -329,11 +332,20 @@ requestAnimationFrame(moveEgg);
                 target="_blank">https://knowyourmeme.com/memes/</a
             >
         </Figure>
-        <Figure x={0.4} y={0.55} figure={6} src="/images/friendship.webp">
+        <Figure x={0.4} y={0.55} figure={6} src="/images/friendship.webp" width={"50em"}>
             Internet <i>meme</i> created by an anonymous internet user[41] exemplifies
             the widespread jubilation[42] felt by millions after `window.requestAnimationFrame`,
             the JavaScript™ function, became generally available in all browsers in
             mid-2015.[43]
+        </Figure>
+        <Figure x={0.5} y={0.5} figure={6} src="/images/raf_in-gsap.png" width={"50em"}>
+            RequestAnimationFrame is what powers GSAP: <a href="https://github.com/greensock/GSAP/blob/master/src/gsap-core.js" target="_blank">https://github.com/greensock/GSAP/...</a>
+        </Figure>
+        <Figure x={0.33} y={0.33} figure={6} src="/images/raf_in-motion.png" width={"60em"}>
+            And Motion: <a href="https://github.com/motiondivision/motion/blob/16c61222c4166bbef5ff6ab0051192faa79fa8c8/packages/motion-dom/src/frameloop/frame.ts" target="_blank">https://github.com/motiondivision/motion/...</a>
+        </Figure>
+        <Figure x={0.63} y={0.33} figure={6} src="/images/raf_in-animejs.png" width={"70em"}>
+            And AnimeJS: <a href="https://github.com/juliangarnier/anime/blob/master/src/engine/engine.js" target="_blank">https://github.com/juliangarnier/anime/...</a>
         </Figure>
     </div>
 </section>
