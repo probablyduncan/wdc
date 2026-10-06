@@ -505,25 +505,7 @@ function step(deltaMS) {
         </math>
         Distance is velocity times time!
     </Figure>
-    <Figure id="math-x-no-d" x="0.5" y="0.45" figure={9}>
-        <math slot="figure">
-            <msub>
-                <mi>x</mi>
-                <mn>Δ</mn>
-            </msub>
-            <mo>=</mo>
-            <mi>k</mi>
-            <mi>x</mi>
-            <msup>
-                <mi>t</mi>
-                <mn>2</mn>
-            </msup>
-            <mo>/</mo>
-            <mi>m</mi>
-        </math>
-        To get the change
-    </Figure>
-    <Figure id="math-fd" x="0.12" y="0.68" figure={10}>
+    <Figure id="math-fd" x="0.12" y="0.68" figure={9}>
         <math slot="figure">
             <msub>
                 <mi>F</mi>
@@ -535,7 +517,7 @@ function step(deltaMS) {
         </math>
         The damping force!
     </Figure>
-    <Figure id="math-fd-fs" x="0.6" y="0.84" figure={11}>
+    <Figure id="math-fd-fs" x="0.6" y="0.84" figure={10}>
         <div slot="figure" class="math-steps">
             <math class="active">
                 <msub>
@@ -1346,8 +1328,6 @@ function step(deltaMS) {
     });
     withPrevious();
 
-    registerClassTransition("#math-x-no-d", "active", "add");
-
     codeClasses.next();
     registerClassTransition("#math-fd", "active", "add");
     withPrevious();
@@ -1370,7 +1350,7 @@ function step(deltaMS) {
     // clear everything and activate spring!
     codeClasses.next();
     registerClassTransition(
-        "#gcse-physics, #math-fs, #math-fma, #math-vat, #math-xvt, #math-fd, #math-fdm, #math-fd-fs, #math-x-no-d",
+        "#gcse-physics, #math-fs, #math-fma, #math-vat, #math-xvt, #math-fd, #math-fdm, #math-fd-fs",
         "active",
         "remove",
     );

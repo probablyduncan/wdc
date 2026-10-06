@@ -5,6 +5,56 @@ import Slide from "../components/slide.astro";
 ---
 
 <Slide prev="examples">
+    <section id="cern">
+        <h1>
+            World Wide Web <span id="web-emoji" style="line-height: 0;" hidden
+                >🕸️</span>
+        </h1>
+        The WorldWideWeb (W3) is a wide-area <a>hypermedia</a> information retrieval
+        initiative aiming to give universal access to a large universe of documents.
+        <p>
+            Everything there is online about W3 is linked directly or indirectly
+            to this document, including an <a>executive summary</a> of the project,
+            <a>Mailing lists</a>, <a>Policy</a>, November's <a class="visited"
+                >W3 news</a
+            >, <a>Frequently Asked Questions</a>.
+        </p>
+        <dl>
+            <dt>
+                <a class="visited">What's out there?</a>
+            </dt><dd>
+                Pointers to the world's online information, <a>subjects</a>, <a
+                    >W3 servers</a
+                >, etc.
+            </dd><dt>
+                <a>Help</a>
+            </dt><dd>on the browser you are using</dd><dt>
+                <a>Software Products</a>
+            </dt><dd>
+                A list of W3 project components and their current state. (e.g. <a
+                    class="visited">Line Mode</a
+                >, X11 <a>Viola</a>, <a>NeXTStep</a>, <a>Servers</a>, <a
+                    >Tools</a
+                >, <a class="visited">Mail robot</a>, <a>Library</a>)
+            </dd><dt>
+                <a>Technical</a>
+            </dt><dd>
+                Details of protocols, formats, program internals etc
+            </dd><dt>
+                <a>Bibliography</a>
+            </dt><dd>Paper documentation on W3 and references.</dd><dt>
+                <a class="visited">People</a>
+            </dt><dd>A list of some people involved in the project.</dd><dt>
+                <a>History</a>
+            </dt><dd>A summary of the history of the project.</dd><dt>
+                <a>How can I help</a> ?
+            </dt><dd>If you would like to support the web..</dd><dt>
+                <a>Getting code</a>
+            </dt><dd>
+                Getting the code by <a>anonymous FTP</a>, etc.
+            </dd>
+        </dl>
+    </section>
     <canvas id="itsy-bitsy"></canvas>
     <section id="code">
         <Code lang="html" code={`<canvas id="itsy-bitsy-canvas"></canvas>`} />
@@ -99,7 +149,7 @@ requestAnimationFrame(drawFrame);
             target="_blank">https://luke.zip/posts/draw-the-owl/</a
         > is good.
     </Figure>
-    <Figure
+    <!-- <Figure
         id="qr"
         src="/images/qr_spiders.duncanpetrie.com.png"
         x={0.5}
@@ -109,7 +159,7 @@ requestAnimationFrame(drawFrame);
         <a href="https://spiders.duncanpetrie.com" target="_blank"
             >spiders.duncanpetrie.com</a
         > is the place to be!
-    </Figure>
+    </Figure> -->
 </Slide>
 <style>
     body {
@@ -138,10 +188,37 @@ requestAnimationFrame(drawFrame);
         position: fixed;
         top: 2ch;
         left: 2ch;
-        z-index: 90;
+        z-index: 95;
     }
 
     :global(.expressive-code) {
+        &:not(.active) {
+            display: none;
+        }
+    }
+
+    #cern {
+        font-family: "Times New Roman", Times, serif;
+        width: 100vw;
+        min-height: 100svh;
+        background-color: #fafaff;
+        z-index: 2;
+        position: fixed;
+        padding: 1em 0.5em;
+        h1 {
+            margin-top: 0;
+        }
+        a {
+            color: blue;
+            color: #1200ee;
+            text-decoration: underline;
+            cursor: pointer;
+            &.visited {
+                color: purple;
+                color: #551a8b;
+            }
+        }
+
         &:not(.active) {
             display: none;
         }
@@ -187,6 +264,24 @@ requestAnimationFrame(drawFrame);
                 y: e.clientY,
             },
         ];
+    });
+
+    window.addEventListener("mousedown", (e) => {
+        if (me.kissing) {
+            me.scale /= 1.5;
+            if (me.interpolation.type === "ease") {
+                me.interpolation.halfLife *= 20;
+            }
+        }
+    });
+
+    window.addEventListener("mouseup", (e) => {
+        if (me.kissing) {
+            me.scale *= 1.5;
+            if (me.interpolation.type === "ease") {
+                me.interpolation.halfLife /= 20;
+            }
+        }
     });
 
     const spiders: SpiderState[] = [];
@@ -467,7 +562,8 @@ requestAnimationFrame(drawFrame);
 
     registerTransition({
         begin() {
-            me.scale = 5;
+            me.scale = 2;
+            me.kissing = true;
             me.targetPadding = 100;
             me.interpolation = {
                 type: "ease",
@@ -476,6 +572,7 @@ requestAnimationFrame(drawFrame);
         },
         revert() {
             me.scale = 30;
+            me.kissing = false;
             me.interpolation = {
                 type: "linear",
                 speed: 10,
@@ -483,12 +580,21 @@ requestAnimationFrame(drawFrame);
         },
     });
 
-    // we can put this wherever we want!
-    // cern?????
-    // TODO
     registerClassTransition("#cern");
+    registerCanvasStateTransition("empty");
+    withPrevious();
 
-    registerClassTransition("#qr", "active");
+    // add back spider
+    registerTransition({
+        begin() {
+            updateProgress("following-mouse");
+            document.getElementById("web-emoji")!.hidden = false;
+        },
+        revert() {
+            updateProgress("empty");
+            document.getElementById("web-emoji")!.hidden = true;
+        },
+    });
 
     // ------------------------------------------------------------------------
     // ------------------------------------------------------------------------

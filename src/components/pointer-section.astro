@@ -229,7 +229,7 @@ import { getPointsAcrossBox } from "../lib/webCanvas";
         deactivate();
         updatePos(e);
 
-        if (spidersSpawned >= -1) {
+        if (spidersSpawned > -1) {
             const windowSize = {
                 x: window.innerWidth,
                 y: window.innerHeight,
@@ -264,106 +264,6 @@ import { getPointsAcrossBox } from "../lib/webCanvas";
                             }
                         }),
                     );
-                    break;
-                case 2:
-                    const spider = createSpiderToRunOffScreen({
-                        current: spawnPoint,
-                        targets: [getPointAroundBox(getCanvasSize(), 40)],
-                        scale: 1,
-                        interpolation: {
-                            type: "linear",
-                            speed: 10,
-                        },
-                    });
-                    spiders.push(spider);
-                    setTimeout(() => {
-                        spider.targets = [
-                            {
-                                x:
-                                    spider.current.x -
-                                    Math.cos(
-                                        spider.angle * randomInRange(-0.2, 0.2),
-                                    ) *
-                                        50,
-                                y:
-                                    spider.current.y -
-                                    Math.sin(
-                                        spider.angle * randomInRange(-0.2, 0.2),
-                                    ) *
-                                        50,
-                            },
-                        ];
-                        spider.interpolation = {
-                            type: "linear",
-                            speed: 10,
-                        };
-                    }, 83.3333333333);
-                    setTimeout(() => {
-                        spider.targets = [
-                            {
-                                x:
-                                    spider.current.x -
-                                    Math.cos(
-                                        spider.angle * randomInRange(-0.2, 0.2),
-                                    ) *
-                                        50,
-                                y:
-                                    spider.current.y -
-                                    Math.sin(
-                                        spider.angle * randomInRange(-0.2, 0.2),
-                                    ) *
-                                        50,
-                            },
-                        ];
-                        spider.interpolation = {
-                            type: "linear",
-                            speed: 10,
-                        };
-                    }, 83.3333333333);
-                    setTimeout(() => {
-                        spider.targets = [
-                            {
-                                x:
-                                    spider.current.x -
-                                    Math.cos(
-                                        spider.angle * randomInRange(-0.2, 0.2),
-                                    ) *
-                                        400,
-                                y:
-                                    spider.current.y -
-                                    Math.sin(
-                                        spider.angle * randomInRange(-0.2, 0.2),
-                                    ) *
-                                        400,
-                            },
-                        ];
-                        spider.interpolation = {
-                            type: "ease",
-                            halfLife: 400,
-                        };
-                    }, 250);
-                    setTimeout(() => {
-                        spider.targets = [
-                            {
-                                x:
-                                    spider.current.x -
-                                    Math.cos(
-                                        spider.angle * randomInRange(-0.2, 0.2),
-                                    ) *
-                                        getCanvasSize().x,
-                                y:
-                                    spider.current.y -
-                                    Math.sin(
-                                        spider.angle * randomInRange(-0.2, 0.2),
-                                    ) *
-                                        getCanvasSize().y,
-                            },
-                        ];
-                        spider.interpolation = {
-                            type: "ease",
-                            halfLife: 300,
-                        };
-                    }, 500);
                     break;
                 default:
                     spiders.push(

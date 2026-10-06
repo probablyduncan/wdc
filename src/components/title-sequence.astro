@@ -7,7 +7,7 @@
     <h3>and the</h3>
 </section>
 <section id="cern" class="centered">
-    <img id="subway" src="/images/subway-surfers.gif" draggable="false" />
+    <img id="subway" src="/images/subway-surfers.webp" draggable="false" />
     <div
         id="awwwards"
     >
@@ -84,20 +84,20 @@
 <section id="googling-website">
     
     <img
-        src="/images/website-cern1.png"
-        alt="the first website landing page"
+        src="/images/website-cern1.webp"
+        alt="the first website's landing page"
     />
     <img
-        src="/images/website-cern2.png"
+        src="/images/website-cern2.webp"
         alt="the first website"
     />
-    <!-- <img
-        src="/images/website-mf.png"
-        alt="motherfucking website dot com"
-    /> -->
     <img
-        src="/images/website-ipad.png"
-        alt="wikipedia entry for ipad kids"
+        src="/images/website-mf.webp"
+        alt="motherfucking website dot com"
+    />
+    <img
+    src="/images/website-ipad.webp"
+    alt="wikipedia entry for ipad kids"
     />
 </section>
 <style>
@@ -141,7 +141,7 @@
         width: 100vw;
         min-height: 100svh;
         transform-origin: top left;
-        padding: 10px;
+        padding: 1em 0.5em;
         transition-timing-function: linear(
             0,
             0.029 1.3%,
@@ -342,20 +342,17 @@
     import { getChildTransitions } from "../lib/codeBlockHelpers";
     import { registerClassTransition, withPrevious } from "../lib/slides";
 
-    // first show
-    const googlingWebsite = getChildTransitions("googling-website", "img");
+    registerClassTransition("#everything-else");
 
+    const googlingWebsite = getChildTransitions("googling-website", "img");
+    
     googlingWebsite.next();
     googlingWebsite.next();
-    // googlingWebsite.next();
 
     googlingWebsite.hide();
-    registerClassTransition("#everything-else");
-    withPrevious();
     
     registerClassTransition("#title", "invisible");
     registerClassTransition("#cern", "centered", "remove");
-    withPrevious();
     registerClassTransition("#title", "gone");
     withPrevious();
 
@@ -369,6 +366,8 @@
     registerClassTransition("#cern", "ai-lang");
     
     googlingWebsite.next();
+    googlingWebsite.next();
+
     googlingWebsite.hide();
     registerClassTransition("#cern", "subway");
     withPrevious();

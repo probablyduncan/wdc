@@ -1,3 +1,7 @@
+---
+import Figure from "./figure.astro";
+---
+
 <section id="box-spring-section">
     <div id="box"></div>
     <div id="spring-sliders">
@@ -22,6 +26,19 @@
             <input name="rotation" type="range" value="0" />
         </div>
     </div>
+    <Figure
+        id="comeau"
+        x={0.65}
+        y={0.4}
+        src="/images/comeau.webp"
+        width="80vmin"
+        figure={17}
+    >
+        <i>Josh W. Comeau</i> has a lovely spring explainer on his <a href="https://www.joshwcomeau.com/animation/a-friendly-introduction-to-spring-physics/" target="_blank">blog</a>.
+    </Figure>
+    <Figure id="easing-wizard" figure={18} x="0.35" y="0.6" src="/images/easing-wizard.webp" width="80vmin">
+        <a href="https://easingwizard.com/" target="_blank"><i>easingwizard.com</i></a> is also very helpful!
+    </Figure>
 </section>
 <style>
     #box-spring-section {
@@ -89,7 +106,7 @@
     import AnimationFrameController from "../lib/animationFrameController";
     import { addConstControl } from "../lib/codeBlockHelpers";
     import { SpringController } from "../lib/interpolationController";
-    import { registerTransition, withPrevious } from "../lib/slides";
+    import { registerClassTransition, registerTransition, withPrevious } from "../lib/slides";
 
     const section = document.getElementById("box-spring-section")!;
     const box = document.getElementById("box")!;
@@ -341,6 +358,10 @@
 
     rotationFactor.registerAnimate("farLeft", "left");
 
+    registerClassTransition("#comeau", "active");
+    registerClassTransition("#easing-wizard", "active");
+    
+    registerClassTransition("#comeau, #easing-wizard", "active", "remove");
     registerTransition({
         begin() {
             animationController.pause();
@@ -351,4 +372,5 @@
             section.hidden = false;
         },
     });
+    withPrevious();
 </script>

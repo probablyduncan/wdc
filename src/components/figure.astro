@@ -132,6 +132,9 @@ if (Astro.slots.has("default")) {
     figure.pixelate img {
         image-rendering: pixelated;
     }
+    figure:not(.pixelate) img {
+        image-rendering: auto;
+    }
 
     figcaption {
         margin-top: 0.5lh;
