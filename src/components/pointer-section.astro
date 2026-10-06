@@ -1,0 +1,575 @@
+---
+import Figure from "./figure.astro";
+---
+
+<section id="pointer-section">
+    <canvas id="foreshadowing"></canvas>
+    <div id="pointer">☜</div>
+    <Figure
+        id="manicule"
+        figure={112}
+        src="/images/manicule-1.webp"
+        x={0.3}
+        y={0.4}
+        width={"80vmin"}
+    >
+        Not to be confused with manacle or manicure, the manicule, ☞, is a
+        typographical mark with the appearance of a hand with its index finger
+        extended in a pointing gesture. From <a
+            href="https://en.wikipedia.org/wiki/Manicule"
+            target="_blank">Wikipedia</a
+        >.
+    </Figure>
+</section>
+<style>
+    #pointer-section {
+        position: fixed;
+        inset: 0;
+        &:not(.active) {
+            display: none;
+        }
+    }
+
+    #pointer {
+        font-family: Fingers, serif;
+        font-size: 10vmin;
+        font-weight: 600;
+        line-height: 1;
+        padding-top: 1.5rem;
+
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 100;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+
+        user-select: none;
+        pointer-events: none;
+
+        transform: translate(
+                var(--translate-x, 61.8vw),
+                var(--translate-y, 61.8vh)
+            )
+            rotate(var(--rotate, 15deg)) scale(var(--scale, 1));
+
+        @media (prefers-reduced-motion: reduce) {
+            display: none;
+        }
+    }
+
+    #foreshadowing {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 90;
+        image-rendering: pixelated;
+        pointer-events: none;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+    }
+</style>
+<script>
+    import AnimationFrameController from "../lib/animationFrameController";
+    import { registerTransition, withPrevious } from "../lib/slides";
+import { getPointsAcrossBox } from "../lib/webCanvas";
+    import { randomInRange } from "../lib/webCanvas";
+    import { getPointAroundBox } from "../lib/webCanvas";
+    import {
+        createWebCanvas,
+        type Point,
+        type SpiderState,
+    } from "../lib/webCanvas";
+
+    const pointer = document.getElementById("pointer")!;
+    const pointerSection = document.getElementById("pointer-section")!;
+    const cursors = {
+        normal: {
+            left: "☜",
+            right: "☞",
+        },
+        active: {
+            left: "☚",
+            right: "☛",
+        },
+    } as const;
+
+    interface PointerState {
+        currentPos: [number, number];
+        mousePos: [number, number];
+        icon: {
+            state: keyof typeof cursors;
+            dir: keyof (typeof cursors)[keyof typeof cursors];
+            update: boolean;
+        };
+        lastSide: "left" | "right";
+    }
+
+    const HALF_LIFE = 100;
+    const MOVE_THRESHOLD = 2;
+
+    const startPos = [window.innerWidth * 0.618, window.innerHeight * 0.618];
+
+    const state: PointerState = {
+        currentPos: [0, 0],
+        mousePos: [0, 0],
+        icon: {
+            state: "normal",
+            dir: "right",
+            update: true,
+        },
+        lastSide: "left",
+    };
+
+    function resetPointer() {
+        pointer.innerHTML = cursors.normal.left;
+        pointer.style.removeProperty("--translate-x");
+        pointer.style.removeProperty("--translate-y");
+        pointer.style.removeProperty("--scale");
+        pointer.style.removeProperty("--rotate");
+        state.currentPos[0] = state.mousePos[0] = startPos[0];
+        state.currentPos[1] = state.mousePos[1] = startPos[1];
+    }
+
+    document.addEventListener("mousemove", moveHandler);
+    document.addEventListener("mousedown", downHandler);
+    document.addEventListener("mouseup", upHandler);
+    document.addEventListener("touchmove", dragHandler);
+    document.addEventListener("touchend", touchEndHandler);
+
+    const animationController = new AnimationFrameController(
+        ({ deltaMS, timestampMS }) => {
+            const distanceToMousePos = [
+                state.mousePos[0] - state.currentPos[0],
+                state.mousePos[1] - state.currentPos[1],
+            ];
+
+            const angle = Math.atan2(
+                distanceToMousePos[1],
+                distanceToMousePos[0],
+            );
+
+            // don't update current position if pressing down
+            if (state.icon.state === "normal") {
+                const lerpValue = (0.5 * deltaMS) / HALF_LIFE;
+                state.currentPos[0] += distanceToMousePos[0] * lerpValue;
+                state.currentPos[1] += distanceToMousePos[1] * lerpValue;
+            }
+
+            // update left/right icon
+            if (distanceToMousePos[0] > MOVE_THRESHOLD) {
+                updateIcon("dir", "right");
+            } else if (distanceToMousePos[0] < -MOVE_THRESHOLD) {
+                updateIcon("dir", "left");
+            }
+
+            // update pointer transform
+            const rotation = angle + (state.icon.dir == "left" ? Math.PI : 0);
+            pointer.style.setProperty("--rotate", rotation + "rad");
+
+            pointer.style.setProperty(
+                "--translate-x",
+                state.currentPos[0] + "px",
+            );
+            pointer.style.setProperty(
+                "--translate-y",
+                state.currentPos[1] + "px",
+            );
+
+            // update pointer html
+            if (state.icon.update) {
+                state.icon.update = false;
+                pointer.innerHTML = cursors[state.icon.state][state.icon.dir];
+            }
+
+            // if active, we want to scale up
+            if (state.icon.state === "active") {
+                const scaleFactor =
+                    Math.pow(
+                        Math.sqrt(
+                            Math.pow(
+                                distanceToMousePos[0] / window.innerWidth,
+                                2,
+                            ) +
+                                Math.pow(
+                                    distanceToMousePos[1] / window.innerHeight,
+                                    2,
+                                ),
+                        ) / Math.SQRT2,
+                        2,
+                    ) + 1;
+                const scale = Math.max(1, Math.min(2, scaleFactor));
+                pointer.style.setProperty("--scale", scale.toFixed(5));
+            } else {
+                pointer.style.setProperty("--scale", "1");
+            }
+
+            clearCanvas();
+            spiders.forEach((spider) =>
+                stepAndDrawSpider(deltaMS, timestampMS, spider),
+            );
+
+            return true;
+        },
+    );
+
+    function downHandler(e: MouseEvent) {
+        activate();
+        updatePos(e);
+    }
+
+    function upHandler(e: MouseEvent) {
+        deactivate();
+        updatePos(e);
+
+        if (spidersSpawned >= -1) {
+            const windowSize = {
+                x: window.innerWidth,
+                y: window.innerHeight,
+            };
+            const spawnPoint = transformPointToCanvas(
+                {
+                    x: state.currentPos[0] + pointer.clientWidth / 2,
+                    y: state.currentPos[1] + pointer.clientHeight / 2,
+                },
+                windowSize,
+            );
+            switch (spidersSpawned) {
+                case 0:
+                    setTimeout(() => {
+                        const points = getPointsAcrossBox(getCanvasSize(), 50);
+                        spiders.push(
+                            createSpiderToRunOffScreen({
+                            current: points[0],
+                            targets: [points[1]],
+                        }),
+                        );
+                    }, 1000);
+                    break;
+                case 1:
+                    spiders.push(
+                        createSpiderToRunOffScreen({
+                            current: spawnPoint,
+                            targets: [getPointAroundBox(getCanvasSize(), 100)],
+                            interpolation: {
+                                type: "linear",
+                                speed: 10,
+                            }
+                        }),
+                    );
+                    break;
+                case 2:
+                    const spider = createSpiderToRunOffScreen({
+                        current: spawnPoint,
+                        targets: [getPointAroundBox(getCanvasSize(), 40)],
+                        scale: 1,
+                        interpolation: {
+                            type: "linear",
+                            speed: 10,
+                        },
+                    });
+                    spiders.push(spider);
+                    setTimeout(() => {
+                        spider.targets = [
+                            {
+                                x:
+                                    spider.current.x -
+                                    Math.cos(
+                                        spider.angle * randomInRange(-0.2, 0.2),
+                                    ) *
+                                        50,
+                                y:
+                                    spider.current.y -
+                                    Math.sin(
+                                        spider.angle * randomInRange(-0.2, 0.2),
+                                    ) *
+                                        50,
+                            },
+                        ];
+                        spider.interpolation = {
+                            type: "linear",
+                            speed: 10,
+                        };
+                    }, 83.3333333333);
+                    setTimeout(() => {
+                        spider.targets = [
+                            {
+                                x:
+                                    spider.current.x -
+                                    Math.cos(
+                                        spider.angle * randomInRange(-0.2, 0.2),
+                                    ) *
+                                        50,
+                                y:
+                                    spider.current.y -
+                                    Math.sin(
+                                        spider.angle * randomInRange(-0.2, 0.2),
+                                    ) *
+                                        50,
+                            },
+                        ];
+                        spider.interpolation = {
+                            type: "linear",
+                            speed: 10,
+                        };
+                    }, 83.3333333333);
+                    setTimeout(() => {
+                        spider.targets = [
+                            {
+                                x:
+                                    spider.current.x -
+                                    Math.cos(
+                                        spider.angle * randomInRange(-0.2, 0.2),
+                                    ) *
+                                        400,
+                                y:
+                                    spider.current.y -
+                                    Math.sin(
+                                        spider.angle * randomInRange(-0.2, 0.2),
+                                    ) *
+                                        400,
+                            },
+                        ];
+                        spider.interpolation = {
+                            type: "ease",
+                            halfLife: 400,
+                        };
+                    }, 250);
+                    setTimeout(() => {
+                        spider.targets = [
+                            {
+                                x:
+                                    spider.current.x -
+                                    Math.cos(
+                                        spider.angle * randomInRange(-0.2, 0.2),
+                                    ) *
+                                        getCanvasSize().x,
+                                y:
+                                    spider.current.y -
+                                    Math.sin(
+                                        spider.angle * randomInRange(-0.2, 0.2),
+                                    ) *
+                                        getCanvasSize().y,
+                            },
+                        ];
+                        spider.interpolation = {
+                            type: "ease",
+                            halfLife: 300,
+                        };
+                    }, 500);
+                    break;
+                default:
+                    spiders.push(
+                        createSpiderToRunOffScreen({
+                            current: { ...spawnPoint },
+                            targets: [getPointAroundBox(getCanvasSize(), 100)],
+                            interpolation: {
+                                type: "ease",
+                                halfLife: randomInRange(100, 200),
+                            },
+                            scale: randomInRange(0.9, 1.1),
+                        }),
+                        createSpiderToRunOffScreen({
+                            current: { ...spawnPoint },
+                            targets: [getPointAroundBox(getCanvasSize(), 100)],
+                            interpolation: {
+                                type: "ease",
+                                halfLife: randomInRange(100, 200),
+                            },
+                            scale: randomInRange(0.9, 1.1),
+                        }),
+                        createSpiderToRunOffScreen({
+                            current: { ...spawnPoint },
+                            targets: [getPointAroundBox(getCanvasSize(), 100)],
+                            interpolation: {
+                                type: "ease",
+                                halfLife: randomInRange(100, 200),
+                            },
+                            scale: randomInRange(0.9, 1.1),
+                        }),
+                    );
+                    break;
+            }
+            spidersSpawned++;
+        }
+    }
+
+    function moveHandler(e: MouseEvent) {
+        const isMouseButtonDown = e.buttons & (1 << 0);
+
+        if (isMouseButtonDown) {
+            activate();
+        } else {
+            deactivate();
+        }
+
+        updatePos(e);
+    }
+
+    function dragHandler(e: TouchEvent) {
+        activate();
+        updatePos(e.touches[0]);
+    }
+
+    function touchEndHandler(e: TouchEvent) {
+        deactivate();
+        updatePos(e.touches[0]);
+    }
+
+    function activate() {
+        updateIcon("state", "active");
+    }
+
+    function deactivate() {
+        updateIcon("state", "normal");
+    }
+
+    function updatePos({
+        clientX,
+        clientY,
+    }: {
+        clientX: number;
+        clientY: number;
+    }) {
+        state.mousePos = [
+            clientX - pointer.clientWidth / 2,
+            clientY - pointer.clientHeight / 2,
+        ];
+    }
+
+    function updateIcon<T extends Exclude<keyof typeof state.icon, "update">>(
+        key: T,
+        value: (typeof state.icon)[T],
+    ): void {
+        if (state.icon[key] !== value) {
+            state.icon[key] = value as any;
+            state.icon.update = true;
+        }
+    }
+
+    const canvas = document.getElementById(
+        "foreshadowing",
+    ) as HTMLCanvasElement;
+    const {
+        clearCanvas,
+        stepAndDrawSpider,
+        transformPointToCanvas,
+        setPixelScale,
+        getCanvasSize,
+    } = createWebCanvas(canvas);
+    let spidersSpawned = -1;
+    const spiders: SpiderState[] = [];
+    function createSpiderToRunOffScreen(
+        spider: Partial<SpiderState> = {},
+    ): SpiderState {
+        return Object.assign(
+            {
+                angle: 0,
+                current: { x: 0, y: 0 },
+                targets: [{ x: 0, y: 0 }],
+                feet: [],
+                headPosition: { x: 0, y: 0 },
+                id: Math.random().toFixed(10),
+                interpolation: {
+                    type: "ease",
+                    halfLife: 100,
+                },
+                kissing: false,
+                scale: 1,
+                velocity: 0,
+                targetPadding: 0,
+            },
+            spider,
+        );
+    }
+
+    registerTransition({
+        begin() {
+            resetPointer();
+            pointerSection.classList.add("active");
+        },
+        revert() {
+            pointerSection.classList.remove("active");
+        },
+    });
+    withPrevious();
+
+    {
+        const maniculeFigure = document.getElementById("manicule")!;
+        const maniculeImage = maniculeFigure.querySelector("img")!;
+        const getSrc = (i: 1 | 2 | 3 | 4) => `/images/manicule-${i}.webp`;
+        registerTransition({
+            begin() {
+                maniculeFigure.classList.add("active");
+            },
+            revert() {
+                maniculeFigure.classList.remove("active");
+            },
+        });
+        registerTransition({
+            begin() {
+                maniculeImage.src = getSrc(2);
+            },
+            revert() {
+                maniculeImage.src = getSrc(1);
+            },
+        });
+        registerTransition({
+            begin() {
+                maniculeImage.src = getSrc(3);
+            },
+            revert() {
+                maniculeImage.src = getSrc(2);
+            },
+        });
+        registerTransition({
+            begin() {
+                maniculeImage.src = getSrc(4);
+            },
+            revert() {
+                maniculeImage.src = getSrc(3);
+            },
+        });
+        registerTransition({
+            begin() {
+                maniculeFigure.classList.remove("active");
+                animationController.playIfPaused();
+            },
+            revert() {
+                maniculeFigure.classList.add("active");
+                animationController.pause();
+                resetPointer();
+            },
+        });
+
+        // so I guess I want to spawn a spider when I drag
+        registerTransition({
+            begin() {
+                spidersSpawned = 0;
+                setPixelScale(3);
+            },
+            revert() {
+                spidersSpawned = -1;
+            },
+        });
+
+        registerTransition({
+            begin() {
+                animationController.pause();
+                pointerSection.classList.remove("active");
+            },
+            revert() {
+                animationController.playIfPaused();
+                pointerSection.classList.add("active");
+                spidersSpawned = 0;
+            },
+        });
+    }
+</script>

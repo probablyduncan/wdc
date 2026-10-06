@@ -1,0 +1,324 @@
+---
+
+---
+
+<section id="act-iii">
+    <canvas id="spider-canvas"></canvas>
+    <div>
+        <h1>
+            <span>A</span>
+            <span>C</span>
+            <span>T</span>
+            <span>&nbsp;</span>
+            <span>I</span>
+            <span>I</span>
+            <span>I</span>
+        </h1>
+        <h2>
+            <span>— &nbsp; </span>
+            <span>a </span>
+            <span>w</span>
+            <span>eb </span>
+            <span>f</span>
+            <span>u</span>
+            <span>l</span>
+            <span>l </span>
+            <span>o</span>
+            <span>f </span>
+            <span>s</span>
+            <span>p</span>
+            <span>id</span>
+            <span>e</span>
+            <span>r</span>
+            <span>s</span>
+        </h2>
+    </div>
+</section>
+<style>
+    #act-iii {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-flow: column;
+        justify-content: center;
+        align-items: center;
+
+        background-color: #b10606;
+        background-image: url(/images/noise.avif);
+        background-repeat: repeat;
+        background-blend-mode: screen;
+
+        &:not(.active) {
+            opacity: 0;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        &.active {
+            transition: opacity 0.2s ease-in;
+        }
+    }
+
+    canvas#spider-canvas {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100svh;
+        z-index: 1000000;
+
+        pointer-events: none;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+
+        image-rendering: pixelated;
+        opacity: 0.8;
+    }
+
+    div {
+        padding: 4em;
+        border: 4px double rgba(0, 0, 0, 0.1);
+        outline-offset: 4px;
+        outline-color: rgba(0, 0, 0, 0.1);
+        outline-style: groove;
+    }
+
+    h1,
+    h2 {
+        margin: 0;
+        line-height: 0.74;
+    }
+
+    h1 {
+        font-family: "LofiForest";
+        font-size: 22vw;
+    }
+
+    h1 span, h2 span {
+        opacity: 0;
+    }
+
+    h2 {
+        font-family: "Gossip";
+        font-size: 6vw;
+        font-weight: 400;
+        color: black;
+        text-align: right;
+        margin-right: 2ch;
+        margin-top: 0.25em;
+    }
+</style>
+<script>
+import AnimationFrameController from "../lib/animationFrameController";
+    import { registerTransition, withPrevious } from "../lib/slides";
+    import {
+        createWebCanvas,
+        getPointAroundBox,
+        isAlmostZero,
+        randomInRange,
+        type Point,
+        type SpiderState,
+    } from "../lib/webCanvas";
+
+    const section = document.getElementById("act-iii")!;
+    const h1 = document.querySelector<HTMLHeadingElement>("#act-iii h1")!;
+    const h2 = document.querySelector<HTMLHeadingElement>("#act-iii h2")!;
+    const timeoutIds: NodeJS.Timeout[] = [];
+    const animations: Animation[] = [];
+
+    function startAnimation() {
+        animationController.playIfPaused();
+        for (let i = 0; i < h1.children.length; i++) {
+            animations.push(
+                h1.children[i].animate(
+                    [
+                        {
+                            opacity: 0,
+                            translate: "0 0.05em",
+                        },
+                        {
+                            opacity: 1,
+                            translate: "0 0",
+                        },
+                    ],
+                    {
+                        duration: 1000,
+                        easing: "ease-out",
+                        fill: "both",
+                        delay: i * 200 + 200,
+                    },
+                ),
+            );
+        }
+
+        for (let i = 0; i < h2.children.length; i++) {
+            const child = h2.children[i];
+            timeoutIds.push(
+                setTimeout(
+                    () => {
+                        const fontWeightDuration = randomInRange(2000, 6000);
+                        animations.push(
+                            child.animate(
+                                [
+                                    { fontWeight: 400, opacity: 0 },
+                                    {
+                                        fontWeight:
+                                            Math.random() > 0.5 ? 600 : 500,
+                                        opacity: randomInRange(0.8, 1),
+                                    },
+                                    { fontWeight: 500, opacity: 1 },
+                                ],
+                                {
+                                    duration: fontWeightDuration,
+                                    fill: "forwards",
+                                    easing: "steps(3)",
+                                },
+                            ),
+                        );
+
+                        if (i === 0) {
+                            return;
+                        }
+
+                        const rect = child.getBoundingClientRect();
+                        let numSpiders = Math.floor(
+                            (rect.width * rect.height) / 500,
+                        );
+
+                        while (numSpiders--) {
+                            timeoutIds.push(
+                                setTimeout(
+                                    () =>
+                                        spiders.push({
+                                            angle: 0,
+                                            current: getPointAroundBox(
+                                                getCanvasSize(),
+                                                40,
+                                            ),
+                                            targets: [
+                                                transformPointToCanvas(
+                                                    {
+                                                        x:
+                                                            rect.left +
+                                                            rect.width / 2,
+                                                        y:
+                                                            rect.top +
+                                                            rect.height / 2,
+                                                    },
+                                                    {
+                                                        x: window.innerWidth,
+                                                        y: window.innerHeight,
+                                                    },
+                                                ),
+                                            ],
+                                            feet: [],
+                                            headPosition: {
+                                                x: 0,
+                                                y: 0,
+                                            },
+                                            id: Math.random().toFixed(10),
+                                            interpolation:
+                                                Math.random() > 0.5
+                                                    ? {
+                                                          type: "linear",
+                                                          speed: randomInRange(
+                                                              5,
+                                                              7,
+                                                          ),
+                                                      }
+                                                    : {
+                                                          type: "ease",
+                                                          halfLife:
+                                                              randomInRange(
+                                                                  400,
+                                                                  2000,
+                                                              ),
+                                                      },
+                                            kissing: false,
+                                            scale: randomInRange(0.5, 1.5),
+                                            targetPadding: rect.width / 2,
+                                            velocity: 0,
+                                        }),
+                                    Math.pow(Math.random(), 2) * 8000 +
+                                        fontWeightDuration / 2,
+                                ),
+                            );
+                        }
+                    },
+                    i * 200 + 800,
+                ),
+            );
+        }
+    }
+
+    const canvas = document.getElementById(
+        "spider-canvas",
+    ) as HTMLCanvasElement;
+    const {
+        clearCanvas,
+        stepAndDrawSpider,
+        transformPointToCanvas,
+        getCanvasSize,
+        setPixelScale,
+    } = createWebCanvas(canvas);
+    setPixelScale(4);
+
+    const spiders: SpiderState[] = [];
+    const mouse: Point = { x: Infinity, y: Infinity };
+    window.addEventListener("mousemove", (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+    });
+
+    const animationController = new AnimationFrameController(
+        ({ deltaMS, timestampMS }) => {
+            clearCanvas();
+            spiders.forEach((spider) => {
+                const distanceFromMouse = {
+                    x: mouse.x - spider.current.x,
+                    y: mouse.y - spider.current.y,
+                };
+                if (
+                    spider.velocity < 7 && Math.random() > 0.3 &&
+                    isAlmostZero(distanceFromMouse, 40)
+                ) {
+                    const angleFromMouse =
+                        Math.atan2(distanceFromMouse.y, distanceFromMouse.x) +
+                        randomInRange(-Math.PI / 8, Math.PI / 8);
+                    spider.targets[0].x -= Math.cos(angleFromMouse) * 50;
+                    spider.targets[0].y -= Math.sin(angleFromMouse) * 50;
+                    spider.interpolation.type = "ease";
+                    //@ts-ignore
+                    spider.interpolation.halfLife = 100;
+                }
+
+                stepAndDrawSpider(deltaMS, timestampMS / 2, spider);
+            });
+            return true;
+        },
+    );
+
+    function reset() {
+        spiders.length = 0;
+        timeoutIds.forEach(clearTimeout);
+        timeoutIds.length = 0;
+        animations.forEach((a) => a.cancel());
+        animations.length = 0;
+        animationController.pause();
+        clearCanvas();
+    }
+
+    registerTransition({
+        begin() {
+            section.classList.add("active");
+            timeoutIds.push(setTimeout(startAnimation, 200));
+        },
+        revert() {
+            section.classList.remove("active");
+            reset();
+        },
+    });
+    withPrevious();
+</script>

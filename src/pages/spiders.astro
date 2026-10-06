@@ -1,0 +1,1222 @@
+---
+import { Code } from "astro-expressive-code/components";
+import Figure from "../components/figure.astro";
+import Slide from "../components/slide.astro";
+---
+
+<Slide prev="examples">
+    <canvas id="itsy-bitsy"></canvas>
+    <section id="code">
+        <Code lang="html" code={`<canvas id="itsy-bitsy-canvas"></canvas>`} />
+        <Code
+            lang="typescript"
+            code={`
+const canvas = document.getElementById("itsy-bitsy-canvas");
+const context = canvas.getContext("2d");
+`}
+        />
+        <Code
+            lang="typescript"
+            code={`
+const canvas = document.getElementById("itsy-bitsy-canvas");
+const context = canvas.getContext("2d");
+
+context.beginPath();
+context.arc(
+    canvas.width * 0.618,
+    canvas.height * 0.5,
+    500,
+    0,
+    2 * Math.PI);
+
+context.fillStyle = "black";
+context.fill();
+`}
+        />
+        <Code
+            lang="typescript"
+            collapse={"1-13"}
+            code={`
+const canvas = document.getElementById("itsy-bitsy-canvas");
+const context = canvas.getContext("2d");
+
+context.beginPath();
+context.arc(
+    spiderPosition.x,
+    spiderPosition.y,
+    500,
+    0,
+    2 * Math.PI);
+
+context.fillStyle = "black";
+context.fill();
+
+context.beginPath();
+context.ellipse(
+    spiderPosition.x + Math.cos(spiderAngle) * 100,
+    spiderPosition.y + Math.sin(spiderAngle) * 100,
+    100,
+    70,
+    spiderAngle
+    0,
+    2 * Math.PI);
+context.fillStyle = "black";
+context.fill();
+`}
+        />
+        <Code
+            lang="typescript"
+            code={`
+const canvas = document.getElementById("itsy-bitsy-canvas");
+const context = canvas.getContext("2d");
+
+function drawFrame(timestamp: DOMHighResTimeStamp) {
+
+    // update positions
+    spider.current.x += // etc etc
+
+    // clear canvas for next paint
+    context.clearRect(0, 0, canvasSize.x, canvasSize.y);
+    
+    // draw shapes
+    context.beginPath();
+    // ...
+    context.fill();
+
+    // request next frame
+    requestAnimationFrame(drawFrame)
+}
+
+requestAnimationFrame(drawFrame);
+`}
+        />
+    </section>
+    <Figure id="owl" src="/images/owl.jpg" x={0.25} y={0.4} width="70vmin">
+        I found this picture on <i>knowyourmeme.com.</i> This is what they have to
+        say: “Despite what the title suggests, the vast majority of the artistic process
+        is left unexplained for comedic effect.” Additionally, <a
+            href="https://luke.zip/posts/draw-the-owl/"
+            target="_blank">https://luke.zip/posts/draw-the-owl/</a
+        > is good.
+    </Figure>
+    <Figure id="qr" src="/images/qr_spiders.duncanpetrie.com.png" x={0.5} y="0.5" width={"80vmin"}>
+        <a href="https://spiders.duncanpetrie.com" target="_blank">spiders.duncanpetrie.com</a> is the place to be!
+    </Figure>
+</Slide>
+<style>
+    body {
+        background-color: #b10606;
+        background-image: url(/images/noise.avif);
+        background-repeat: repeat;
+        background-blend-mode: screen;
+    }
+
+    #itsy-bitsy {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 90;
+        image-rendering: pixelated;
+        pointer-events: none;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+    }
+
+    #code {
+        position: fixed;
+        top: 2ch;
+        left: 2ch;
+        z-index: 90;
+    }
+
+    :global(.expressive-code) {
+        &:not(.active) {
+            display: none;
+        }
+    }
+</style>
+<script>
+    import AnimationFrameController from "../lib/animationFrameController";
+    import { getChildTransitions } from "../lib/codeBlockHelpers";
+    import {
+        registerClassTransition,
+        registerTransition,
+        withPrevious,
+    } from "../lib/slides";
+
+    const canvas = document.getElementById("itsy-bitsy") as HTMLCanvasElement;
+    const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+    const canvasSize: Point = {
+        x: canvas.clientWidth,
+        y: canvas.clientHeight,
+    };
+    let pixelScale: number = 1;
+    window.addEventListener("resize", scaleCanvasToWindow);
+    scaleCanvasToWindow();
+
+    const me: SpiderState = {
+        angle: 0,
+        current: { x: 0, y: 0 },
+        feet: [],
+        headPosition: { x: 0, y: 0 },
+        id: "me",
+        interpolation: { type: "ease", halfLife: 100 },
+        kissing: false,
+        scale: 1,
+        targets: [],
+        velocity: 0,
+        targetPadding: 20,
+    };
+
+    window.addEventListener("mousemove", (e) => {
+        me.targets = [
+            {
+                x: e.clientX,
+                y: e.clientY,
+            },
+        ];
+    });
+
+    const spiders: SpiderState[] = [];
+    const timeouts: NodeJS.Timeout[] = [];
+
+    type WhereWeAreInThisWholeThing =
+        | "empty"
+        | "body"
+        | "abdomen"
+        | "blink"
+        | "moving-on-their-own"
+        | "following-mouse";
+    const { updateProgress, getProgress, registerCanvasStateTransition } =
+        (() => {
+            let _state: WhereWeAreInThisWholeThing = "empty";
+            return {
+                updateProgress(state: WhereWeAreInThisWholeThing) {
+                    _state = state;
+                    animation.playIfPaused();
+                },
+                getProgress() {
+                    return _state;
+                },
+                registerCanvasStateTransition(
+                    newState: WhereWeAreInThisWholeThing,
+                ) {
+                    let prev: WhereWeAreInThisWholeThing;
+                    registerTransition({
+                        begin() {
+                            prev = _state;
+                            updateProgress(newState);
+                        },
+                        revert() {
+                            updateProgress(prev);
+                        },
+                    });
+                },
+            };
+        })();
+
+    const animation = new AnimationFrameController(
+        ({ deltaMS, timestampMS }) => {
+            switch (getProgress()) {
+                case "empty":
+                    clearCanvas();
+                    return false;
+                case "body":
+                    clearCanvas();
+                    stepAndDrawSpider(
+                        deltaMS,
+                        timestampMS,
+                        {
+                            angle: 0,
+                            current: {
+                                x: canvasSize.x * 0.618,
+                                y: canvasSize.y * 0.55,
+                            },
+                            scale: 30,
+                            targets: [
+                                {
+                                    x: canvasSize.x * 0.618 - 1,
+                                    y: canvasSize.y * 0.55 - 1,
+                                },
+                            ],
+                            feet: [],
+                            headPosition: {
+                                x: canvasSize.x * 0.618,
+                                y: canvasSize.y * 0.55,
+                            },
+                            id: "",
+                            interpolation: { type: "ease", halfLife: 100 },
+                            kissing: false,
+                            velocity: 0,
+                            targetPadding: 0,
+                        },
+                        {
+                            drawAbdomen: false,
+                            drawBody: true,
+                            drawEyes: false,
+                            drawHead: false,
+                            drawLegs: false,
+                            drawPupils: false,
+                            shouldBlink: false,
+                            shouldMove: false,
+                            shouldThrob: false,
+                            stepLegs: false,
+                        },
+                    );
+                    return false;
+                case "abdomen":
+                    clearCanvas();
+                    stepAndDrawSpider(
+                        deltaMS,
+                        timestampMS,
+                        {
+                            angle: 0,
+                            current: {
+                                x: canvasSize.x * 0.618,
+                                y: canvasSize.y * 0.55,
+                            },
+                            scale: 30,
+                            targets: [
+                                {
+                                    x: canvasSize.x * 0.618 - 1,
+                                    y: canvasSize.y * 0.55 - 1,
+                                },
+                            ],
+                            feet: [],
+                            headPosition: {
+                                x: canvasSize.x * 0.618,
+                                y: canvasSize.y * 0.55,
+                            },
+                            id: "",
+                            interpolation: { type: "ease", halfLife: 100 },
+                            kissing: false,
+                            velocity: 0,
+                            targetPadding: 0,
+                        },
+                        {
+                            drawAbdomen: true,
+                            drawBody: true,
+                            drawEyes: false,
+                            drawHead: false,
+                            drawLegs: false,
+                            drawPupils: false,
+                            shouldBlink: false,
+                            shouldMove: false,
+                            shouldThrob: false,
+                            stepLegs: false,
+                        },
+                    );
+                    return false;
+                case "blink":
+                    clearCanvas();
+                    stepAndDrawSpider(
+                        deltaMS,
+                        timestampMS,
+                        {
+                            angle: 0,
+                            current: {
+                                x: canvasSize.x * 0.618,
+                                y: canvasSize.y * 0.55,
+                            },
+                            scale: 30,
+                            targets: [
+                                {
+                                    x: canvasSize.x * 0.618 - 1,
+                                    y: canvasSize.y * 0.55 - 1,
+                                },
+                            ],
+                            feet: [],
+                            headPosition: {
+                                x: canvasSize.x * 0.618,
+                                y: canvasSize.y * 0.55,
+                            },
+                            id: "",
+                            interpolation: { type: "ease", halfLife: 100 },
+                            kissing: false,
+                            velocity: 0,
+                            targetPadding: 0,
+                        },
+                        {
+                            drawAbdomen: true,
+                            drawBody: true,
+                            drawEyes: true,
+                            drawHead: true,
+                            drawLegs: true,
+                            drawPupils: true,
+                            shouldBlink: "slow",
+                            shouldMove: false,
+                            shouldThrob: false,
+                            stepLegs: false,
+                        },
+                    );
+                    return true;
+                case "moving-on-their-own":
+                    clearCanvas();
+                    for (const spider of spiders) {
+                        stepAndDrawSpider(deltaMS, timestampMS, spider, {
+                            drawAbdomen: true,
+                            drawBody: true,
+                            drawEyes: true,
+                            drawHead: true,
+                            drawLegs: true,
+                            drawPupils: true,
+                            shouldBlink: true,
+                            shouldMove: true,
+                            shouldThrob: false,
+                            stepLegs: true,
+                        });
+
+                        if (
+                            isAlmostZero(
+                                {
+                                    x: spider.targets[0].x - spider.current.x,
+                                    y: spider.targets[0].y - spider.current.y,
+                                },
+                                50,
+                            )
+                        ) {
+                            timeouts.push(
+                                setTimeout(() => {
+                                    spider.targets = [
+                                        {
+                                            x: randomInRange(
+                                                50,
+                                                canvasSize.x - 50,
+                                            ),
+                                            y: randomInRange(
+                                                50,
+                                                canvasSize.y - 50,
+                                            ),
+                                        },
+                                    ];
+                                }, 1),
+                            );
+                        }
+                    }
+                    return true;
+                case "following-mouse":
+                    clearCanvas();
+                    stepAndDrawSpider(deltaMS, timestampMS, me, {
+                        drawAbdomen: true,
+                        drawBody: true,
+                        drawEyes: true,
+                        drawHead: true,
+                        drawLegs: true,
+                        drawPupils: true,
+                        shouldBlink: true,
+                        shouldMove: true,
+                        shouldThrob: false,
+                        stepLegs: true,
+                    });
+                    return true;
+            }
+        },
+    );
+
+    const code = getChildTransitions("code", ".expressive-code");
+
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+
+    code.next();
+    code.next();
+
+    code.next();
+    registerCanvasStateTransition("body");
+    withPrevious();
+
+    code.next();
+    registerCanvasStateTransition("abdomen");
+    withPrevious();
+
+    registerClassTransition("#owl");
+
+    registerCanvasStateTransition("blink");
+
+    code.next();
+    registerClassTransition("#owl", "active", "remove");
+    withPrevious();
+
+    code.hide();
+    registerCanvasStateTransition("moving-on-their-own");
+    withPrevious();
+    registerTransition({
+        begin() {
+            spiders.push({
+                angle: 0,
+                current: {
+                    x: canvasSize.x * 0.618,
+                    y: canvasSize.y * 0.55,
+                },
+                scale: 30,
+                targets: [
+                    {
+                        x: canvasSize.x * 0.618 - 100,
+                        y: canvasSize.y * 0.55 - 100,
+                    },
+                ],
+                feet: [],
+                headPosition: { x: 0, y: 0 },
+                id: "",
+                interpolation: { type: "linear", speed: 5 },
+                kissing: false,
+                velocity: 0,
+                targetPadding: 20,
+            });
+        },
+        revert() {
+            timeouts.forEach(clearTimeout);
+            timeouts.length = 0;
+            spiders.length = 0;
+        },
+    });
+    withPrevious();
+
+    registerCanvasStateTransition("following-mouse");
+    registerTransition({
+        begin() {
+            const currentPos = spiders[0].current;
+            spiders.length = 0;
+            me.current.x = currentPos.x;
+            me.current.y = currentPos.y;
+            me.scale = 30;
+            me.interpolation = {
+                type: "linear",
+                speed: 10,
+            };
+            me.targetPadding = 20;
+        },
+        revert() {
+            spiders.push({
+                angle: 0,
+                current: {
+                    x: canvasSize.x * 0.618,
+                    y: canvasSize.y * 0.55,
+                },
+                scale: 30,
+                targets: [
+                    {
+                        x: canvasSize.x * 0.618 - 100,
+                        y: canvasSize.y * 0.55 - 100,
+                    },
+                ],
+                feet: [],
+                headPosition: { x: 0, y: 0 },
+                id: "",
+                interpolation: { type: "linear", speed: 5 },
+                kissing: false,
+                velocity: 0,
+                targetPadding: 20,
+            });
+        },
+    });
+    withPrevious();
+
+    registerTransition({
+        begin() {
+            me.scale = 5;
+            me.targetPadding = 100;
+            me.interpolation = {
+                type: "ease",
+                halfLife: 100,
+            };
+        },
+        revert() {
+            me.scale = 30;
+            me.interpolation = {
+                type: "linear",
+                speed: 10,
+            };
+        },
+    });
+
+    registerClassTransition("#qr", "active");
+
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+
+    export type Point = {
+        x: number;
+        y: number;
+    };
+
+    /**
+     * this is persisted across frames
+     * all points should be sized to the canvas
+     */
+    export type SpiderState = {
+        /** connection id or "me" or whatever */
+        id: string;
+        targets: Point[];
+        /** if undefined, spider will render on target */
+        current: Point;
+        /** the number of pixels to keep the spider away from the target */
+        targetPadding?: number;
+        feet: Point[];
+        interpolation:
+            | {
+                  /** approach the target faster when further away */
+                  type: "ease";
+                  /** milliseconds to get halfway to the target */
+                  halfLife: number;
+              }
+            | {
+                  /** move at a constant speed towards the target */
+                  type: "linear";
+                  /** in pixels per millisecond */
+                  speed: number;
+              };
+
+        // this stuff is used outside of rendering but doesn't need to be set,
+        // will be overwritten every frame
+        angle: number;
+        headPosition: Point;
+        velocity: number;
+
+        /** 1 is standard */
+        scale: number;
+
+        kissing: boolean;
+    };
+
+    export type HeartState = {
+        key: `${string}+${string}=4ever`;
+        char: string;
+        size: number;
+        center: Point;
+        angle: number;
+        duration: number;
+        delay: number;
+        progress: number;
+    };
+
+    function setPixelScale(scale: number | ((prev: number) => number)) {
+        if (typeof scale === "function") {
+            pixelScale = scale(pixelScale);
+        } else {
+            pixelScale = scale;
+        }
+        pixelScale = Math.max(pixelScale, 1);
+        scaleCanvasToWindow();
+    }
+
+    function scaleCanvasToWindow() {
+        const dpr = (window.devicePixelRatio || 1) / pixelScale;
+        canvasSize.x = canvas.clientWidth;
+        canvasSize.y = canvas.clientHeight;
+        canvas.width = canvasSize.x * dpr;
+        canvas.height = canvasSize.y * dpr;
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        context.scale(dpr, dpr);
+    }
+
+    function getTarget(targets: Point[]): {
+        /** center of targets */
+        target: Point;
+        /** between 0 and 1 */
+        spread: number;
+    } {
+        const result = {
+            target: {
+                x: 0,
+                y: 0,
+            },
+            spread: 0,
+        };
+
+        if (!targets.length) {
+            return result;
+        }
+
+        const min = { x: Infinity, y: Infinity };
+        const max = { x: 0, y: 0 };
+
+        targets.forEach(({ x, y }) => {
+            min.x = Math.min(min.x, x);
+            max.x = Math.max(max.x, x);
+            min.y = Math.min(min.y, y);
+            max.y = Math.max(max.y, y);
+
+            result.target.x += x;
+            result.target.y += y;
+        });
+
+        if (targets.length > 1) {
+            result.spread =
+                Math.max(
+                    Math.min((max.x - min.x + (max.y - min.y)) / 2 - 100, 100),
+                    0,
+                ) / 100;
+        }
+
+        result.target.x /= targets.length;
+        result.target.y /= targets.length;
+
+        return result;
+    }
+
+    function transformPointToCanvas(
+        point: Point,
+        currentScale: Point = { x: 1, y: 1 },
+    ) {
+        return {
+            x: (canvasSize.x * point.x) / currentScale.x,
+            y: (canvasSize.y * point.y) / currentScale.y,
+        };
+    }
+
+    function drawLine(from: Point, to: Point, color: string, width: number) {
+        context.strokeStyle = color;
+        context.lineWidth = width;
+        context.beginPath();
+        context.moveTo(from.x, from.y);
+        context.lineTo(to.x, to.y);
+        context.stroke();
+        context.closePath();
+    }
+
+    function drawCircle(
+        center: Point,
+        radius: number,
+        fillColor?: string,
+        stroke?: {
+            color: string;
+            width: number;
+        },
+    ) {
+        context.beginPath();
+        context.arc(center.x, center.y, radius, 0, 2 * Math.PI);
+
+        if (fillColor) {
+            context.fillStyle = fillColor;
+            context.fill();
+        }
+
+        if (stroke) {
+            context.lineWidth = stroke.width;
+            context.strokeStyle = stroke.color;
+            context.stroke();
+        }
+
+        context.closePath();
+    }
+
+    function drawEllipse(
+        center: Point,
+        radius: Point,
+        angle: number,
+        fillColor?: string,
+        stroke?: {
+            color: string;
+            width: number;
+        },
+    ) {
+        context.beginPath();
+        context.ellipse(
+            center.x,
+            center.y,
+            radius.x,
+            radius.y,
+            angle,
+            0,
+            2 * Math.PI,
+        );
+
+        if (fillColor) {
+            context.fillStyle = fillColor;
+            context.fill();
+        }
+
+        if (stroke) {
+            context.lineWidth = stroke.width;
+            context.strokeStyle = stroke.color;
+            context.stroke();
+        }
+
+        context.closePath();
+    }
+
+    const idealFeet = [
+        {
+            angle: toRads(20),
+            length: 0.5,
+            stretch: 0.4,
+        },
+        {
+            angle: toRads(50),
+            length: 0.5,
+            stretch: 0.6,
+        },
+        {
+            angle: toRads(90),
+            length: 0.4,
+            stretch: 0.5,
+        },
+        {
+            angle: toRads(120),
+            length: 0.4,
+            stretch: 0.4,
+        },
+    ] as const;
+
+    function stepAndDrawSpider(
+        deltaMS: number,
+        timestamp: number,
+        spider: SpiderState,
+        options: {
+            drawHead: boolean;
+            drawBody: boolean;
+            drawLegs: boolean;
+            stepLegs: boolean;
+            drawEyes: boolean;
+            drawPupils: boolean;
+            drawAbdomen: boolean;
+            shouldThrob: boolean;
+            shouldBlink: boolean | "slow";
+            shouldMove: boolean;
+        },
+    ) {
+        if (!spider.targets.length) {
+            spider.targets.push({
+                x: 0,
+                y: 0,
+            });
+        }
+
+        const { target, spread } = getTarget(spider.targets);
+        spider.current ??= target;
+        const center = spider.current;
+
+        const scale = spider.scale * (1 + spread);
+
+        // face target
+        spider.angle = Math.atan2(target.y - center.y, target.x - center.x);
+
+        // push target back a bit, away from cursor
+        if (spider.targetPadding) {
+            target.x -= spider.targetPadding * Math.cos(spider.angle);
+            target.y -= spider.targetPadding * Math.sin(spider.angle);
+        }
+
+        const distanceToTarget = {
+            x: target.x - center.x,
+            y: target.y - center.y,
+        };
+
+        if (options.shouldMove) {
+            // update current position
+            switch (spider.interpolation.type) {
+                case "linear": {
+                    // can I make this a little more natural?
+                    spider.velocity = spider.interpolation.speed;
+                    const distanceToTravel = {
+                        x: Math.cos(spider.angle) * spider.interpolation.speed,
+                        y: Math.sin(spider.angle) * spider.interpolation.speed,
+                    };
+                    center.x += lessExtreme(
+                        distanceToTarget.x,
+                        distanceToTravel.x,
+                    );
+                    center.y += lessExtreme(
+                        distanceToTarget.y,
+                        distanceToTravel.y,
+                    );
+                    break;
+                }
+                case "ease": {
+                    const lerp = Math.min(
+                        1,
+                        (0.5 * deltaMS) / spider.interpolation.halfLife,
+                    );
+                    const distanceToTravel = {
+                        x: distanceToTarget.x * lerp,
+                        y: distanceToTarget.y * lerp,
+                    };
+                    spider.velocity = Math.sqrt(
+                        Math.pow(distanceToTravel.x, 2) +
+                            Math.pow(distanceToTravel.y, 2),
+                    );
+                    center.x += distanceToTravel.x;
+                    center.y += distanceToTravel.y;
+                    break;
+                }
+            }
+        }
+
+        const isAtRest = spider.velocity < 0.1;
+
+        // walk legs
+        for (let i = 0; i < idealFeet.length * 2; i++) {
+            const baseLegLength = 30 * scale + spread * 100;
+
+            const footConfig = idealFeet[Math.floor(i / 2)];
+            const side = i % 2 === 0 ? 1 : -1;
+
+            const idealFoot = getPointAt(
+                spider.current,
+                footConfig.length * baseLegLength,
+                spider.angle + footConfig.angle * side,
+            );
+
+            // if no foot, or we're at rest, set to ideal
+            if (
+                !options.shouldMove ||
+                spider.feet.length <= i ||
+                !spider.feet[i] ||
+                (isAtRest && Math.random() > 0.99)
+            ) {
+                spider.feet[i] = idealFoot;
+                continue;
+            }
+
+            // need to get distance from current to ideal
+            const distanceFromIdeal = Math.sqrt(
+                Math.pow(spider.feet[i].x - idealFoot.x, 2) +
+                    Math.pow(spider.feet[i].y - idealFoot.y, 2),
+            );
+
+            if (
+                distanceFromIdeal >
+                baseLegLength * footConfig.stretch * (Math.random() * 0.2 + 0.9)
+            ) {
+                spider.feet[i] = idealFoot;
+            }
+        }
+
+        // this is so that all spiders aren't synced
+        const standingWiggle = !options.shouldThrob
+            ? 0
+            : Math.sin(timestamp / 100) / 20;
+        const walkingWiggle = !options.shouldThrob
+            ? 0
+            : (Math.min(spider.velocity, 3) *
+                  Math.sin(timestamp / 50 + Math.random() * 0.1)) /
+              20;
+        const kissingWiggle = spider.kissing
+            ? Math.sin(timestamp / 60) / 15
+            : 0;
+
+        // ------------------- DRAW --------------------
+
+        if (options.drawLegs) {
+            spider.feet.forEach((f) => {
+                drawLine(center, f, "black", scale * 1);
+            });
+        }
+
+        // body
+        if (options.drawBody) {
+            drawCircle(center, scale * 3, "black");
+        }
+
+        // head
+        if (options.drawHead) {
+            spider.headPosition = getPointAt(
+                center,
+                scale * 5,
+                spider.angle + walkingWiggle,
+            );
+            drawCircle(spider.headPosition, scale * 3, "black");
+        }
+
+        // abdomen
+        if (options.drawAbdomen) {
+            const abdomenPos = getPointAt(
+                center,
+                scale * -6,
+                spider.angle + kissingWiggle - walkingWiggle - standingWiggle,
+            );
+            drawEllipse(
+                abdomenPos,
+                { x: scale * 6, y: scale * 4 },
+                spider.angle - standingWiggle * 2,
+                "black",
+            );
+        }
+
+        // eyes
+        if (options.drawEyes) {
+            const eyeAngle = 0.42; // 25 deg ish
+            const leftEyePos = getPointAt(
+                center,
+                scale * 5,
+                spider.angle - eyeAngle + walkingWiggle,
+            );
+            const rightEyePos = getPointAt(
+                center,
+                scale * 5,
+                spider.angle + eyeAngle + walkingWiggle,
+            );
+
+            const eyeSize = scale * 2;
+            // black outlines
+            drawCircle(leftEyePos, eyeSize + 0.5 * scale, "black");
+            drawCircle(rightEyePos, eyeSize + 0.5 * scale, "black");
+
+            // whites of the eyes
+            const blinkCycleLength =
+                options.shouldBlink === "slow" ? 10000 : 2500;
+            const blinkLength = 250;
+            const blink = !options.shouldBlink
+                ? 1
+                : 1 -
+                  (isAtRest && timestamp % blinkCycleLength < blinkLength
+                      ? Math.sin(
+                            (Math.PI * (timestamp % blinkCycleLength)) /
+                                blinkLength,
+                        )
+                      : 0);
+            drawEllipse(
+                leftEyePos,
+                { x: eyeSize * blink, y: eyeSize },
+                spider.angle,
+                "white",
+                { color: "black", width: 1 },
+            );
+            drawEllipse(
+                rightEyePos,
+                { x: eyeSize * blink, y: eyeSize },
+                spider.angle,
+                "white",
+                { color: "black", width: 1 },
+            );
+
+            // pupils
+            if (options.drawPupils) {
+                drawCircle(leftEyePos, eyeSize / 2, "black");
+                drawCircle(rightEyePos, eyeSize / 2, "black");
+            }
+        }
+    }
+
+    function stepAndDrawHeart(delta: number, heart: HeartState) {
+        if (heart.delay > 0) {
+            heart.delay -= delta;
+            return;
+        }
+
+        heart.progress += delta;
+        if (heart.progress > heart.duration) {
+            heart.progress = heart.duration;
+        }
+
+        // 1 if complete, 0 if just started
+        const progress = heart.progress / heart.duration;
+
+        // start at center, end towards rotation
+        const position = {
+            x: heart.center.x + Math.cos(heart.angle) * progress * 20,
+            y: heart.center.y + Math.sin(heart.angle) * progress * 20,
+        };
+
+        // start at 1, end at 0
+        const opacity = 1 - progress;
+
+        // start at size, end at 1.5*size
+        const fontSize = heart.size + heart.size * progress * 0.5;
+
+        context.save();
+
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.textRendering = "optimizeSpeed";
+        context.font = fontSize + "px serif";
+        context.globalAlpha = opacity;
+        context.fillText(heart.char, position.x, position.y);
+
+        context.restore();
+    }
+
+    function clearCanvas() {
+        context.clearRect(0, 0, canvasSize.x, canvasSize.y);
+    }
+
+    export function moreExtreme(x1: number, x2: number) {
+        return Math.abs(x1) > Math.abs(x2) ? x1 : x2;
+    }
+
+    export function lessExtreme(x1: number, x2: number) {
+        return Math.abs(x1) > Math.abs(x2) ? x2 : x1;
+    }
+
+    export function isAlmostZero(point: Point, threshold: number) {
+        return Math.abs(point.x) < threshold && Math.abs(point.y) < threshold;
+    }
+
+    export function toRads(degrees: number) {
+        return (degrees * Math.PI) / 180;
+    }
+
+    export function getPointAt(
+        start: Point,
+        length: number,
+        angle: number,
+    ): Point {
+        return {
+            x: start.x + Math.cos(angle) * length,
+            y: start.y + Math.sin(angle) * length,
+        };
+    }
+
+    // returns 0 if equal, 1 if opposite
+
+    /**
+     * returns 0 if angles are equal, 1 if opposite, 0.5 if at either right angle
+     */
+    export function angleDifference(angle1: number, angle2: number) {
+        let diff = Math.abs(angle1 - angle2) % (2 * Math.PI);
+        if (diff > Math.PI) diff = 2 * Math.PI - diff;
+        return diff / Math.PI;
+    }
+
+    /**
+     * returns the midpoint between two angles
+     */
+    export function midpoint(angle1: number, angle2: number) {
+        const x = Math.cos(angle1) + Math.cos(angle2);
+        const y = Math.sin(angle1) + Math.sin(angle2);
+        return Math.atan2(-y, -x);
+    }
+
+    export function randomInRange(min: number, max: number) {
+        return Math.random() * (max - min) + min;
+    }
+
+    export function getPointAroundBox(boxSize: Point, offset: number) {
+        const axis = Math.floor(Math.random() + 0.5);
+        const points = [
+            {
+                x: [-offset, offset + boxSize.x],
+                y: [-offset, offset + boxSize.y],
+            },
+            {
+                x: [boxSize.x * Math.random(), boxSize.x * Math.random()],
+                y: [boxSize.y * Math.random(), boxSize.y * Math.random()],
+            },
+        ];
+
+        return {
+            x: points[axis].x[Math.floor(Math.random() + 0.5)],
+            y: points[1 - axis].y[Math.floor(Math.random() + 0.5)],
+        };
+    }
+
+    export function getPointsAcrossBox(
+        boxSize: Point,
+        offset: number,
+    ): [Point, Point] {
+        const axis = Math.floor(Math.random() + 0.5);
+        const otherIndex = Math.floor(Math.random() + 0.5);
+        const points = [
+            {
+                x: [-offset, offset + boxSize.x],
+                y: [-offset, offset + boxSize.y],
+            },
+            {
+                x: [boxSize.x * Math.random(), boxSize.x * Math.random()],
+                y: [boxSize.y * Math.random(), boxSize.y * Math.random()],
+            },
+        ];
+
+        return [
+            {
+                x: points[axis].x[otherIndex],
+                y: points[1 - axis].y[1 - otherIndex],
+            },
+            {
+                x: points[axis].x[1 - otherIndex],
+                y: points[1 - axis].y[otherIndex],
+            },
+        ];
+    }
+</script>

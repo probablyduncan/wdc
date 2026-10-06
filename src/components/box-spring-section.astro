@@ -1,0 +1,354 @@
+<section id="box-spring-section">
+    <div id="box"></div>
+    <div id="spring-sliders">
+        <div>
+            <label for="stiffness">stiffness</label>
+            <output for="stiffness">144</output>
+            <input name="stiffness" type="range" value="11" />
+        </div>
+        <div>
+            <label for="mass">mass (kg)</label>
+            <output for="mass">2</output>
+            <input name="mass" type="range" value="2" />
+        </div>
+        <div>
+            <label for="damping">damping</label>
+            <output for="damping">21</output>
+            <input name="damping" type="range" value="7" />
+        </div>
+        <div>
+            <label for="rotation">rotate-y-ness</label>
+            <output for="rotation">1</output>
+            <input name="rotation" type="range" value="0" />
+        </div>
+    </div>
+</section>
+<style>
+    #box-spring-section {
+        position: fixed;
+        inset: 0;
+    }
+
+    #box {
+        width: 100px;
+        aspect-ratio: 1;
+        background-color: tomato;
+        transform: translate(
+                calc(var(--x, 50vw) - 50%),
+                calc(var(--y, 50vh) - 50%)
+            )
+            rotate(var(--r, 0rad));
+    }
+
+    #spring-sliders {
+        position: fixed;
+        top: 2ch;
+        left: 50%;
+        translate: -50%;
+        padding: 1ch;
+        border-radius: 1ch;
+        font-size: 0.75em;
+
+        & > div {
+            display: grid;
+            align-items: center;
+            width: clamp(20vw, 350px, 95vw);
+            margin-bottom: 2ch;
+
+            transform: translateX(var(--x, 0));
+            transition: opacity 0.5s;
+
+            &:not(.active) {
+                opacity: 0;
+            }
+
+            label,
+            output {
+                padding: 0.25em 0.5em;
+                margin-inline: 0.25em;
+                background-color: white;
+                border-radius: 0.25em;
+                box-shadow: 0 0 0.125em #00000044;
+            }
+
+            input {
+                grid-column: 1 / 3;
+            }
+
+            label {
+                justify-self: start;
+            }
+
+            output {
+                justify-self: end;
+            }
+        }
+    }
+</style>
+<script>
+    import AnimationFrameController from "../lib/animationFrameController";
+    import { addConstControl } from "../lib/codeBlockHelpers";
+    import { SpringController } from "../lib/interpolationController";
+    import { registerTransition, withPrevious } from "../lib/slides";
+
+    const section = document.getElementById("box-spring-section")!;
+    const box = document.getElementById("box")!;
+
+    const x = new SpringController();
+    const y = new SpringController();
+
+    function resetBoxCurrent() {
+        x.current = window.innerWidth / 2;
+        y.current = window.innerHeight / 2;
+        box.style.removeProperty("--x");
+        box.style.removeProperty("--y");
+    }
+    resetBoxCurrent();
+
+    const rotationFactor = setupSpringSlider(
+        `input[name="rotation"]`,
+        [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597],
+    );
+
+    function getRotation() {
+        if (rotationFactor.getValue() <= 1) {
+            return 0;
+        }
+
+        // max.rotation
+        const max = Math.PI / 8;
+        // [-180,180] where top is 0, left is negative, right is positive
+        const angleToCurrent = Math.atan2(
+            x.target - x.current,
+            y.current - y.target,
+        );
+        // [-1,1] where topleft and bottomright +1, topright and bottomleft -1, and left/right/top/bottom 0
+        const angleFactor = -Math.sin(angleToCurrent * 2);
+        // [0,1] velocities get big (~1000 sometimes), so we have to scale it down a lot
+        const velocityFactor = Math.min(
+            Math.abs(
+                ((x.velocity * y.velocity) / 1_000_000_000) *
+                    rotationFactor.getValue(),
+            ),
+            1,
+        );
+        return max * angleFactor * velocityFactor;
+    }
+
+    const animationController = new AnimationFrameController(({ deltaMS }) => {
+        box.style.setProperty("--x", x.step(deltaMS) + "px");
+        box.style.setProperty("--y", y.step(deltaMS) + "px");
+        box.style.setProperty("--r", getRotation() + "rad");
+        return true;
+    });
+
+    window.addEventListener("mousemove", (e) => {
+        x.target = e.clientX;
+        y.target = e.clientY;
+    });
+
+    function setupSpringSlider(inputSelector: string, values: number[]) {
+        const input = document.querySelector<HTMLInputElement>(inputSelector)!;
+        const initialValue = parseInt(input.value);
+        const codeBlockControl = addConstControl(input.name + " =", values, {
+            additionalInputSelector: inputSelector,
+            startInlineInputsHidden: true,
+        });
+        codeBlockControl.set(values[initialValue]);
+
+        const translatableParent = input.parentElement!;
+        const outputs = document.querySelectorAll<HTMLOutputElement>(
+            `output[for="${input.name}"]`,
+        );
+
+        function strAndNum(str: string) {
+            return { str, num: parseInt(str) };
+        }
+
+        // store these for after animation is complete
+        let value = strAndNum(input.value);
+        const min = strAndNum(input.min);
+        const max = strAndNum(input.max);
+
+        const rangeX = new SpringController();
+        const thumbX = new SpringController({
+            damping: 24,
+            mass: 3,
+            stiffness: 120,
+        });
+
+        function getInputValueDuringAnimation() {
+            // diff between input and value currents gets distance from center
+            // we need to add the offset from the initial value, i.e. where value should end up
+            return (
+                ((value.num - min.num) / (max.num - min.num)) *
+                    input.clientWidth -
+                input.clientWidth / 2 +
+                thumbX.current -
+                rangeX.current
+            ).toFixed();
+        }
+
+        type SliderPosition =
+            "middle" | "left" | "right" | "farLeft" | "farRight";
+        function getSliderPosition(position: SliderPosition) {
+            switch (position) {
+                case "middle":
+                    return 0;
+                case "farLeft":
+                    return (
+                        (window.innerWidth + translatableParent.clientWidth) /
+                        -2
+                    );
+                case "farRight":
+                    return (
+                        (window.innerWidth + translatableParent.clientWidth) / 2
+                    );
+                case "left":
+                    return (
+                        translatableParent.clientWidth / 2 -
+                        window.innerWidth / 2 +
+                        40
+                    );
+                case "right":
+                    return (
+                        window.innerWidth / 2 -
+                        translatableParent.clientWidth / 2 -
+                        40
+                    );
+            }
+        }
+
+        function setupForAnimation(from: SliderPosition, to: SliderPosition) {
+            rangeX.current = thumbX.current = getSliderPosition(from);
+            rangeX.target = thumbX.target = getSliderPosition(to);
+            rangeX.velocity = thumbX.velocity = 0;
+
+            translatableParent.style.setProperty("--x", rangeX.current + "px");
+
+            // set range as width in pixels
+            input.min = (input.clientWidth / -2).toString();
+            input.max = (input.clientWidth / 2).toString();
+            input.value = getInputValueDuringAnimation();
+        }
+
+        function onAnimationComplete() {
+            input.min = min.str;
+            input.max = max.str;
+            input.value = value.str;
+            codeBlockControl.set(values[value.num]);
+        }
+
+        const animation = new AnimationFrameController(({ deltaMS }) => {
+            rangeX.step(deltaMS);
+            thumbX.step(deltaMS);
+
+            translatableParent.style.setProperty("--x", rangeX.current + "px");
+            input.value = getInputValueDuringAnimation();
+
+            if (thumbX.isAtRest()) {
+                onAnimationComplete();
+                return false;
+            }
+            return true;
+        });
+
+        codeBlockControl.listen((v) => {
+            if (!v) return;
+            outputs.forEach((output) => (output.innerText = v.toString()));
+            value = {
+                num: values.indexOf(v),
+                str: values.indexOf(v).toString(),
+            };
+        });
+
+        function animate(
+            from: SliderPosition,
+            to: SliderPosition,
+            delay: number = 10,
+        ) {
+            setTimeout(() => {
+                setupForAnimation(from, to);
+                translatableParent.classList.add("active");
+                animation.playIfPaused();
+            }, delay);
+        }
+
+        return {
+            getValue: codeBlockControl.get,
+            setValue: codeBlockControl.set,
+            listenForValueChange: codeBlockControl.listen,
+            registerAnimate(
+                from: SliderPosition,
+                to: SliderPosition,
+                delay: number = 10,
+            ) {
+                registerTransition({
+                    begin() {
+                        animate(from, to, delay);
+                    },
+                    revert() {
+                        animate(to, from, delay);
+                    },
+                });
+            },
+        };
+    }
+
+    const stiffness = setupSpringSlider(
+        `input[name="stiffness"]`,
+        [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597],
+    );
+    stiffness.listenForValueChange((value) => {
+        x.options.stiffness = value;
+        y.options.stiffness = value;
+    });
+
+    const mass = setupSpringSlider(
+        `input[name="mass"]`,
+        [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597],
+    );
+    mass.listenForValueChange((value) => {
+        x.options.mass = value;
+        y.options.mass = value;
+    });
+
+    const damping = setupSpringSlider(
+        `input[name="damping"]`,
+        [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597],
+    );
+    damping.listenForValueChange((value) => {
+        x.options.damping = value;
+        y.options.damping = value;
+    });
+
+    registerTransition({
+        begin() {
+            resetBoxCurrent();
+            animationController.playIfPaused();
+        },
+        revert() {
+            animationController.pause();
+            resetBoxCurrent();
+        },
+    });
+
+    stiffness.registerAnimate("farLeft", "left");
+    mass.registerAnimate("farLeft", "left", 200);
+    withPrevious();
+    damping.registerAnimate("farLeft", "left", 300);
+    withPrevious();
+
+    rotationFactor.registerAnimate("farLeft", "left");
+
+    registerTransition({
+        begin() {
+            animationController.pause();
+            section.hidden = true;
+        },
+        revert() {
+            animationController.playIfPaused();
+            section.hidden = false;
+        },
+    });
+</script>

@@ -3,41 +3,14 @@ import { Code } from "astro-expressive-code/components";
 import Slide from "../components/slide.astro";
 import Figure from "../components/figure.astro";
 
-// const editFile = `vscode://file${Astro.self.moduleId}`;
-function getEditFileLink() {
-    return import.meta.env.MODE.startsWith("dev")
-        ? `vscode://file${Astro.self.moduleId}`
-        : `https://github.com/probablyduncan/wdc/tree/main/${Astro.self.moduleId}`;
-}
-
-// console.log(import.meta.dirname); // in build this will be in /dist
-// console.log(import.meta.filename); // in build this will be in /dist
-// console.log(import.meta.hot); // this is set when hot reload is on, otherwise not
-// console.log(import.meta.url); // this is the file url!
-
-// basically, if we're hot we want to
+// function getEditFileLink() {
+//     return import.meta.env.DEV
+//         ? `vscode://file${Astro.self.moduleId}`
+//         : `https://github.com/probablyduncan/wdc/tree/main/${Astro.self.moduleId}`;
+// }
 ---
 
-<Slide prev="cursor">
-    <!--
-        who do you think laid our egg??
-        a spring chicken, of course
-
-        ok, this is spring chicken
-        because who do you think laid our egg?
-        and spring chicken wants to cross the road
-        should be a mouse click to spring over
-
-        spring chicken should be adjustable with those spring range inputs
-        and maybe I can spring other values?
-        spring width of something? scale/rotate? a color? rgb/etc
-
-        and then a bunch of iterative examples of doing fun things, without many code examples
-        (maybe a few interesting points, but that's it)
-
-        and eventually we can go to editing files in vscode and hot reloading?
-        maybe that's what I can do for the spider?
-    -->
+<Slide prev="cursor" next="examples">
     <Figure x="0.75" y="0.6" class="active">
         <section id="code-uses" slot="figure">
             <Code
@@ -420,8 +393,8 @@ class Spring {
         <Code
             lang="typescript"
             code={`
-const inputPosition = createSpring();
-const thumbPosition = createSpring();
+const inputPosition = new Spring();
+const thumbPosition = new Spring();
 
 thumbPosition.stiffness *= 1.2;
 thumbPosition.mass *= 1.5;
@@ -437,8 +410,8 @@ thumbPosition.target = 300;
             code={`
 const chicken = {
     el: getElementById("chicken"),
-    x: createSpring(),
-    y: createSpring(),
+    x: new Spring(),
+    y: new Spring(),
 };
 
 // called in requestAnimationFrame
@@ -456,8 +429,8 @@ function step(deltaMS) {
             code={`
 const chicken = {
     el: getElementById("chicken"),
-    x: createSpring(),
-    y: createSpring(),
+    x: new Spring(),
+    y: new Spring(),
 };
 
 // called in requestAnimationFrame
@@ -601,17 +574,17 @@ function step(deltaMS) {
     <div id="spring-sliders">
         <div>
             <label for="stiffness">stiffness</label>
-            <output for="stiffness">100</output>
+            <output for="stiffness">1</output>
             <input name="stiffness" type="range" />
         </div>
         <div>
             <label for="mass">mass (kg)</label>
-            <output for="mass">2</output>
+            <output for="mass">1</output>
             <input name="mass" type="range" />
         </div>
         <div>
             <label for="damping">damping</label>
-            <output for="damping">20</output>
+            <output for="damping">1</output>
             <input name="damping" type="range" />
         </div>
         <button id="lay-egg" title="or just press e!">lay egg</button>
@@ -625,7 +598,7 @@ function step(deltaMS) {
 </Slide>
 
 <style>
-    :global(body) {
+    :global(body.road) {
         background-image: url("/images/chicken-bg.png");
         image-rendering: pixelated;
         background-size: 100%;
@@ -672,14 +645,12 @@ function step(deltaMS) {
         --width: 25vw;
         width: var(--width);
         position: fixed;
-        top: 0;
+        bottom: 0;
         left: 0;
         user-select: none;
         pointer-events: none;
         --d: 1;
-        --x: calc(50vw - var(--width) / 2);
-        --y: calc(100vh - var(--width) / 2);
-        translate: calc(var(--x, 0px) - 50%) calc(var(--y, 0px) - 50%);
+        translate: calc(var(--x, 50vw) - 50%) calc(var(--y, -50vh) + 50%);
         scale: calc(var(--d) * var(--s, 1)) var(--s, 1);
         z-index: 85;
     }
@@ -738,7 +709,9 @@ function step(deltaMS) {
                 display: none;
             }
 
-            transition: font-variation-settings 0.2s, font-weight 0.2s;
+            transition:
+                font-variation-settings 0.2s,
+                font-weight 0.2s;
             font-variation-settings:
                 "MONO" 1,
                 "CASL" 0,
@@ -803,9 +776,8 @@ function step(deltaMS) {
     };
 
     let currentType: keyof typeof xControllers = "empty";
-    const startX =
-        chicken.getBoundingClientRect().left + chicken.clientWidth / 2;
-    const startY = window.innerHeight - chicken.clientWidth / 2;
+    const startX = window.innerWidth / 3;
+    const startY = window.innerHeight * -0.02 + chicken.clientWidth / -2;
     // @ts-ignore
     const startD = chicken.computedStyleMap().get("--d")[0];
 
@@ -819,14 +791,20 @@ function step(deltaMS) {
 
     let scaleY = false;
     function getScale() {
-        const topToHorizon = ((window.innerWidth * 9) / 16) * 0.35;
-        if (yController.current < topToHorizon) {
+
+        const horizon = -window.innerWidth / 16 * 5.5;
+        if (yController.current < horizon) {
             return 0;
         }
 
+        if (yController.current > startY) {
+            return 1;
+        }
+
+        // max is startY, min is topToHorizon
         const lerp =
-            (yController.current - topToHorizon) / (startY - topToHorizon);
-        const scaleAtHorizon = 0.2;
+            (yController.current - horizon) / (startY - horizon);
+        const scaleAtHorizon = 0.05;
         const scale = lerp * (1 - scaleAtHorizon) + scaleAtHorizon;
         return scale;
     }
@@ -884,7 +862,7 @@ function step(deltaMS) {
                 mouseDown = true;
                 xController().target = clientX;
                 if (translateY) {
-                    yController.target = clientY;
+                    yController.target = clientY - window.innerHeight;
                 }
             }
         });
@@ -895,7 +873,7 @@ function step(deltaMS) {
             if (mouseDown) {
                 xController().target = clientX;
                 if (translateY) {
-                    yController.target = clientY;
+                    yController.target = clientY - window.innerHeight;
                 }
             }
         });
@@ -951,17 +929,17 @@ function step(deltaMS) {
         }
 
         type SliderPosition =
-            "middle" | "left" | "right" | "farLeft" | "farRight";
+            "middle" | "left" | "right" | "offLeft" | "offRight";
         function getSliderPosition(position: SliderPosition) {
             switch (position) {
                 case "middle":
                     return 0;
-                case "farLeft":
+                case "offLeft":
                     return (
                         (window.innerWidth + translatableParent.clientWidth) /
                         -2
                     );
-                case "farRight":
+                case "offRight":
                     return (
                         (window.innerWidth + translatableParent.clientWidth) / 2
                     );
@@ -1034,25 +1012,6 @@ function step(deltaMS) {
             }, delay);
         }
 
-        // function jump(to: SliderPosition) {
-        //     animation.pause();
-        //     setupForAnimation(to, to);
-        //     translatableParent.classList.add("active");
-        //     onAnimationComplete();
-        // }
-
-        // function hide() {
-        //     translatableParent.classList.remove("active");
-        //     animation.pause();
-        //     translatableParent.style.removeProperty("--x");
-        // }
-
-        // function show() {
-        //     onAnimationComplete();
-        //     translatableParent.style.removeProperty("--x");
-        //     translatableParent.classList.add("active");
-        // }
-
         return {
             getValue: codeBlockControl.get,
             setValue: codeBlockControl.set,
@@ -1071,19 +1030,6 @@ function step(deltaMS) {
                     },
                 });
             },
-            // registerJump(
-            //     from: SliderPosition,
-            //     to: SliderPosition,
-            // ) {
-            //     registerTransition({
-            //         begin() {
-            //             jump(to);
-            //         },
-            //         revert() {
-            //             jump(from);
-            //         },
-            //     })
-            // },
         };
     }
 
@@ -1235,6 +1181,7 @@ function step(deltaMS) {
                 "--y",
                 yController.step(deltaMS).toFixed(2) + "px",
             );
+
             if (scaleY) {
                 const scale = getScale();
                 chicken.style.setProperty("--s", scale.toFixed(2));
@@ -1259,8 +1206,8 @@ function step(deltaMS) {
             img.style.position = "fixed";
             img.style.left =
                 (100 * xController().current) / window.innerWidth + "%";
-            img.style.top =
-                yController.current + (chicken.clientHeight * scale) / 5 + "px";
+            img.style.bottom =
+                -yController.current - (chicken.clientHeight * scale) / 5 + "px";
             img.style.pointerEvents = "none";
             img.style.userSelect = "none";
             img.style.translate = `-50%`;
@@ -1308,8 +1255,20 @@ function step(deltaMS) {
         });
     }
 
-    resetChicken();
-    animationController.playIfPaused();
+    registerClassTransition("body", "road");
+    registerTransition({
+        begin() {
+            resetChicken();
+            animationController.playIfPaused();
+        },
+        revert() {
+            animationController.pause();
+            chicken.style.removeProperty("--x");
+            chicken.style.removeProperty("--y");
+            chicken.style.removeProperty("--d");
+        },
+    });
+    withPrevious();
 
     // create a lerp class
     codeClasses.next();
@@ -1342,6 +1301,12 @@ function step(deltaMS) {
         revert() {
             chickenFrames.idle = "stand";
         },
+    });
+    withPrevious();
+    springSettingTransition({
+        damping: 0,
+        stiffness: 1,
+        mass: 1,
     });
     withPrevious();
 
@@ -1433,9 +1398,9 @@ function step(deltaMS) {
     codeClasses.next();
     codeClasses.hide();
 
-    stiffness.registerAnimate("farLeft", "middle");
-    mass.registerAnimate("farLeft", "middle");
-    damping.registerAnimate("farLeft", "middle");
+    stiffness.registerAnimate("offLeft", "middle");
+    mass.registerAnimate("offLeft", "middle");
+    damping.registerAnimate("offLeft", "middle");
 
     stiffness.registerAnimate("middle", "right", 100);
     mass.registerAnimate("middle", "right", 200);
