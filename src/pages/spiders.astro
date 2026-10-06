@@ -99,8 +99,16 @@ requestAnimationFrame(drawFrame);
             target="_blank">https://luke.zip/posts/draw-the-owl/</a
         > is good.
     </Figure>
-    <Figure id="qr" src="/images/qr_spiders.duncanpetrie.com.png" x={0.5} y="0.5" width={"80vmin"}>
-        <a href="https://spiders.duncanpetrie.com" target="_blank">spiders.duncanpetrie.com</a> is the place to be!
+    <Figure
+        id="qr"
+        src="/images/qr_spiders.duncanpetrie.com.png"
+        x={0.5}
+        y="0.5"
+        width={"80vmin"}
+    >
+        <a href="https://spiders.duncanpetrie.com" target="_blank"
+            >spiders.duncanpetrie.com</a
+        > is the place to be!
     </Figure>
 </Slide>
 <style>
@@ -182,15 +190,9 @@ requestAnimationFrame(drawFrame);
     });
 
     const spiders: SpiderState[] = [];
-    const timeouts: NodeJS.Timeout[] = [];
 
     type WhereWeAreInThisWholeThing =
-        | "empty"
-        | "body"
-        | "abdomen"
-        | "blink"
-        | "moving-on-their-own"
-        | "following-mouse";
+        "empty" | "body" | "abdomen" | "blink" | "following-mouse";
     const { updateProgress, getProgress, registerCanvasStateTransition } =
         (() => {
             let _state: WhereWeAreInThisWholeThing = "empty";
@@ -354,50 +356,6 @@ requestAnimationFrame(drawFrame);
                         },
                     );
                     return true;
-                case "moving-on-their-own":
-                    clearCanvas();
-                    for (const spider of spiders) {
-                        stepAndDrawSpider(deltaMS, timestampMS, spider, {
-                            drawAbdomen: true,
-                            drawBody: true,
-                            drawEyes: true,
-                            drawHead: true,
-                            drawLegs: true,
-                            drawPupils: true,
-                            shouldBlink: true,
-                            shouldMove: true,
-                            shouldThrob: false,
-                            stepLegs: true,
-                        });
-
-                        if (
-                            isAlmostZero(
-                                {
-                                    x: spider.targets[0].x - spider.current.x,
-                                    y: spider.targets[0].y - spider.current.y,
-                                },
-                                50,
-                            )
-                        ) {
-                            timeouts.push(
-                                setTimeout(() => {
-                                    spider.targets = [
-                                        {
-                                            x: randomInRange(
-                                                50,
-                                                canvasSize.x - 50,
-                                            ),
-                                            y: randomInRange(
-                                                50,
-                                                canvasSize.y - 50,
-                                            ),
-                                        },
-                                    ];
-                                }, 1),
-                            );
-                        }
-                    }
-                    return true;
                 case "following-mouse":
                     clearCanvas();
                     stepAndDrawSpider(deltaMS, timestampMS, me, {
@@ -485,45 +443,15 @@ requestAnimationFrame(drawFrame);
     withPrevious();
 
     code.hide();
-    registerCanvasStateTransition("moving-on-their-own");
-    withPrevious();
-    registerTransition({
-        begin() {
-            spiders.push({
-                angle: 0,
-                current: {
-                    x: canvasSize.x * 0.618,
-                    y: canvasSize.y * 0.55,
-                },
-                scale: 30,
-                targets: [
-                    {
-                        x: canvasSize.x * 0.618 - 100,
-                        y: canvasSize.y * 0.55 - 100,
-                    },
-                ],
-                feet: [],
-                headPosition: { x: 0, y: 0 },
-                id: "",
-                interpolation: { type: "linear", speed: 5 },
-                kissing: false,
-                velocity: 0,
-                targetPadding: 20,
-            });
-        },
-        revert() {
-            timeouts.forEach(clearTimeout);
-            timeouts.length = 0;
-            spiders.length = 0;
-        },
-    });
-    withPrevious();
-
     registerCanvasStateTransition("following-mouse");
+    withPrevious();
     registerTransition({
         begin() {
-            const currentPos = spiders[0].current;
             spiders.length = 0;
+            const currentPos = {
+                x: canvasSize.x * 0.618,
+                y: canvasSize.y * 0.55,
+            };
             me.current.x = currentPos.x;
             me.current.y = currentPos.y;
             me.scale = 30;
@@ -533,29 +461,7 @@ requestAnimationFrame(drawFrame);
             };
             me.targetPadding = 20;
         },
-        revert() {
-            spiders.push({
-                angle: 0,
-                current: {
-                    x: canvasSize.x * 0.618,
-                    y: canvasSize.y * 0.55,
-                },
-                scale: 30,
-                targets: [
-                    {
-                        x: canvasSize.x * 0.618 - 100,
-                        y: canvasSize.y * 0.55 - 100,
-                    },
-                ],
-                feet: [],
-                headPosition: { x: 0, y: 0 },
-                id: "",
-                interpolation: { type: "linear", speed: 5 },
-                kissing: false,
-                velocity: 0,
-                targetPadding: 20,
-            });
-        },
+        revert() {},
     });
     withPrevious();
 
@@ -576,6 +482,11 @@ requestAnimationFrame(drawFrame);
             };
         },
     });
+
+    // we can put this wherever we want!
+    // cern?????
+    // TODO
+    registerClassTransition("#cern");
 
     registerClassTransition("#qr", "active");
 
