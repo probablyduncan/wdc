@@ -393,21 +393,6 @@ class Spring {
         <Code
             lang="typescript"
             code={`
-const inputPosition = new Spring();
-const thumbPosition = new Spring();
-
-thumbPosition.stiffness *= 1.2;
-thumbPosition.mass *= 1.5;
-thumbPosition.damping *= 1.2;
-
-// go 300px to the right:
-inputPosition.target = 300;
-thumbPosition.target = 300;
-        `}
-        />
-        <Code
-            lang="typescript"
-            code={`
 const chicken = {
     el: getElementById("chicken"),
     x: new Spring(),
@@ -441,7 +426,7 @@ function step(deltaMS) {
     chicken.el.style.setProperty("--y", y.current + "px");
 
     const pxFromTopToHorizon = window.innerHeight * 0.35;
-    const scale = (yController.current - pxFromTopToHorizon)
+    const scale = (chicken.y.current - pxFromTopToHorizon)
         / (window.innerHeight - pxFromTopToHorizon);
     chicken.el.style.setProperty("--s", Math.max(scale, 0) + "px");
 }
@@ -1389,8 +1374,7 @@ function step(deltaMS) {
     withPrevious();
 
     codeClasses.next();
-
-    codeClasses.next();
+    withPrevious();
     registerTransition({
         begin() {
             translateY = true;
