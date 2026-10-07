@@ -1,17 +1,16 @@
 ---
 import Figure from "./figure.astro";
-
-
 ---
 
 <section id="title">
-    <h2>&nbsp; requestAnimationFrame()</h2>
+    <h2>&nbsp;&nbsp;requestAnimationFrame<span>()</span></h2>
     <h3>— and the —</h3>
     <footer>
-        DP is at WDC (and you are too!)
+        the year is <em>2026</em>
+        <br/>
+        <a target="_blank" href="https://duncanpetrie.com">duncan</a> is at <em>WDC</em>
         <br />
-        <a href="https://spiders.duncanpetrie.com" target="_blank"
-            >duncanpetrie.com</a>
+        and so are you <em>!</em>
     </footer>
 </section>
 <section id="cern" class="centered">
@@ -192,10 +191,20 @@ import Figure from "./figure.astro";
             line-height: 0.7;
             margin-top: calc(50vh - 1em);
             margin-bottom: 0;
+
+            color: #4895F3;
+            text-shadow: 0 0.1em 0.1em rgba(0, 0, 0, 0.05);
+            span {
+                opacity: 0.1;
+            }
         }
         h3 {
             font-size: 2vw;
             text-align: center;
+            margin-bottom: 0;
+            opacity: 0.8;
+            color: #1b3b62;
+            font-variation-settings: "MONO" 1, "CASL" 1, "slnt" -10, "CRSV" 1;
         }
 
         &.invisible {
@@ -209,10 +218,31 @@ import Figure from "./figure.astro";
 
     footer {
         position: fixed;
-        bottom: 2em;
-        left: 4ch;
+        bottom: 1.35em;
+        left: 2em;
         text-align: justify;
-        /* width: 20ch; */
+        padding: 0.5em;
+        border: 0.1em dotted #4895F388;
+        color: #1b3b62;
+        a {
+            color: #4895F3;
+            transition: text-decoration-color 0.2s;
+            text-decoration-color: transparent;
+            &:hover {
+                text-decoration-color: currentColor;
+            }
+            /* font-variation-settings: "MONO" 1, "CASL" 1, "slnt" -15, "CRSV" 1; */
+        }
+        em {
+            font-weight: 500;
+        }
+
+        transition: border-style, border-color;
+        transition-duration: 0.2s;
+        &:has(a:hover) {
+            border-style: solid;
+            border-color: #4895F3;
+        }
     }
 
     #googling-website {
@@ -275,7 +305,7 @@ import Figure from "./figure.astro";
         }
 
         &.centered {
-            translate: calc(50vw - 14ch);
+            translate: calc(50vw - 15.5ch);
             font-size: 2em;
         }
 
@@ -300,7 +330,7 @@ import Figure from "./figure.astro";
                 position: relative;
                 width: 20ch;
                 text-align: center;
-                transform: translate(calc(25vw), 20vh) scale(2);
+                transform: translate(25vw, 20vh) scale(2);
                 transform-origin: top left;
                 width: 25vw;
                 transition: transform 0.5s;
@@ -878,6 +908,9 @@ import Figure from "./figure.astro";
     }
 
     #everything-else {
+        &.active {
+            /* transition: opacity 0.2s; */
+        }
         &:not(.active) {
             opacity: 0;
             user-select: none;
