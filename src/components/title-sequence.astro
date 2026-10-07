@@ -1,4 +1,6 @@
 ---
+import Figure from "./figure.astro";
+
 
 ---
 
@@ -7,14 +9,14 @@
     <h3>— and the —</h3>
     <footer>
         DP is at WDC (and you are too!)
-        <br/>
-        <a href="https://spiders.duncanpetrie.com" target="_blank">duncanpetrie.com</a></footer>
+        <br />
+        <a href="https://spiders.duncanpetrie.com" target="_blank"
+            >duncanpetrie.com</a>
+    </footer>
 </section>
 <section id="cern" class="centered">
     <img id="subway" src="/images/subway-surfers.webp" draggable="false" />
-    <div
-        id="awwwards"
-    >
+    <div id="awwwards">
         <svg width="53.08" height="350.358"
             ><path class="js-color-bg" fill="#9BD4D7" d="M0 0h53.08v171.358H0z"
             ></path><g class="js-color-text" fill="#fff"
@@ -36,6 +38,18 @@
                 > access to a large universe of <span class="ai"
                     >AI-friendly</span
                 > documents.
+                <div class="cta-row">
+                    <span class="btn primary">World Wide Web</span>
+                    <span class="btn ghost">World Wide Web</span>
+                </div>
+                <div class="proof-row">
+                    <span class="avatars"
+                        ><span></span><span></span><span></span><span
+                        ></span></span
+                    >
+                    <span class="stars">★★★★★</span>
+                    <!-- <span>Loved by 10,000+ physicists</span> -->
+                </div>
             </div>
             <p>
                 Everything there is online about W3 is linked directly or
@@ -84,26 +98,89 @@
             </dl>
         </div>
     </div>
+
+    <!-- background layers, fade in with the colors -->
+    <div class="fx aurora"></div>
+    <div class="fx grid"></div>
+    <div class="fx grain"></div>
+
+    <!-- navbar -->
+    <nav class="nav">
+        <div class="nav-logo">
+            <!-- <span class="nav-mark">W3</span>
+            <span class="nav-word">WorldWideWeb<sup>™</sup></span> -->
+        </div>
+        <ul class="nav-links">
+            <!-- <li>
+                Discover
+                <svg class="chev" viewBox="0 0 12 12" aria-hidden="true"
+                    ><path d="M2.5 4.5 6 8l3.5-3.5"></path></svg
+                >
+            </li> -->
+            <li>
+                Products
+                <!-- <svg class="chev" viewBox="0 0 12 12" aria-hidden="true"
+                    ><path d="M2.5 4.5 6 8l3.5-3.5"></path></svg
+                > -->
+                <!-- <b class="nav-new">New</b> -->
+            </li>
+            <li>Pricing</li>
+            <li>Enterprise</li>
+        </ul>
+        <div class="nav-actions">
+            <!-- <span class="nav-signin">Sign in</span>
+            <span class="btn primary">Get early access</span> -->
+        </div>
+    </nav>
+
+    <!-- announcement pill, sits above the title -->
+    <div class="pill">
+        <div class="pill-ring">
+            <div class="pill-body">
+                <svg class="spark" viewBox="0 0 24 24" aria-hidden="true"
+                    ><path
+                        d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"
+                    ></path></svg
+                >
+                The WorldWideWeb (W3)
+                <svg class="arrow" viewBox="0 0 12 12" aria-hidden="true"
+                    ><path d="M2 6h8M6.5 2.5 10 6l-3.5 3.5"></path></svg
+                >
+            </div>
+        </div>
+    </div>
+
+    <!-- feature cards, flip in one after the other -->
+    <div class="card-row">
+        <article class="card" style="--i: 0; --accent: #3ddcff;">
+            <div class="card-icon">🧭</div>
+            <h3>What's out there?</h3>
+            <p>Pointers to the world's online information, subjects , W3 servers, etc.</p>
+            <span class="card-link">Hyperlink →</span>
+        </article>
+        <article class="card" style="--i: 1; --accent: #ff5fb0;">
+            <div class="card-icon">🚀</div>
+            <h3>Software Products</h3>
+            <p>(e.g. Line Mode ,X11 Viola , NeXTStep , Servers , Tools , Mail robot , Library )</p>
+            <span class="card-link">Hyperlink →</span>
+        </article>
+        <article class="card" style="--i: 2; --accent: #ffcf5c;">
+            <div class="card-icon">🧠</div>
+            <h3>Technical</h3>
+            <p>Details of protocols, formats, program internals etc</p>
+            <span class="card-link">Hyperlink →</span>
+        </article>
+    </div>
 </section>
 <section id="googling-website">
-    
     <img
         src="/images/website-cern1.webp"
         alt="the first website's landing page"
     />
-    <img
-        src="/images/website-cern2.webp"
-        alt="the first website"
-    />
-    <img
-        src="/images/website-mf.webp"
-        alt="motherfucking website dot com"
-    />
-    <img
-    src="/images/website-ipad.webp"
-    alt="wikipedia entry for ipad kids"
-    />
+    <img src="/images/website-cern2.webp" alt="the first website" />
 </section>
+<Figure id="vc" src="/images/website-vc.webp" x="0.4" y="0.4" width="70vmin" />
+<Figure id="ipad" src="/images/website-ipad.webp" x="0.6" y="0.6" width="70vmin" />
 <style>
     body {
         overflow: clip;
@@ -150,12 +227,8 @@
     }
 
     #cern {
-        font-family: "Times New Roman", Times, serif;
-        width: 100vw;
-        min-height: 100svh;
-        transform-origin: top left;
-        padding: 1em 0.5em;
-        transition-timing-function: linear(
+        /* the bouncy ease, shared by everything that arrives on screen */
+        --spring: linear(
             0,
             0.029 1.3%,
             0.119 2.8%,
@@ -171,6 +244,22 @@
             1.001 57.6%,
             1
         );
+        --subway-w: calc(100vh * 124 / 225);
+        --pink: #ff5fb0;
+        --cyan: #3ddcff;
+        --amber: #ffcf5c;
+        --violet: #a56bff;
+
+        font-family: "Times New Roman", Times, serif;
+        /* 16px on a 1920 wide screen, and scales with the viewport so the 16:9 layout holds at any size */
+        font-size: calc(100vw / 120);
+        /* keeps the fixed layers inside #cern, so they can't paint over the googling screenshots */
+        isolation: isolate;
+        width: 100vw;
+        min-height: 100svh;
+        transform-origin: top left;
+        padding: 1em 0.5em;
+        transition-timing-function: var(--spring);
         h1 {
             margin-top: 0;
         }
@@ -221,12 +310,13 @@
         &.tagline-centered {
             #tagline {
                 position: relative;
-                transform: translate(calc(25vw), 30vh) scale(2);
+                transform: translate(calc(25vw), 25vh) scale(2);
                 height: 1lh;
                 transition: transform 0.5s;
                 transform-origin: top left;
                 width: 25vw;
                 text-align: center;
+                text-wrap: pretty;
             }
         }
 
@@ -247,10 +337,19 @@
                     #ff5fb0 60%,
                     #ffcf5c 80%
                 );
-                text-shadow: 2 2 8px rgba(255, 255, 255, 0.2);
                 -webkit-background-clip: text;
                 background-clip: text;
                 color: transparent;
+                font-weight: 800;
+                letter-spacing: -0.02em;
+                filter: drop-shadow(0 0 0.45em rgb(255 95 176 / 0.5));
+            }
+
+            .fx {
+                opacity: 1;
+            }
+            .grain {
+                opacity: 0.2;
             }
         }
 
@@ -292,10 +391,16 @@
                 #ff5fb0 60%,
                 #ffcf5c 80%
             );
-            text-shadow: 2 2 8px rgba(255, 255, 255, 0.2);
+            background-size: 140% 100%;
+            animation: shimmer 4.5s ease-in-out infinite alternate;
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+        }
+
+        .ai {
+            /* never split "AI-friendly" across two lines */
+            white-space: nowrap;
         }
 
         &:not(.ai-lang) {
@@ -306,33 +411,462 @@
 
         &.subway {
             h1 {
-                transform: translate(calc(25vw + 100vh * 124 / 225 / 2), 20vh) scale(2);
+                transform: translate(calc(25vw + 100vh * 124 / 225 / 2), 20vh)
+                    scale(2);
             }
 
             #tagline {
-                transform: translate(calc(25vw + 100vh * 124 / 225 / 2), 30vh) scale(2);
+                transform: translate(calc(25vw + 100vh * 124 / 225 / 2), 25vh)
+                    scale(2);
             }
 
             #subway {
                 width: calc(100vh * 124 / 225);
                 transition: width 0.5s;
-                transition-timing-function: linear(
-                    0,
-                    0.029 1.3%,
-                    0.119 2.8%,
-                    0.659 8.7%,
-                    0.871 11.6%,
-                    1.009 14.6%,
-                    1.052 16.2%,
-                    1.078 17.9%,
-                    1.088 19.7%,
-                    1.085 21.7%,
-                    1.014 31.4%,
-                    0.993 38%,
-                    1.001 57.6%,
-                    1
-                );
+                transition-timing-function: var(--spring);
             }
+
+            /* the new bits make room too: the navbar starts where the gif ends, the rest slides over with the title */
+            .nav {
+                left: var(--subway-w);
+            }
+            .pill,
+            .card-row {
+                transform: translateX(calc(var(--subway-w) / 2));
+            }
+        }
+
+        /* ---------- landing page furniture ---------- */
+        /* all of it starts invisible, and arrives when its class lands on #cern */
+
+        /* background layers (arrive with .colors) */
+        .fx {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.2s ease;
+        }
+        .aurora {
+            inset: -25%;
+            background:
+                radial-gradient(
+                    closest-side at 22% 28%,
+                    rgb(255 95 176 / 0.55),
+                    transparent
+                ),
+                radial-gradient(
+                    closest-side at 78% 22%,
+                    rgb(61 220 255 / 0.42),
+                    transparent
+                ),
+                radial-gradient(
+                    closest-side at 70% 82%,
+                    rgb(255 207 92 / 0.3),
+                    transparent
+                ),
+                radial-gradient(
+                    closest-side at 18% 84%,
+                    rgb(130 80 255 / 0.5),
+                    transparent
+                );
+            mix-blend-mode: screen;
+            animation: drift 22s ease-in-out infinite alternate;
+        }
+        .grid {
+            background-image:
+                linear-gradient(rgb(255 255 255 / 0.08) 1px, transparent 1px),
+                linear-gradient(
+                    90deg,
+                    rgb(255 255 255 / 0.08) 1px,
+                    transparent 1px
+                );
+            background-size: 4.5em 4.5em;
+            -webkit-mask-image: radial-gradient(
+                ellipse 65% 60% at 50% 40%,
+                #000 20%,
+                transparent 78%
+            );
+            mask-image: radial-gradient(
+                ellipse 65% 60% at 50% 40%,
+                #000 20%,
+                transparent 78%
+            );
+        }
+        .grain {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            background-size: 15em;
+            mix-blend-mode: overlay;
+        }
+
+        /* buttons, shared by the navbar and the hero */
+        .btn {
+            display: inline-block;
+            padding: 0.7em 1.3em;
+            border-radius: 999px;
+            font-weight: 700;
+            line-height: 1;
+            white-space: nowrap;
+        }
+        .btn.primary {
+            color: #1a0638;
+            background: linear-gradient(
+                100deg,
+                var(--pink) 0%,
+                var(--violet) 55%,
+                var(--cyan) 100%
+            );
+            box-shadow:
+                0 0 1.6em rgb(255 95 176 / 0.55),
+                inset 0 1px 0 rgb(255 255 255 / 0.55);
+        }
+        .btn.ghost {
+            color: #fff;
+            background: rgb(255 255 255 / 0.1);
+            box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3);
+            -webkit-backdrop-filter: blur(0.6em);
+            backdrop-filter: blur(0.6em);
+        }
+
+        /* navbar */
+        .nav {
+            position: fixed;
+            z-index: 30;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4.6em;
+            padding: 0 2.4em;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            color: #fff;
+            background: linear-gradient(
+                180deg,
+                rgb(24 8 70 / 0.55),
+                rgb(24 8 70 / 0.3)
+            );
+            -webkit-backdrop-filter: blur(1em) saturate(160%);
+            backdrop-filter: blur(1em) saturate(160%);
+            border-bottom: 1px solid rgb(255 255 255 / 0.2);
+            box-shadow:
+                inset 0 1px 0 rgb(255 255 255 / 0.12),
+                0 1em 3em -1em rgb(10 0 40 / 0.6);
+            opacity: 0;
+            translate: 0 -100%;
+            transition:
+                opacity 0.35s linear,
+                translate 0.8s var(--spring),
+                left 0.5s var(--spring);
+            pointer-events: none;
+            user-select: none;
+        }
+        &.navbar .nav {
+            opacity: 1;
+            translate: 0 0;
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.7em;
+        }
+        .nav-mark {
+            display: grid;
+            place-items: center;
+            width: 2.5em;
+            height: 2.5em;
+            border-radius: 0.7em;
+            font-size: 0.95em;
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            color: #1a0638;
+            background: linear-gradient(
+                135deg,
+                var(--pink),
+                var(--violet) 55%,
+                var(--cyan)
+            );
+            box-shadow:
+                0 0 1.4em rgb(165 107 255 / 0.7),
+                inset 0 1px 0 rgb(255 255 255 / 0.5);
+        }
+        .nav-word {
+            font-size: 1.25em;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            sup {
+                margin-left: 0.1em;
+                font-size: 0.45em;
+                font-weight: 600;
+                opacity: 0.8;
+                vertical-align: super;
+            }
+        }
+        .nav-links {
+            display: flex;
+            gap: 2.4em;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            font-size: 1.05em;
+            font-weight: 500;
+            color: rgb(255 255 255 / 0.85);
+            li {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.4em;
+            }
+        }
+        .chev {
+            width: 0.75em;
+            height: 0.75em;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            opacity: 0.8;
+        }
+        .nav-new {
+            padding: 0.3em 0.65em;
+            border-radius: 999px;
+            font-size: 0.62em;
+            font-weight: 800;
+            color: #1a0638;
+            background: linear-gradient(100deg, var(--amber), var(--pink));
+        }
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 1.6em;
+            font-size: 0.95em;
+            .nav-signin {
+                font-weight: 600;
+                color: rgb(255 255 255 / 0.9);
+            }
+            .btn {
+                padding: 0.7em 1.2em;
+            }
+        }
+
+        /* announcement pill, above the title */
+        .pill {
+            position: fixed;
+            top: 9.3em;
+            left: calc(25vw + 10px);
+            width: 50vw;
+            display: flex;
+            justify-content: center;
+            opacity: 0.4;
+            translate: -150vw -2em;
+            transition:
+                opacity 0.4s linear,
+                translate 0.8s var(--spring),
+                transform 0.5s;
+            pointer-events: none;
+        }
+        &.hero .pill {
+            opacity: 1;
+            translate: 0 0;
+        }
+        .pill-ring {
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
+            padding: 1px;
+            border-radius: 999px;
+            box-shadow: 0 0 2.4em rgb(165 107 255 / 0.5);
+        }
+        .pill-ring::before {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            left: 50%;
+            top: 50%;
+            width: 200%;
+            aspect-ratio: 1;
+            translate: -50% -50%;
+            background: conic-gradient(
+                var(--pink),
+                var(--amber),
+                var(--cyan),
+                var(--violet),
+                var(--pink)
+            );
+            animation: spin 5s linear infinite;
+        }
+        .pill-body {
+            display: flex;
+            align-items: center;
+            gap: 0.7em;
+            padding: 0.6em 1.2em 0.6em 1em;
+            border-radius: inherit;
+            background: rgb(22 8 66 / 0.88);
+            font-size: 1.1em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .spark {
+            width: 1.05em;
+            height: 1.05em;
+            fill: var(--amber);
+            filter: drop-shadow(0 0 0.35em var(--amber));
+        }
+        .arrow {
+            width: 0.95em;
+            height: 0.95em;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* hero buttons + social proof, they live inside the tagline so they follow its text */
+        .cta-row,
+        .proof-row {
+            display: none;
+        }
+        &.hero .cta-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.7em;
+            margin-top: 1em;
+            font-size: 0.85em;
+            animation: rise 0.8s var(--spring) both;
+        }
+        &.hero .proof-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.7em;
+            margin-top: 1.1em;
+            font-size: 0.72em;
+            color: rgb(255 255 255 / 0.85);
+            animation: rise 0.8s var(--spring) 0.15s both;
+        }
+        .avatars {
+            display: inline-flex;
+            span {
+                width: 1.9em;
+                height: 1.9em;
+                margin-left: -0.6em;
+                border-radius: 50%;
+                border: 2px solid #3d12b8;
+                &:first-child {
+                    margin-left: 0;
+                }
+                &:nth-child(1) {
+                    background: linear-gradient(
+                        135deg,
+                        var(--pink),
+                        var(--amber)
+                    );
+                }
+                &:nth-child(2) {
+                    background: linear-gradient(
+                        135deg,
+                        var(--cyan),
+                        var(--violet)
+                    );
+                }
+                &:nth-child(3) {
+                    background: linear-gradient(
+                        135deg,
+                        var(--amber),
+                        var(--pink)
+                    );
+                }
+                &:nth-child(4) {
+                    background: linear-gradient(
+                        135deg,
+                        var(--violet),
+                        var(--cyan)
+                    );
+                }
+            }
+        }
+        .stars {
+            color: var(--amber);
+            letter-spacing: 0.08em;
+        }
+
+        /* thick-border cards, they flip in one after the other */
+        .card-row {
+            position: fixed;
+            left: calc(25vw + 10px);
+            width: 50vw;
+            bottom: 8em;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.4em;
+            perspective: 90em;
+            pointer-events: none;
+            transition: transform 0.5s;
+        }
+        .card {
+            --accent: var(--cyan);
+            display: flex;
+            flex-direction: column;
+            padding: 1.15em 1.3em 1.2em;
+            border: 1px solid rgb(255 255 255 / 0.18);
+            border-left: 0.5em solid var(--accent);
+            border-radius: 1em;
+            color: #fff;
+            background: linear-gradient(
+                160deg,
+                rgb(255 255 255 / 0.16),
+                rgb(255 255 255 / 0.05)
+            );
+            -webkit-backdrop-filter: blur(0.9em) saturate(150%);
+            backdrop-filter: blur(0.9em) saturate(150%);
+            box-shadow:
+                0 1.4em 2.6em -1em rgb(8 0 40 / 0.6),
+                0 0 2.2em -0.8em var(--accent),
+                inset 0 1px 0 rgb(255 255 255 / 0.25);
+            opacity: 0;
+            transform: rotateY(calc(100deg + var(--i) * 40deg)) translate(-200em, 51.5em) scale(0.6);
+            backface-visibility: hidden;
+            /* a gentler ease than --spring, so the flip itself is readable */
+            transition:
+                transform 2s var(--spring),
+                opacity 0.3s var(--spring);
+            transition-delay: calc(var(--i) * 0.16s);
+        }
+        &.cards .card {
+            opacity: 1;
+            transform: none;
+        }
+        .card-icon {
+            display: grid;
+            place-items: center;
+            width: 2.6em;
+            height: 2.6em;
+            border-radius: 0.8em;
+            font-size: 1.3em;
+            background: color-mix(in srgb, var(--accent) 24%, transparent);
+            box-shadow: inset 0 0 0 1px
+                color-mix(in srgb, var(--accent) 45%, transparent);
+        }
+        .card h3 {
+            margin: 0.7em 0 0.3em;
+            font-size: 1.5em;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+        }
+        .card p {
+            margin: 0 0 0.9em;
+            font-size: 1.05em;
+            line-height: 1.4;
+            color: rgb(255 255 255 / 0.82);
+        }
+        .card-link {
+            margin-top: auto;
+            font-weight: 700;
+            color: var(--accent);
         }
 
         &.hidden {
@@ -350,6 +884,48 @@
             pointer-events: none;
         }
     }
+
+    @keyframes drift {
+        from {
+            transform: translate3d(-4%, 3%, 0) rotate(-4deg) scale(1);
+        }
+        to {
+            transform: translate3d(4%, -3%, 0) rotate(6deg) scale(1.12);
+        }
+    }
+    @keyframes shimmer {
+        from {
+            background-position: 0% 50%;
+        }
+        to {
+            background-position: 100% 50%;
+        }
+    }
+    @keyframes rise {
+        from {
+            opacity: 0;
+            translate: -100vw 1.2em;
+            scale: 0.96;
+        }
+        to {
+            opacity: 1;
+            translate: 0 0;
+            scale: 1;
+        }
+    }
+    @keyframes spin {
+        to {
+            rotate: 360deg;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        #cern .aurora,
+        #cern .ai,
+        #cern .pill-ring::before {
+            animation: none;
+        }
+    }
 </style>
 <script>
     import { getChildTransitions } from "../lib/codeBlockHelpers";
@@ -358,33 +934,37 @@
     registerClassTransition("#everything-else");
 
     const googlingWebsite = getChildTransitions("googling-website", "img");
-    
-    googlingWebsite.next();
-    googlingWebsite.next();
 
-    googlingWebsite.hide();
-    
     registerClassTransition("#title", "invisible");
     registerClassTransition("#cern", "centered", "remove");
     registerClassTransition("#title", "gone");
     withPrevious();
 
+    googlingWebsite.next();
+    googlingWebsite.next();
+    googlingWebsite.hide();
 
     // font
-    registerClassTransition("#cern", "inter");
     registerClassTransition("#cern", "title-centered");
     registerClassTransition("#cern", "tagline-centered");
     registerClassTransition("#cern", "other-crap");
+    registerClassTransition("#cern", "inter");
     registerClassTransition("#cern", "colors");
+    
+    // now it needs to look like every other landing page
+    registerClassTransition("#cern", "navbar");
+    registerClassTransition("#cern", "hero");
+    registerClassTransition("#cern", "cards");
+    
+    registerClassTransition("#vc", "active");
+    registerClassTransition("#ipad", "active");
+
+    registerClassTransition("#vc, #ipad", "active", "remove");
     registerClassTransition("#cern", "ai-lang");
     
-    googlingWebsite.next();
-    googlingWebsite.next();
-
-    googlingWebsite.hide();
     registerClassTransition("#cern", "subway");
-    withPrevious();
     
+
     registerClassTransition("#awwwards");
 
     registerClassTransition("#cern", "hidden");
