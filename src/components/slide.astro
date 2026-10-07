@@ -17,16 +17,14 @@ const { next, prev } = Astro.props;
         <meta name="text-scale" content="scale" />
 
         <link rel="canonical" href={Astro.site} />
-        <title>WDC, DP, you see</title>
+        <title>DP@WDC</title>
         <script src="../lib/slides.ts"></script>
     </head>
 
     <body data-next-page={next} data-prev-page={prev}>
-        <header></header>
         <main>
             <slot />
         </main>
-        <footer></footer>
     </body>
 
     <style>
@@ -42,30 +40,6 @@ const { next, prev } = Astro.props;
             flex-flow: column;
             place-content: center;
             place-items: center;
-        }
-
-        header,
-        footer {
-            position: fixed;
-            left: 0;
-            right: 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            line-height: 1;
-            padding: 0 1rem;
-
-            font-variant-numeric: diagonal-fractions;
-            font-variant-caps: petite-caps;
-        }
-
-        header {
-            top: 0;
-        }
-
-        footer {
-            bottom: 0;
         }
     </style>
 </html>
