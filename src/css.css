@@ -48,8 +48,8 @@
 
 @font-face {
     font-family: 'Fingers';
-    src: url('fonts/fingers.woff2') format('woff2'),
-         url('fonts/fingers.woff') format('woff');
+    src: url('/fonts/fingers.woff2') format('woff2'),
+         url('/fonts/fingers.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 }
