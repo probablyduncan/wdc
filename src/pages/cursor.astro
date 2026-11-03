@@ -10,9 +10,9 @@ import Lever from "../components/lever.astro";
         id="wcaglette"
         src="/images/wcaglette.webp"
         x="0.4"
-        y="0.3"
+        y="0.4"
         figure="12"
-        width="30rem"
+        width="50rem"
     >
         “You can’t meet WCAG without breaking a few eggs,” or so the saying
         goes.[72] Image courtesy of <a
@@ -23,7 +23,7 @@ import Lever from "../components/lever.astro";
             target="_blank">link</a
         >).
     </Figure>
-    <Figure id="zeno" src="/images/zeno.webp" x="0.6" y="0.4" width="50em">
+    <Figure id="zeno" src="/images/zeno.webp" x="0.62" y="0.4" width="50em">
         <span
             style="width: 100%; display: inline-flex; justify-content: space-between;"
         >
@@ -81,6 +81,42 @@ import Lever from "../components/lever.astro";
             title="Youtube: Engineering Hack"
             target="_blank">link</a
         >).
+    </Figure>
+    <Figure
+        id="elephant-1"
+        class="elephant-figure"
+        src="/images/elephant-cartoon-1.webp"
+        x={0.75}
+        y={0.5}
+        width={"45em"}
+        figure={24}
+    >
+        Something is in the room. Drawn by Leo Cullum for the <i>New Yorker</i>.
+    </Figure>
+    <Figure
+        id="elephant-2"
+        class="elephant-figure"
+        src="/images/elephant-cartoon-2.webp"
+        x={0.3}
+        y={0.4}
+        width={"40em"}
+        figure={24}
+    >
+        Something is in the room. Drawn by JB Handelsman for the <i
+            >New Yorker</i
+        >.
+    </Figure>
+    <Figure
+        id="elephant-3"
+        class="elephant-figure"
+        src="/images/elephant-cartoon-3.webp"
+        x={0.475}
+        y={0.65}
+        width={"42em"}
+        figure={24}
+    >
+        Something is in the room. Drawn by Ellis Rosen for the <i>New Yorker</i
+        >.
     </Figure>
     <Figure id="fps-figure" x={0.618} y={0.618} class="act-i">
         <div id="fps-display" slot="figure">
@@ -1092,7 +1128,8 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
 
         translate: var(--egg-x, 0px) var(--egg-y, 0px);
         &.center {
-            translate: calc(var(--egg-x, 0px) - 50%) calc(var(--egg-y, 0px) - 50%);
+            translate: calc(var(--egg-x, 0px) - 50%)
+                calc(var(--egg-y, 0px) - 50%);
         }
 
         &.no-pointer {
@@ -1142,6 +1179,9 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
     :global(.expressive-code) {
         &:not(.active) {
             display: none;
+        }
+        .code {
+            font-size: 1.4em;
         }
     }
 
@@ -1889,25 +1929,31 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
 
     registerClassTransition("#zeno", "active");
     registerClassTransition("#dichotomy", "active");
+    registerClassTransition("#lerp-with-apples", "active");
 
     registerClassTransition("#zeno", "active", "remove");
     registerClassTransition("#dichotomy", "active", "remove");
     withPrevious();
+    registerClassTransition("#lerp-with-apples", "active", "remove");
+    withPrevious();
 
     // add lerp calculation
     ts.next();
+    withPrevious();
     animationOptionTransition("lerpType", "basic-half");
     withPrevious();
 
-    registerClassTransition("#lerp-with-apples", "active");
-
     // add lerp slider
-    registerClassTransition("#lerp-with-apples", "active", "remove");
     ts.next();
-    withPrevious();
+
+    // elephant in the room
+    registerClassTransition("#elephant-1", "active");
+    registerClassTransition("#elephant-2", "active");
+    registerClassTransition("#elephant-3", "active");
 
     // now show FPS!!
     registerClassTransition("#fps-figure", "active");
+    registerClassTransition(".elephant-figure", "active", "remove");
 
     // show throttle!
     registerClassTransition("#fps-throttle", "active");

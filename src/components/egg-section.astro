@@ -539,6 +539,10 @@ requestAnimationFrame(moveEgg);
         :global(.expressive-code):not(.full-width) .code {
             max-width: 95ch;
         }
+
+        :global(.expressive-code .code) {
+            font-size: 1.5em;
+        }
     }
 
     /* #rewind {
@@ -812,7 +816,7 @@ requestAnimationFrame(moveEgg);
     codeBlockTransition();
     registerClassTransition("#old-house", "hot");
     withPrevious();
-    registerClassTransition("#egg", "hot");
+    registerClassTransition("#egg", "unpacked");
     withPrevious();
     {
         let intervalId: NodeJS.Timeout | undefined;
@@ -844,7 +848,7 @@ requestAnimationFrame(moveEgg);
         registerClassTransition("#arson-timeline", "active", "remove");
         registerClassTransition("#old-house", "hot", "remove");
         withPrevious();
-        registerClassTransition("#egg", "hot", "remove");
+        registerClassTransition("#egg", "unpacked", "remove");
         withPrevious();
         codeBlockTransition();
         withPrevious();
