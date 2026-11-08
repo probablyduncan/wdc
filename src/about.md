@@ -2,7 +2,7 @@
 
 # Hello!
 
-This website contains slides and demos for a performance lecture about web animation that I ([Duncan Petrie](https://duncanpetrie.com "duncan’s website!")) gave at [Web Dev Conf](https://webdevconf.com/events/2026/ "WDC2026 - October 9 2026, Watershed, Bristol, UK | WDC") in October, 2026, and [London Web Standards](https://londonwebstandards.org/talks/bringing-spiders-to-the-web-with-requestanimationframe/ "Bringing Spiders to the Web with RequestAnimationFrame | London Web Standards") in November, 2026.
+This website contains slides and demos for a performance lecture about `requestAnimationFrame` that I ([Duncan Petrie](https://duncanpetrie.com "duncan’s website!")) gave at [Web Dev Conf](https://webdevconf.com/events/2026/ "WDC2026 - October 9 2026, Watershed, Bristol, UK | WDC") in October, 2026, and [London Web Standards](https://londonwebstandards.org/talks/bringing-spiders-to-the-web-with-requestanimationframe/ "Bringing Spiders to the Web with RequestAnimationFrame | London Web Standards") in November, 2026.
 
 \
 \
@@ -40,4 +40,4 @@ The [browser extension](https://chromewebstore.google.com/detail/a-spider-on-the
 \
 Thanks for visiting! For more about me, see my website, [duncanpetrie.com](https://duncanpetrie.com "duncan’s website!").
 
-If you want to get in touch, [email me](mailto:duncanpetrie1@gmail.com "mail to: duncanpetrie1@gmail.com"), or find me on [instagram](https://instagram.com/probablyduncan "Duncan Petrie (@probablyduncan) • Instagram photos and videos") or [bluesky](https://bsky.app/profile/duncanpetrie.com "Duncan Petrie (@duncanpetrie.com) — Bluesky").
+Want me to speak at your event? Or collaborate on something? Reach out via [email](mailto:duncanpetrie1@gmail.com "mail to: duncanpetrie1@gmail.com"), [bluesky](https://bsky.app/profile/duncanpetrie.com "Duncan Petrie (@duncanpetrie.com) — Bluesky"), or [instagram](https://instagram.com/probablyduncan "Duncan Petrie (@probablyduncan) • Instagram photos and videos"). I'd love to hear from you!
