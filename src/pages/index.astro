@@ -12,7 +12,6 @@ import "../css.css";
 
         <link rel="canonical" href={Astro.site} />
         <title>🕷️🌐🛝🎭</title>
-        <script src="../lib/slides.ts"></script>
     </head>
     <body>
         <main>
@@ -22,13 +21,63 @@ import "../css.css";
 </html>
 
 <style>
+    html {
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        font-synthesis: none;
+        -webkit-text-size-adjust: none;
+        text-size-adjust: none;
+    }
+
+    body {
+        container-type: inline-size;
+    }
+
     main {
+        --step-0: clamp(1.125rem, 0.9rem + 1.25cqi, 1.5rem);
+        --step-1: clamp(1.5rem, 1.1rem + 2.5cqi, 2.25rem);
+        --step-2: clamp(2.25rem, 1.4rem + 5cqi, 3.5rem);
+
+        width: calc(100% - 2em);
         max-width: 50ch;
-        font-size: 1.5em;
-        width: calc(100% - 1em);
-        text-wrap: pretty;
+
+        font-size: var(--step-0);
+        font-size-adjust: from-font;
+
         margin: 1em auto 50svh;
         line-height: 1.5;
+
+        font-kerning: normal;
+        font-variant-ligatures: common-ligatures contextual;
+        text-wrap: pretty;
+    }
+
+    main :global(:is(h1, h2)) {
+        font-size: var(--step-1);
+        line-height: 1.15;
+        letter-spacing: -0.01em;
+        text-wrap: balance;
+        margin-block: 1.5em 0.75em;
+    }
+
+    main :global(h1) {
+        font-size: var(--step-2);
+    }
+
+    main :global(p) {
+        text-wrap: pretty;
+        margin-block: 1.25em;
+        font-weight: 450;
+    }
+
+    main :global(a) {
+        text-decoration-thickness: from-font;
+        text-underline-offset: 0.15em;
+        text-decoration-skip-ink: auto;
+    }
+
+    main :global(a):hover {
+        text-decoration: none;
     }
 
     main :global(img) {
@@ -42,6 +91,7 @@ import "../css.css";
         border-left: 0.125em dashed black;
         padding-left: 1.618em;
         margin-left: 0.618em;
+        margin-right: 0;
     }
 
     main :global(code) {

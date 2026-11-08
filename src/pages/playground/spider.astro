@@ -1,0 +1,433 @@
+---
+import "../../css.css";
+
+// log sliders go from 0 to 1 in the input, and the script maps that onto
+// [min, max] exponentially, so each step is a constant ratio.
+// name, label, min, max, default value
+const logSliders = [
+    ["size", "size", 0.5, 30, 2],
+    ["legLength", "leg length", 0.25, 4, 1],
+    ["legWidth", "leg width", 0.25, 5, 1],
+] as const;
+
+const toLogPosition = (value: number, min: number, max: number) =>
+    Math.log(value / min) / Math.log(max / min);
+
+// name, label, min, max, default value
+const linearSliders = [
+    ["legPairs", "leg pairs", 0, 4, 4],
+    ["pixelation", "pixelation", 1, 32, 1],
+] as const;
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>🕷️🌐🛝🎭 spider demo</title>
+    </head>
+    <body>
+        <canvas id="itsy-bitsy"></canvas>
+
+        <form id="settings" onsubmit="return false">
+            <div class="slider">
+                <label for="parts">parts</label>
+                <output for="parts"></output>
+                <input id="parts" name="parts" type="range" min="1" max="5" step="1" value="5" />
+            </div>
+            {
+                logSliders.map(([name, label, min, max, value]) => (
+                    <div class="slider">
+                        <label for={name}>{label}</label>
+                        <output for={name} />
+                        <input
+                            id={name}
+                            name={name}
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.001"
+                            value={toLogPosition(value, min, max)}
+                            data-min={min}
+                            data-max={max}
+                        />
+                    </div>
+                ))
+            }
+            {
+                linearSliders.map(([name, label, min, max, value]) => (
+                    <div class="slider">
+                        <label for={name}>{label}</label>
+                        <output for={name} />
+                        <input id={name} name={name} type="range" min={min} max={max} step="1" value={value} />
+                    </div>
+                ))
+            }
+            <div class="toggles">
+                <label><input type="checkbox" name="padding" checked /> keep distance from cursor</label>
+            </div>
+        </form>
+    </body>
+</html>
+
+<style>
+    body {
+        margin: unset;
+        height: 100vh;
+        overflow: clip;
+        background-color: #b10606;
+        background-image: url(/images/noise.avif);
+        background-repeat: repeat;
+        background-blend-mode: screen;
+    }
+
+    #itsy-bitsy {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 1;
+        image-rendering: pixelated;
+        pointer-events: none;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    #settings {
+        position: fixed;
+        top: 2ch;
+        left: 2ch;
+        z-index: 2;
+        width: clamp(20vw, 350px, 95vw);
+        font-size: 0.75em;
+        display: flex;
+        flex-flow: column;
+        gap: 2ch;
+
+        label,
+        output {
+            padding: 0.25em 0.5em;
+            background-color: white;
+            border-radius: 0.25em;
+            box-shadow: 0 0 0.125em #00000044;
+        }
+    }
+
+    .slider {
+        display: grid;
+        align-items: center;
+
+        input {
+            grid-column: 1 / 3;
+        }
+
+        label {
+            justify-self: start;
+        }
+
+        output {
+            justify-self: end;
+        }
+    }
+
+    .toggles {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5em;
+
+        /* #settings prefix so this beats the plain label background above */
+        #settings & label {
+            cursor: pointer;
+
+            &:has(input:checked) {
+                background-color: tomato;
+                color: white;
+            }
+
+            &:has(input:focus-visible) {
+                outline: 2px solid black;
+            }
+
+            input {
+                position: absolute;
+                opacity: 0;
+                pointer-events: none;
+            }
+        }
+    }
+</style>
+<script>
+    // intentionally self-contained: the spider code is duplicated from
+    // slides/spiders.astro, and nothing is imported.
+
+    type Point = { x: number; y: number };
+
+    const canvas = document.getElementById("itsy-bitsy") as HTMLCanvasElement;
+    const context = canvas.getContext("2d")!;
+    const form = document.getElementById("settings") as HTMLFormElement;
+    const canvasSize: Point = { x: 0, y: 0 };
+
+    // each stage adds a part to the previous ones
+    const partNames = ["body", "abdomen", "head", "eyes", "legs"];
+    const HALF_LIFE = 100; // ms to get halfway to the target
+
+    // --- settings ---
+
+    const opts = {
+        parts: 5,
+        size: 10,
+        legPairs: 4,
+        legLength: 1,
+        legWidth: 1,
+        padding: true,
+        pixelation: 1,
+    };
+
+    function readSettings() {
+        for (const el of Array.from(form.elements)) {
+            if (!(el instanceof HTMLInputElement) || !el.name) continue;
+
+            let value: number | boolean;
+            let display: string;
+            if (el.type === "checkbox") {
+                value = el.checked;
+                display = "";
+            } else if (el.dataset.min) {
+                // log slider
+                const min = parseFloat(el.dataset.min);
+                const max = parseFloat(el.dataset.max!);
+                value = min * Math.pow(max / min, parseFloat(el.value));
+                display = parseFloat(value.toPrecision(2)).toString();
+            } else {
+                value = parseFloat(el.value);
+                display = el.name === "parts" ? partNames[value - 1] : el.value;
+            }
+
+            (opts as Record<string, number | boolean>)[el.name] = value;
+            const output = form.querySelector(`output[for="${el.name}"]`);
+            if (output) output.textContent = display;
+        }
+
+        scaleCanvasToWindow();
+    }
+
+    function scaleCanvasToWindow() {
+        const dpr = (window.devicePixelRatio || 1) / opts.pixelation;
+        canvasSize.x = canvas.clientWidth;
+        canvasSize.y = canvas.clientHeight;
+        const width = Math.max(1, Math.round(canvasSize.x * dpr));
+        const height = Math.max(1, Math.round(canvasSize.y * dpr));
+        // resizing the canvas clears it, so skip when nothing changed
+        if (canvas.width !== width || canvas.height !== height) {
+            canvas.width = width;
+            canvas.height = height;
+        }
+        context.setTransform(width / canvasSize.x, 0, 0, height / canvasSize.y, 0, 0);
+    }
+
+    form.addEventListener("input", readSettings);
+    window.addEventListener("resize", scaleCanvasToWindow);
+
+    // --- spider state ---
+
+    scaleCanvasToWindow();
+
+    const spider = {
+        current: { x: canvasSize.x * 0.618, y: canvasSize.y * 0.55 },
+        target: { x: canvasSize.x * 0.618 - 1, y: canvasSize.y * 0.55 - 1 },
+        feet: [] as Point[],
+        angle: 0,
+        velocity: 0,
+    };
+
+    window.addEventListener("pointermove", (e) => {
+        spider.target.x = e.clientX;
+        spider.target.y = e.clientY;
+    });
+
+    // --- helpers ---
+
+    const toRads = (degrees: number) => (degrees * Math.PI) / 180;
+
+    function getPointAt(start: Point, length: number, angle: number): Point {
+        return {
+            x: start.x + Math.cos(angle) * length,
+            y: start.y + Math.sin(angle) * length,
+        };
+    }
+
+    function drawLine(from: Point, to: Point, width: number) {
+        context.strokeStyle = "black";
+        context.lineWidth = width;
+        context.beginPath();
+        context.moveTo(from.x, from.y);
+        context.lineTo(to.x, to.y);
+        context.stroke();
+    }
+
+    function drawEllipse(
+        center: Point,
+        radius: Point,
+        angle: number,
+        fillColor: string,
+        strokeWidth?: number,
+    ) {
+        context.beginPath();
+        context.ellipse(center.x, center.y, radius.x, radius.y, angle, 0, 2 * Math.PI);
+        context.fillStyle = fillColor;
+        context.fill();
+        if (strokeWidth) {
+            context.lineWidth = strokeWidth;
+            context.strokeStyle = "black";
+            context.stroke();
+        }
+    }
+
+    function drawCircle(center: Point, radius: number, fillColor = "black") {
+        drawEllipse(center, { x: radius, y: radius }, 0, fillColor);
+    }
+
+    const idealFeet = [
+        { angle: toRads(20), length: 0.5, stretch: 0.4 },
+        { angle: toRads(50), length: 0.5, stretch: 0.6 },
+        { angle: toRads(90), length: 0.4, stretch: 0.5 },
+        { angle: toRads(120), length: 0.4, stretch: 0.4 },
+    ];
+
+    // --- step + draw ---
+
+    function stepAndDrawSpider(deltaMS: number, timestamp: number) {
+        const center = spider.current;
+        const scale = opts.size;
+
+        // face target
+        spider.angle = Math.atan2(
+            spider.target.y - center.y,
+            spider.target.x - center.x,
+        );
+
+        // push target back a bit, away from cursor
+        const padding = opts.padding ? (scale * 10 + 10) : 0;
+        const target = getPointAt(spider.target, -padding, spider.angle);
+
+        // ease towards the target
+        const lerp = Math.min(1, (0.5 * deltaMS) / HALF_LIFE);
+        const travel = {
+            x: (target.x - center.x) * lerp,
+            y: (target.y - center.y) * lerp,
+        };
+        spider.velocity = Math.hypot(travel.x, travel.y);
+        center.x += travel.x;
+        center.y += travel.y;
+
+        const isAtRest = spider.velocity < 0.1;
+
+        // walk legs
+        const footCount = opts.legPairs * 2;
+        spider.feet.length = Math.min(spider.feet.length, footCount);
+        for (let i = 0; i < footCount; i++) {
+            const baseLegLength = 30 * scale * opts.legLength;
+            const footConfig = idealFeet[Math.floor(i / 2)];
+            const side = i % 2 === 0 ? 1 : -1;
+
+            const idealFoot = getPointAt(
+                center,
+                footConfig.length * baseLegLength,
+                spider.angle + footConfig.angle * side,
+            );
+
+            // if no foot, or we're at rest, set to ideal
+            if (!spider.feet[i] || (isAtRest && Math.random() > 0.99)) {
+                spider.feet[i] = idealFoot;
+                continue;
+            }
+
+            const distanceFromIdeal = Math.hypot(
+                spider.feet[i].x - idealFoot.x,
+                spider.feet[i].y - idealFoot.y,
+            );
+
+            if (
+                distanceFromIdeal >
+                baseLegLength * footConfig.stretch * (Math.random() * 0.2 + 0.9)
+            ) {
+                spider.feet[i] = idealFoot;
+            }
+        }
+
+        // ------------------- DRAW --------------------
+
+        // legs are the last part added, but they're drawn first, underneath
+        if (opts.parts >= 5) {
+            spider.feet.forEach((f) => drawLine(center, f, scale * opts.legWidth));
+        }
+
+        // body
+        drawCircle(center, scale * 3);
+
+        // abdomen
+        if (opts.parts >= 2) {
+            drawEllipse(
+                getPointAt(center, scale * -6, spider.angle),
+                { x: scale * 6, y: scale * 4 },
+                spider.angle,
+                "black",
+            );
+        }
+
+        // head
+        if (opts.parts >= 3) {
+            drawCircle(getPointAt(center, scale * 5, spider.angle), scale * 3);
+        }
+
+        // eyes
+        if (opts.parts >= 4) {
+            const eyeAngle = 0.42; // 25 deg ish
+            const eyeSize = scale * 2;
+
+            // blink every 2.5s, but only while standing still
+            const cycleLength = 2500;
+            const blinkLength = 250;
+            const cycleTime = timestamp % cycleLength;
+            const blink =
+                1 -
+                (isAtRest && cycleTime < blinkLength
+                    ? Math.sin((Math.PI * cycleTime) / blinkLength)
+                    : 0);
+
+            for (const side of [-1, 1]) {
+                const eyePos = getPointAt(
+                    center,
+                    scale * 5,
+                    spider.angle + eyeAngle * side,
+                );
+                // outline, whites, pupil
+                drawCircle(eyePos, eyeSize + 0.5 * scale);
+                drawEllipse(
+                    eyePos,
+                    { x: eyeSize * blink, y: eyeSize },
+                    spider.angle,
+                    "white",
+                    1,
+                );
+                drawCircle(eyePos, eyeSize / 2);
+            }
+        }
+    }
+
+    readSettings();
+
+    let prevTimestamp = performance.now();
+    requestAnimationFrame(function drawFrame(timestamp) {
+        // clamp so a backgrounded tab doesn't produce one giant step
+        const deltaMS = Math.min(timestamp - prevTimestamp, 100);
+        prevTimestamp = timestamp;
+
+        context.clearRect(0, 0, canvasSize.x, canvasSize.y);
+        stepAndDrawSpider(deltaMS, timestamp);
+
+        requestAnimationFrame(drawFrame);
+    });
+</script>

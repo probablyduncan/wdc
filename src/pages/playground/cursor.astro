@@ -1,0 +1,353 @@
+---
+import "../../css.css";
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>🕷️🌐🛝🎭 cursor demo</title>
+    </head>
+    <body data-shape="egg" data-interp="spring">
+        <main>
+            <img
+                id="egg"
+                class="follower"
+                src="/images/egg.webp"
+                alt="my best egg"
+                draggable="false"
+            />
+            <div id="box" class="follower"></div>
+
+            <form id="settings" onsubmit="return false">
+                <fieldset>
+                    <legend>follower</legend>
+                    <label><input type="radio" name="shape" value="box" /> box</label>
+                    <label><input type="radio" name="shape" value="egg" checked /> egg</label>
+                </fieldset>
+                <fieldset>
+                    <legend>interpolation</legend>
+                    <label><input type="radio" name="interp" value="lerp" /> lerp</label>
+                    <label><input type="radio" name="interp" value="spring" checked /> spring</label>
+                </fieldset>
+
+                <div class="sliders" data-for="lerp">
+                    <div>
+                        <label for="half-life">half life (ms)</label>
+                        <output for="half-life">100</output>
+                        <input id="half-life" name="half-life" type="range" min="0" max="1000" step="1" value="100" />
+                    </div>
+                </div>
+
+                <div class="sliders" data-for="spring">
+                    <div>
+                        <label for="stiffness">stiffness</label>
+                        <output for="stiffness">100</output>
+                        <input id="stiffness" name="stiffness" type="range" min="1" max="1000" step="1" value="100" />
+                    </div>
+                    <div>
+                        <label for="mass">mass (kg)</label>
+                        <output for="mass">2</output>
+                        <input id="mass" name="mass" type="range" min="1" max="100" step="1" value="2" />
+                    </div>
+                    <div>
+                        <label for="damping">damping</label>
+                        <output for="damping">20</output>
+                        <input id="damping" name="damping" type="range" min="1" max="200" step="1" value="20" />
+                    </div>
+                </div>
+
+                <div class="sliders" data-for="box">
+                    <div>
+                        <label for="rotation">rotate-y-ness</label>
+                        <output for="rotation">0</output>
+                        <input id="rotation" name="rotation" type="range" min="0" max="1000" step="1" value="0" />
+                    </div>
+                </div>
+            </form>
+        </main>
+    </body>
+</html>
+
+<style>
+    body {
+        margin: unset;
+    }
+
+    main {
+        position: fixed;
+        inset: 0;
+        overflow: clip;
+    }
+
+    .follower {
+        position: fixed;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        user-select: none;
+        -webkit-user-drag: none;
+        -webkit-user-select: none;
+        translate: calc(var(--x, 50vw) - 50%) calc(var(--y, 50vh) - 50%);
+    }
+
+    #egg {
+        width: 15vmin;
+        height: auto;
+    }
+
+    #box {
+        width: 100px;
+        height: 100px;
+        background-color: tomato;
+        rotate: var(--r, 0rad);
+    }
+
+    body[data-shape="egg"] #box,
+    body[data-shape="box"] #egg {
+        display: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .follower {
+            display: none;
+        }
+    }
+
+    #settings {
+        position: fixed;
+        top: 2ch;
+        left: 50%;
+        translate: -50%;
+        z-index: 2;
+        padding: 1ch;
+        font-size: 0.75em;
+        display: flex;
+        flex-flow: column;
+        align-items: center;
+        gap: 2ch;
+
+        fieldset {
+            display: flex;
+            gap: 0.5em;
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        legend {
+            display: none;
+        }
+
+        fieldset label {
+            padding: 0.25em 0.5em;
+            background-color: white;
+            border-radius: 0.25em;
+            box-shadow: 0 0 0.125em #00000044;
+            cursor: pointer;
+
+            &:has(input:checked) {
+                background-color: tomato;
+                color: white;
+            }
+
+            &:has(input:focus-visible) {
+                outline: 2px solid black;
+            }
+
+            input {
+                position: absolute;
+                opacity: 0;
+                pointer-events: none;
+            }
+        }
+    }
+
+    .sliders {
+        & > div {
+            display: grid;
+            align-items: center;
+            width: clamp(20vw, 350px, 95vw);
+            margin-bottom: 2ch;
+
+            label,
+            output {
+                padding: 0.25em 0.5em;
+                margin-inline: 0.25em;
+                background-color: white;
+                border-radius: 0.25em;
+                box-shadow: 0 0 0.125em #00000044;
+            }
+
+            input {
+                grid-column: 1 / 3;
+            }
+
+            label {
+                justify-self: start;
+            }
+
+            output {
+                justify-self: end;
+            }
+        }
+    }
+
+    body[data-interp="lerp"] .sliders[data-for="spring"],
+    body[data-interp="spring"] .sliders[data-for="lerp"],
+    body[data-shape="egg"] .sliders[data-for="box"] {
+        display: none;
+    }
+</style>
+<script>
+    // intentionally self-contained: the interpolation code below is
+    // duplicated from lib/interpolationController, not imported.
+
+    class Spring {
+        current = 0;
+        target = 0;
+        velocity = 0; // px / second
+        stiffness = 100;
+        mass = 2;
+        damping = 20;
+
+        step(deltaMS: number) {
+            // explicit euler gets unstable with big steps, so use small ones
+            const steps = Math.max(1, Math.ceil(deltaMS / 8));
+            const deltaS = deltaMS / 1000 / steps;
+            for (let i = 0; i < steps; i++) {
+                const springForce = this.stiffness * (this.target - this.current);
+                const dampingForce = this.damping * this.velocity;
+                this.velocity += ((springForce - dampingForce) / this.mass) * deltaS;
+                this.current += this.velocity * deltaS;
+            }
+        }
+    }
+
+    class Lerp {
+        current = 0;
+        target = 0;
+        velocity = 0; // px / second, derived
+        halfLife = 100; // ms to get halfway to the target
+
+        step(deltaMS: number) {
+            const prev = this.current;
+            if (this.halfLife <= 0) {
+                this.current = this.target;
+            } else {
+                const lerp = Math.min(1, (0.5 * deltaMS) / this.halfLife);
+                this.current += (this.target - this.current) * lerp;
+            }
+            this.velocity = deltaMS > 0 ? ((this.current - prev) / deltaMS) * 1000 : 0;
+        }
+    }
+
+    const body = document.body;
+    const egg = document.getElementById("egg")!;
+    const box = document.getElementById("box")!;
+    const settings = document.getElementById("settings") as HTMLFormElement;
+
+    const springs = { x: new Spring(), y: new Spring() };
+    const lerps = { x: new Lerp(), y: new Lerp() };
+    const rotation = { factor: 0 };
+
+    function reset() {
+        for (const c of [springs.x, lerps.x]) c.current = c.target = window.innerWidth / 2;
+        for (const c of [springs.y, lerps.y]) c.current = c.target = window.innerHeight / 2;
+        springs.x.velocity = springs.y.velocity = 0;
+        lerps.x.velocity = lerps.y.velocity = 0;
+    }
+    reset();
+
+    window.addEventListener("mousemove", (e) => {
+        for (const c of [springs.x, lerps.x]) c.target = e.clientX;
+        for (const c of [springs.y, lerps.y]) c.target = e.clientY;
+    });
+
+    // --- settings ---
+
+    function syncCurrent(from: { x: Spring | Lerp; y: Spring | Lerp }, to: typeof from) {
+        // so switching interpolation type doesn't teleport the follower
+        to.x.current = from.x.current;
+        to.y.current = from.y.current;
+        to.x.velocity = from.x.velocity;
+        to.y.velocity = from.y.velocity;
+    }
+
+    function radioValue(name: string) {
+        return new FormData(settings).get(name) as string;
+    }
+
+    settings.addEventListener("change", (e) => {
+        const input = e.target as HTMLInputElement;
+        if (input.name === "shape") {
+            body.dataset.shape = input.value;
+        } else if (input.name === "interp") {
+            if (input.value === "lerp") syncCurrent(springs, lerps);
+            else syncCurrent(lerps, springs);
+            body.dataset.interp = input.value;
+        }
+    });
+
+    function bindSlider(name: string, onChange: (value: number) => void) {
+        const input = settings.querySelector<HTMLInputElement>(`input[name="${name}"]`)!;
+        const output = settings.querySelector<HTMLOutputElement>(`output[for="${name}"]`)!;
+        const update = () => {
+            const value = parseFloat(input.value);
+            output.value = output.textContent = input.value;
+            onChange(value);
+        };
+        input.addEventListener("input", update);
+        update();
+    }
+
+    bindSlider("half-life", (v) => (lerps.x.halfLife = lerps.y.halfLife = v));
+    bindSlider("stiffness", (v) => (springs.x.stiffness = springs.y.stiffness = v));
+    bindSlider("mass", (v) => (springs.x.mass = springs.y.mass = v));
+    bindSlider("damping", (v) => (springs.x.damping = springs.y.damping = v));
+    bindSlider("rotation", (v) => (rotation.factor = v));
+
+    // restore radio state (browsers keep form state across reloads)
+    body.dataset.shape = radioValue("shape");
+    body.dataset.interp = radioValue("interp");
+
+    // --- animation ---
+
+    // same rotation maths as the box in the slides
+    function getRotation(x: Spring | Lerp, y: Spring | Lerp) {
+        if (rotation.factor <= 0) return 0;
+
+        const max = Math.PI / 8;
+        // [-180,180] where top is 0, left is negative, right is positive
+        const angleToCurrent = Math.atan2(x.target - x.current, y.current - y.target);
+        // [-1,1] where topleft and bottomright +1, topright and bottomleft -1, left/right/top/bottom 0
+        const angleFactor = -Math.sin(angleToCurrent * 2);
+        // [0,1] velocities get big, so scale way down
+        const velocityFactor = Math.min(
+            Math.abs(((x.velocity * y.velocity) / 1_000_000_000) * rotation.factor),
+            1,
+        );
+        return max * angleFactor * velocityFactor;
+    }
+
+    let prevTimestamp = performance.now();
+    requestAnimationFrame(function frame(timestamp) {
+        // clamp so a backgrounded tab doesn't produce one giant step
+        const delta = Math.min(timestamp - prevTimestamp, 100);
+        prevTimestamp = timestamp;
+
+        const { x, y } = body.dataset.interp === "lerp" ? lerps : springs;
+        x.step(delta);
+        y.step(delta);
+
+        const el = body.dataset.shape === "box" ? box : egg;
+        el.style.setProperty("--x", x.current.toFixed(2) + "px");
+        el.style.setProperty("--y", y.current.toFixed(2) + "px");
+        if (el === box) {
+            el.style.setProperty("--r", getRotation(x, y).toFixed(6) + "rad");
+        }
+
+        requestAnimationFrame(frame);
+    });
+</script>

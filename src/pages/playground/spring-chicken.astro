@@ -1,0 +1,370 @@
+---
+import "../../css.css";
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>🕷️🌐🛝🎭 chicken demo</title>
+    </head>
+    <body>
+        <main>
+            <form id="spring-sliders" onsubmit="return false">
+                <div>
+                    <label for="stiffness">stiffness</label>
+                    <output for="stiffness">100</output>
+                    <input id="stiffness" name="stiffness" type="range" min="0" max="1000" step="1" value="100" />
+                </div>
+                <div>
+                    <label for="mass">mass (kg)</label>
+                    <output for="mass">2</output>
+                    <input id="mass" name="mass" type="range" min="0.25" max="15" step="0.25" value="2" />
+                </div>
+                <div>
+                    <label for="damping">damping</label>
+                    <output for="damping">20</output>
+                    <input id="damping" name="damping" type="range" min="0" max="100" step="1" value="20" />
+                </div>
+                <button id="lay-egg" type="button" title="or just press e!">lay egg</button>
+            </form>
+            <img
+                id="chicken"
+                src="/images/chicken-stand.webp"
+                alt="a spring chicken!"
+                draggable="false"
+            />
+        </main>
+    </body>
+</html>
+
+<style>
+    body {
+        margin: unset;
+        background-image: url("/images/chicken-bg.webp");
+        image-rendering: pixelated;
+        background-size: 100%;
+        background-position: bottom center;
+        background-repeat: no-repeat;
+        background-color: white;
+        height: 100svh;
+    }
+
+    main {
+        position: fixed;
+        inset: 0;
+        overflow: clip;
+    }
+
+    #chicken {
+        image-rendering: pixelated;
+        aspect-ratio: 1;
+        width: 25vw;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        user-select: none;
+        pointer-events: none;
+        --d: 1;
+        translate: calc(var(--x, 50vw) - 50%) calc(var(--y, -50vh) + 50%);
+        scale: calc(var(--d) * var(--s, 1)) var(--s, 1);
+        z-index: 85;
+    }
+
+    #spring-sliders {
+        position: fixed;
+        top: 2ch;
+        left: 50%;
+        translate: -50%;
+        z-index: 90;
+        padding: 1ch;
+        border-radius: 1ch;
+        font-size: 0.75em;
+
+        div {
+            display: grid;
+            align-items: center;
+            width: clamp(20vw, 350px, 95vw);
+            margin-bottom: 2ch;
+
+            input {
+                grid-column: 1 / 3;
+            }
+
+            label {
+                justify-self: start;
+            }
+
+            output {
+                justify-self: end;
+            }
+        }
+
+        label,
+        output,
+        button {
+            padding: 0.25em 0.5em;
+            margin-inline: 0.25em;
+            background-color: white;
+            border-radius: 0.25em;
+            box-shadow: 0 0 0.125em #00000044;
+        }
+
+        button {
+            width: 100%;
+            cursor: pointer;
+            border: none;
+            font-size: inherit;
+
+            transition:
+                font-variation-settings 0.2s,
+                font-weight 0.2s;
+            font-variation-settings:
+                "MONO" 1,
+                "CASL" 0,
+                "slnt" 0,
+                "CRSV" 1;
+        }
+
+        button:hover {
+            font-weight: 500;
+            font-variation-settings:
+                "MONO" 1,
+                "CASL" 1,
+                "slnt" -15,
+                "CRSV" 1;
+        }
+
+        button:active {
+            font-weight: 700;
+        }
+    }
+</style>
+<script>
+    // intentionally self-contained: the spring below is duplicated from
+    // lib/interpolationController, not imported.
+
+    class Spring {
+        current = 0;
+        target = 0;
+        velocity = 0;
+        stiffness = 100;
+        mass = 2;
+        damping = 20;
+
+        step(deltaMS: number) {
+            // explicit euler gets unstable with big steps, so use small ones
+            const steps = Math.max(1, Math.ceil(deltaMS / 8));
+            const deltaS = deltaMS / 1000 / steps;
+            for (let i = 0; i < steps; i++) {
+                const springForce = this.stiffness * (this.target - this.current);
+                const dampingForce = this.damping * this.velocity;
+                const acceleration = (springForce - dampingForce) / this.mass;
+                this.velocity += acceleration * deltaS;
+                this.current += this.velocity * deltaS;
+            }
+            return this.current;
+        }
+
+        isAtRest() {
+            const tolerance = 0.5;
+            return (
+                Math.abs(this.velocity) < tolerance &&
+                Math.abs(this.target - this.current) < tolerance
+            );
+        }
+
+        reset(current = 0) {
+            this.velocity = 0;
+            this.current = this.target = current;
+        }
+
+        fastForward() {
+            this.velocity = 0;
+            this.current = this.target;
+        }
+    }
+
+    const chicken = document.getElementById("chicken") as HTMLImageElement;
+    const settings = document.getElementById("spring-sliders") as HTMLFormElement;
+
+    const x = new Spring();
+    // like the slide, the sliders only affect the horizontal spring
+    const y = new Spring();
+
+    const startX = window.innerWidth / 3;
+    const startY = window.innerHeight * -0.02 + chicken.clientWidth / -2;
+    x.reset(startX);
+    y.reset(startY);
+    chicken.style.setProperty("--x", startX.toFixed(2) + "px");
+    chicken.style.setProperty("--y", startY.toFixed(2) + "px");
+
+    // --- sliders ---
+
+    function bindSlider(name: string, onChange: (value: number) => void) {
+        const input = settings.querySelector<HTMLInputElement>(`input[name="${name}"]`)!;
+        const output = settings.querySelector<HTMLOutputElement>(`output[for="${name}"]`)!;
+        const update = () => {
+            output.textContent = input.value;
+            onChange(parseFloat(input.value));
+        };
+        input.addEventListener("input", update);
+        update();
+    }
+
+    bindSlider("stiffness", (v) => (x.stiffness = v));
+    bindSlider("mass", (v) => (x.mass = v));
+    bindSlider("damping", (v) => (x.damping = v));
+
+    // --- click / drag to move the chicken ---
+
+    function setTarget(clientX: number, clientY: number) {
+        x.target = clientX;
+        y.target = clientY - window.innerHeight;
+    }
+
+    {
+        let mouseDown = false;
+        window.addEventListener("mousedown", ({ target, clientX, clientY }) => {
+            if ((target as HTMLElement).tagName === "MAIN") {
+                mouseDown = true;
+                setTarget(clientX, clientY);
+            }
+        });
+        window.addEventListener("mouseup", () => {
+            mouseDown = false;
+        });
+        window.addEventListener("mousemove", ({ clientX, clientY }) => {
+            if (mouseDown) setTarget(clientX, clientY);
+        });
+    }
+
+    // --- perspective scale ---
+
+    function getScale() {
+        const horizon = (-window.innerWidth / 16) * 5.5;
+        if (y.current < horizon) {
+            return 0;
+        }
+
+        if (y.current > startY) {
+            return 1;
+        }
+
+        // max is startY, min is the horizon
+        const lerp = (y.current - horizon) / (startY - horizon);
+        const scaleAtHorizon = 0.05;
+        return lerp * (1 - scaleAtHorizon) + scaleAtHorizon;
+    }
+
+    // --- sprite animation ---
+
+    const chickenFrames = {
+        current: {
+            id: "idle",
+            index: -1,
+            timestampMS: 0,
+        },
+        idle: "stand",
+        msPerFrame: 166.6666666667,
+        move: [
+            { id: "dash", min: 1, frames: ["dash-1", "dash-2", "dash-3", "dash-4"] },
+            { id: "run", min: 0.5, frames: ["run-1", "run-2", "run-3", "run-4"] },
+            { id: "walk", min: 0.1, frames: ["walk-1", "walk-2", "walk-3", "walk-4"] },
+            {
+                id: "shuffle",
+                min: 0.005,
+                frames: ["walk-2", "walk-4", "walk-2", "walk-4"],
+            },
+            { id: "almost-stand", min: 0, frames: ["walk-2"] },
+        ],
+        getSrc(frame: string) {
+            return `/images/chicken-${frame}.webp`;
+        },
+    };
+
+    // preload frames
+    chickenFrames.move.forEach((m) => {
+        m.frames.forEach((frame) => {
+            new Image().src = chickenFrames.getSrc(frame);
+        });
+    });
+
+    let prevTimestamp = performance.now();
+    requestAnimationFrame(function frame(timestampMS) {
+        // clamp so a backgrounded tab doesn't produce one giant step
+        const deltaMS = Math.min(timestampMS - prevTimestamp, 100);
+        prevTimestamp = timestampMS;
+
+        if (deltaMS > 0) {
+            const prevX = x.current;
+            const newX = x.step(deltaMS);
+            const deltaX = newX - prevX;
+            const v = Math.abs(deltaX / deltaMS);
+
+            let frames = [chickenFrames.idle];
+            let newId = "idle";
+
+            if (x.isAtRest()) {
+                x.fastForward();
+            } else {
+                for (const moveConfig of chickenFrames.move) {
+                    if (v > moveConfig.min) {
+                        frames = moveConfig.frames;
+                        newId = moveConfig.id;
+                        break;
+                    }
+                }
+            }
+
+            if (
+                newId !== chickenFrames.current.id ||
+                timestampMS - chickenFrames.current.timestampMS > chickenFrames.msPerFrame
+            ) {
+                chickenFrames.current.timestampMS = timestampMS;
+                chickenFrames.current.id = newId;
+                chickenFrames.current.index =
+                    (chickenFrames.current.index + 1) % frames.length;
+                chicken.src = chickenFrames.getSrc(frames[chickenFrames.current.index]);
+            }
+
+            if (deltaX !== 0) {
+                chicken.style.setProperty("--d", Math.sign(deltaX).toString());
+            }
+
+            chicken.style.setProperty("--x", newX.toFixed(2) + "px");
+            chicken.style.setProperty("--y", y.step(deltaMS).toFixed(2) + "px");
+            chicken.style.setProperty("--s", getScale().toFixed(2));
+        }
+
+        requestAnimationFrame(frame);
+    });
+
+    // --- lay egg ---
+
+    function layEgg() {
+        const scale = getScale();
+
+        const img = document.createElement("img");
+        img.src = "/images/egg.webp";
+        img.classList.add("laid-egg");
+
+        const sizeInRelationToChicken = 1 / 4;
+        img.style.width = scale * chicken.clientWidth * sizeInRelationToChicken + "px";
+        img.style.position = "fixed";
+        img.style.left = (100 * x.current) / window.innerWidth + "%";
+        img.style.bottom = -y.current - (chicken.clientHeight * scale) / 5 + "px";
+        img.style.pointerEvents = "none";
+        img.style.userSelect = "none";
+        img.style.translate = `-50%`;
+        img.alt = "an egg laid by a spring chicken";
+        img.style.zIndex = (scale * 70).toFixed();
+        chicken.parentElement!.insertBefore(img, chicken);
+    }
+
+    document.getElementById("lay-egg")!.addEventListener("click", layEgg);
+    window.addEventListener("keydown", (e) => {
+        if (e.key === "e" && !e.repeat) layEgg();
+    });
+</script>
