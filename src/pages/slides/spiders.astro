@@ -1,7 +1,7 @@
 ---
 import { Code } from "astro-expressive-code/components";
-import Figure from "../components/figure.astro";
-import Slide from "../components/slide.astro";
+import Figure from "../../components/figure.astro";
+import Slide from "../../components/slide.astro";
 ---
 
 <Slide prev="examples">
@@ -244,13 +244,13 @@ requestAnimationFrame(drawFrame);
     }
 </style>
 <script>
-    import AnimationFrameController from "../lib/animationFrameController";
-    import { getChildTransitions } from "../lib/codeBlockHelpers";
+    import AnimationFrameController from "../../lib/animationFrameController";
+    import { getChildTransitions } from "../../lib/codeBlockHelpers";
     import {
         registerClassTransition,
         registerTransition,
         withPrevious,
-    } from "../lib/slides";
+    } from "../../lib/slides";
 
     const canvas = document.getElementById("itsy-bitsy") as HTMLCanvasElement;
     const context = canvas.getContext("2d") as CanvasRenderingContext2D;

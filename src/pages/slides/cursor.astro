@@ -1,8 +1,8 @@
 ---
 import { Code } from "astro-expressive-code/components";
-import Slide from "../components/slide.astro";
-import Figure from "../components/figure.astro";
-import Lever from "../components/lever.astro";
+import Slide from "../../components/slide.astro";
+import Figure from "../../components/figure.astro";
+import Lever from "../../components/lever.astro";
 ---
 
 <Slide prev="index" next="springtime">
@@ -1282,18 +1282,18 @@ requestAnimationFrame(function moveEgg(theGlitteringNow) {
         addConstControl,
         addLiveDisplay,
         getChildTransitions,
-    } from "../lib/codeBlockHelpers";
+    } from "../../lib/codeBlockHelpers";
     import {
         SpringController,
         type SpringOptions,
-    } from "../lib/interpolationController";
+    } from "../../lib/interpolationController";
     import {
         registerClassTransition,
         registerOneTimeTransition,
         registerRafTransition,
         withPrevious,
-    } from "../lib/slides";
-    import { registerTransition } from "../lib/slides";
+    } from "../../lib/slides";
+    import { registerTransition } from "../../lib/slides";
 
     const egg = document.getElementById("egg")!;
 

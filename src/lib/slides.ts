@@ -206,48 +206,48 @@ const _oneTimeTransitions: Record<TransitionDirection, {
 
 const getCurrentTransition = () => _transitions[_transitionIndex];
 
-const INDEX_SEARCH_PARAM_KEY = "s";
+const SEARCH_PARAM_SLIDE_KEY = "s";
 
 function goToPage(pageName: string, slide?: number) {
-    let newUrl = window.location.origin;
+    let newUrl = window.location.origin + "/slides";
     if (pageName !== "index") {
         newUrl += "/" + pageName;
     }
 
     if (slide) {
-        newUrl += "?" + INDEX_SEARCH_PARAM_KEY + "=" + slide;
+        newUrl += "?" + SEARCH_PARAM_SLIDE_KEY + "=" + slide;
     }
 
     window.location.href = newUrl;
 }
 
-function updateIndexInUrl() {
+function updateSlideInUrl() {
     const url = new URL(window.location.href);
     if (_transitionIndex < 0) {
-        removeIndexFromURL();
+        removeSlideFromURL();
         return;
     }
 
-    url.searchParams.set(INDEX_SEARCH_PARAM_KEY, (_transitionIndex + 1).toString());
+    url.searchParams.set(SEARCH_PARAM_SLIDE_KEY, (_transitionIndex + 1).toString());
     history.pushState(null, "", url.href);
 }
 
-function removeIndexFromURL() {
+function removeSlideFromURL() {
     const url = new URL(window.location.href);
-    url.searchParams.delete(INDEX_SEARCH_PARAM_KEY);
+    url.searchParams.delete(SEARCH_PARAM_SLIDE_KEY);
     history.pushState(null, "", url.href);
 }
 
-function fastForwardToUrlIndex() {
+function fastForwardToSlide() {
     // s=1 will load after the first transition, s=2 will load after the second transition, etc
-    const start = parseInt(new URLSearchParams(window.location.search).get(INDEX_SEARCH_PARAM_KEY) ?? "");
+    const start = parseInt(new URLSearchParams(window.location.search).get(SEARCH_PARAM_SLIDE_KEY) ?? "");
     if (start && !isNaN(start) && start > 0) {
         _transitionIndex = Math.min(start, _transitions.length) - 1;
         for (let i = 0; i <= _transitionIndex; i++) {
             _transitions[i].begin();
         }
     }
-    updateIndexInUrl();
+    updateSlideInUrl();
 }
 
 function executeOneTimeTransitionsAndShouldBlock(direction: TransitionDirection) {
@@ -279,7 +279,7 @@ export function nextTransition() {
     // otherwise, increment and start next transition
     _transitionIndex++;
     getCurrentTransition().begin();
-    updateIndexInUrl();
+    updateSlideInUrl();
 }
 
 export function prevTransition() {
@@ -296,7 +296,7 @@ export function prevTransition() {
     // otherwise, revert last transition and decrement
     getCurrentTransition().revert();
     _transitionIndex--;
-    updateIndexInUrl();
+    updateSlideInUrl();
 }
 
 export function nextPage() {
@@ -313,7 +313,7 @@ export function prevPage() {
 
 function onReady() {
 
-    fastForwardToUrlIndex();
+    fastForwardToSlide();
 
     // set up buttons and arrow keys
     // document.querySelectorAll("button[data-next-slide]").forEach(b => b.addEventListener("click", nextTransition));
@@ -346,7 +346,7 @@ function onReady() {
                 break;
             case "KeyR":
                 if (shiftKey && (metaKey || ctrlKey)) {
-                    removeIndexFromURL();
+                    removeSlideFromURL();
                 }
         }
     });

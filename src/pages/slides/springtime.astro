@@ -1,7 +1,7 @@
 ---
 import { Code } from "astro-expressive-code/components";
-import Slide from "../components/slide.astro";
-import Figure from "../components/figure.astro";
+import Slide from "../../components/slide.astro";
+import Figure from "../../components/figure.astro";
 
 // function getEditFileLink() {
 //     return import.meta.env.DEV
@@ -704,20 +704,20 @@ function step(deltaMS) {
     }
 </style>
 <script>
-    import AnimationFrameController from "../lib/animationFrameController";
-    import { addConstControl } from "../lib/codeBlockHelpers";
-    import { getChildTransitions } from "../lib/codeBlockHelpers";
+    import AnimationFrameController from "../../lib/animationFrameController";
+    import { addConstControl } from "../../lib/codeBlockHelpers";
+    import { getChildTransitions } from "../../lib/codeBlockHelpers";
     import {
         LerpController,
         SpringController,
         type InterpolationController,
         type SpringOptions,
-    } from "../lib/interpolationController";
+    } from "../../lib/interpolationController";
     import {
         registerClassTransition,
         registerTransition,
         withPrevious,
-    } from "../lib/slides";
+    } from "../../lib/slides";
 
     const codeClasses = getChildTransitions("code-classes", ".expressive-code");
     const codeUses = getChildTransitions("code-uses", ".expressive-code");
