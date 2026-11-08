@@ -273,6 +273,7 @@ export function nextTransition() {
 
     // if we're already done with the last transition, nothing to do
     if (_transitionIndex + 1 >= _transitions.length) {
+        nextPage();
         return;
     }
 
@@ -290,6 +291,7 @@ export function prevTransition() {
 
     // if no transitions are active, do nothing
     if (_transitionIndex < 0) {
+        prevPage();
         return;
     }
 

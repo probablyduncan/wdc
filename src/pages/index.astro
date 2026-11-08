@@ -1,0 +1,64 @@
+---
+import { Content } from "../about.md";
+import "../css.css";
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="text-scale" content="scale" />
+
+        <link rel="canonical" href={Astro.site} />
+        <title>🕷️🌐🛝🎭</title>
+        <script src="../lib/slides.ts"></script>
+    </head>
+    <body>
+        <main>
+            <Content />
+        </main>
+    </body>
+</html>
+
+<style>
+    main {
+        max-width: 50ch;
+        font-size: 1.5em;
+        width: calc(100% - 1em);
+        text-wrap: pretty;
+        margin: 1em auto 50svh;
+        line-height: 1.5;
+    }
+
+    main :global(img) {
+        width: 100%;
+        border: 2px solid black;
+        margin-top: 5em;
+    }
+
+    main :global(blockquote) {
+        opacity: 0.618;
+        border-left: 0.125em dashed black;
+        padding-left: 1.618em;
+        margin-left: 0.618em;
+    }
+
+    main :global(code) {
+        background-color: #0001;
+        padding: 0.125em;
+        border-radius: 0.25em;
+        font-family: inherit;
+        font-variation-settings: "MONO" 1, "CASL" 0, "slnt" 0, "CRSV" 0;
+        font-size: 0.8em;
+    }
+
+    main :global(em) {
+        font-variation-settings: "MONO" 1, "CASL" 1, "slnt" -15, "CRSV" 0.5;
+    }
+
+    main :global(strong) {
+        font-weight: 700;
+        font-variation-settings: "MONO" 1, "CASL" 1, "slnt" -7, "CRSV" 0.5;
+    }
+</style>
