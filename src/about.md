@@ -14,9 +14,9 @@ This is what the talk is (ostensibly) about:
 
 \
 \
-[Click here](/slides "the slides!") to go through the presentation yourself. Use the left and right arrow keys to change the slide.
+[Click here](/slides "the slides!") to go through the slides yourself. Use your left and right arrow keys to navigate.
 
-If you haven’t seen the talk, the slides might be confusing. You can watch a recording on [YouTube](https://www.youtube.com/watch?v=88_qqxNvZmQ "Bringing Spiders to the Web with RequestAnimationFrame - Duncan Petrie - YouTube").
+If you haven’t seen the talk, the slides will be confusing! You can watch a recording on [YouTube](https://www.youtube.com/watch?v=88_qqxNvZmQ "Bringing Spiders to the Web with RequestAnimationFrame - Duncan Petrie - YouTube").
 
 ![A screenshot of a spring chicken, ready for action.](/images/screenshot-spring-chicken.webp)
 
