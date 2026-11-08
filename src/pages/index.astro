@@ -50,6 +50,9 @@ import "../css.css";
         font-kerning: normal;
         font-variant-ligatures: common-ligatures contextual;
         text-wrap: pretty;
+
+        font-weight: 450;
+        font-variation-settings: "MONO" 0, "CASL" 1, "slnt" 0, "CRSV" 0.5;
     }
 
     main :global(:is(h1, h2)) {
@@ -65,9 +68,7 @@ import "../css.css";
     }
 
     main :global(p) {
-        text-wrap: pretty;
         margin-block: 1.25em;
-        font-weight: 450;
     }
 
     main :global(a) {
@@ -81,7 +82,7 @@ import "../css.css";
     }
 
     main :global(img) {
-        width: 100%;
+        max-width: 100%;
         border: 2px solid black;
         margin-top: 5em;
     }
@@ -104,11 +105,11 @@ import "../css.css";
     }
 
     main :global(em) {
-        font-variation-settings: "MONO" 1, "CASL" 1, "slnt" -15, "CRSV" 0.5;
+        font-variation-settings: "MONO" 0, "CASL" 1, "slnt" -15, "CRSV" 0.5;
     }
 
     main :global(strong) {
         font-weight: 700;
-        font-variation-settings: "MONO" 1, "CASL" 1, "slnt" -7, "CRSV" 0.5;
+        font-variation-settings: "MONO" 0, "CASL" 1, "slnt" -7, "CRSV" 0.5;
     }
 </style>
